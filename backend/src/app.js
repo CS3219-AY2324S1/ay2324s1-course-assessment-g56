@@ -26,26 +26,25 @@ const supabase = createClient(
 );
 
 app.get("/profiles", async (req, res) => {
-  try {
-    const { data, error } = await supabase.from("profiles").select("*");
-    if (error) throw error;
-    res.json(data);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-app.get("/profiles", async (req, res) => {
   const { id } = req.body;
+
   try {
-    const { data, error } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("id", id);
-    if (error) throw error;
-    if (data.length === 0)
-      return res.status(404).json({ message: "User not found" });
-    res.json(data[0]); // Return the first (and likely only) result
+    if (!id) {
+      // Dispatch all users if no id is provided
+      const { data, error } = await supabase.from("profiles").select("*");
+      if (error) throw error;
+      res.json(data);
+    } else {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", id);
+      if (error) throw error;
+      if (data.length === 0) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      res.json(data[0]);
+    }
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
