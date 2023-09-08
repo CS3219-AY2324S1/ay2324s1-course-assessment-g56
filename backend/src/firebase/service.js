@@ -1,16 +1,16 @@
 // import { firebaseDB } from "./module";
+import dotenv from 'dotenv';
+import { initializeApp } from 'firebase/app';
 import {
-  collection,
-  getDocs,
-  getDoc,
   addDoc,
-  updateDoc,
+  collection,
   deleteDoc,
   doc,
-} from "firebase/firestore/lite";
-import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore/lite";
-import dotenv from "dotenv";
+  getDoc,
+  getDocs,
+  getFirestore,
+  updateDoc,
+} from 'firebase/firestore/lite';
 
 dotenv.config();
 
@@ -29,34 +29,33 @@ export const firebaseDB = getFirestore(app);
 
 // Get all questions from DB
 export async function getAllQuestions() {
-  const questionsCol = collection(firebaseDB, "questions");
+  const questionsCol = collection(firebaseDB, 'questions');
   const questionSnapshot = await getDocs(questionsCol);
   const questionList = questionSnapshot.docs.map((doc) => doc.data());
   return questionList;
 }
 
 export async function addQuestion(questionData) {
-  const questionsCol = collection(firebaseDB, "questions");
+  const questionsCol = collection(firebaseDB, 'questions');
   const docRef = await addDoc(questionsCol, questionData);
   return docRef._key.path.segments[1];
 }
 
 export async function updateQuestionById(uuid, updatedData) {
-  const questionDoc = doc(firebaseDB, "questions", uuid);
+  const questionDoc = doc(firebaseDB, 'questions', uuid);
   await updateDoc(questionDoc, updatedData);
 }
 
 export async function deleteQuestionById(uuid) {
-  const questionDoc = doc(firebaseDB, "questions", uuid);
+  const questionDoc = doc(firebaseDB, 'questions', uuid);
   await deleteDoc(questionDoc);
 }
 
 export async function getQuestionById(uuid) {
-  const questionDoc = doc(firebaseDB, "questions", uuid);
+  const questionDoc = doc(firebaseDB, 'questions', uuid);
   const docSnapshot = await getDoc(questionDoc);
   if (docSnapshot.exists()) {
     return docSnapshot.data();
-  } else {
-    return null;
   }
+  return null;
 }

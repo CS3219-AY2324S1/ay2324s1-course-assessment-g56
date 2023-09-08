@@ -30,13 +30,17 @@
     "typescript": "^5.2.2"
   },
   "scripts": {
+    "backend": "yarn workspace backend",
     "frontend": "yarn workspace frontend",
+    "lint": "prettier --check \"*/src/**/*.{ts,tsx}\" && eslint . --ext .ts,.js,.tsx,.jsx",
+    "lint:fix": "prettier --write \"*/src/**/*.{ts,tsx}\" && eslint . --ext .ts,.js,.tsx,.jsx --fix",
     "postinstall": "husky install"
   },
   "packageManager": "yarn@3.6.3",
   "lint-staged": {
     "**/*.{ts,js,tsx,jsx}": [
-      "eslint --fix"
+      "eslint --fix",
+      "prettier --write --ignore-unknown"
     ],
     "**/*.md": [
       "markdownlint --fix"
