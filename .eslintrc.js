@@ -11,5 +11,12 @@ module.exports = {
     sourceType: 'module',
     tsconfigRootDir: __dirname
   },
+  plugins: [
+    '@typescript-eslint',
+    'import',
+  ],
   root: true,
+  "rules": {
+    "react/react-in-jsx-scope": "off"
+  }
 }
