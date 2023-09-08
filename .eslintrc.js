@@ -14,6 +14,7 @@ module.exports = {
   plugins: ['@typescript-eslint', 'import', 'simple-import-sort'],
   root: true,
   rules: {
+    'react/jsx-props-no-spreading': 'off',
     'react/react-in-jsx-scope': 'off',
     'no-param-reassign': ['error', { props: false }],
   },

@@ -1,13 +1,7 @@
 'use client';
 
-import { Box, Button, Text, useColorMode } from '@chakra-ui/react';
+import NavBar from '../components/NavBar/NavBar';
 
 export default function Page() {
-  const { toggleColorMode } = useColorMode();
-  return (
-    <Box textAlign="center" fontSize="xl">
-      <Text>Welcome to Chakra UI + Next.js</Text>
-      <Button onClick={toggleColorMode}>Toggle Colour</Button>
-    </Box>
-  );
+  return <NavBar />;
 }
