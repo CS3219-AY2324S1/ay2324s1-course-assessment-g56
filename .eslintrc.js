@@ -15,8 +15,7 @@ module.exports = {
   root: true,
   rules: {
     'react/react-in-jsx-scope': 'off',
-    'consistent-return': 'off',
-    '@typescript-eslint/no-throw-literal': 'off',
+    'no-param-reassign': ['error', { props: false }],
   },
   overrides: [
     {
