@@ -12,6 +12,7 @@ import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore/lite";
 import * as dotenv from "dotenv";
 import { UUID } from "crypto";
+import { QuestionData } from "./interface";
 
 dotenv.config();
 
@@ -28,16 +29,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 export const firebaseDB = getFirestore(app);
 
-//  Is this supposed to be question_id?
-interface Question {
-  question_id: UUID;
-  title: string;
-  category: string;
-  complexity: number;
-  link: string;
-  description: string;
-}
-
 // Get all questions from DB
 export async function getAllQuestions() {
   const questionsCol = collection(firebaseDB, "questions");
@@ -46,14 +37,17 @@ export async function getAllQuestions() {
   return questionList;
 }
 
-export async function addQuestion(questionData: Question) {
+export async function addQuestion(questionData: QuestionData) {
   const questionsCol = collection(firebaseDB, "questions");
   const docRef = await addDoc(questionsCol, questionData);
   // return docRef._key.path.segments[1];
   return docRef.id;
 }
 
-export async function updateQuestionById(uuid: UUID, updatedData: any) {
+export async function updateQuestionById(
+  uuid: UUID,
+  updatedData: QuestionData
+) {
   const questionDoc = doc(firebaseDB, "questions", uuid);
   await updateDoc(questionDoc, updatedData);
 }
