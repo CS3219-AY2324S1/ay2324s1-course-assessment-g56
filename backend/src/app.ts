@@ -1,4 +1,3 @@
-import express from "express";
 import { PostgrestError, createClient } from "@supabase/supabase-js";
 import {
   getAllQuestions,
@@ -6,16 +5,13 @@ import {
   addQuestion,
   deleteQuestionById,
   updateQuestionById,
-} from "./firebase/service.ts";
-import morgan from "morgan";
-import bodyParser from "body-parser";
-import dotenv from "dotenv";
+} from "./firebase/service";
+import express from "express";
+import * as bodyParser from "body-parser";
+import * as dotenv from "dotenv";
 
 const app = express();
 dotenv.config();
-
-// using morgan for logs
-app.use(morgan("combined"));
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
