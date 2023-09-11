@@ -1,28 +1,24 @@
-import express from "express";
-import { createClient } from "@supabase/supabase-js";
+import { PostgrestError, createClient } from "@supabase/supabase-js";
 import {
   getAllQuestions,
   getQuestionById,
   addQuestion,
   deleteQuestionById,
   updateQuestionById,
-} from "./firebase/service.js";
-import morgan from "morgan";
-import bodyParser from "body-parser";
-import dotenv from "dotenv";
+} from "./firebase/service";
+import express from "express";
+import * as bodyParser from "body-parser";
+import * as dotenv from "dotenv";
 
 const app = express();
 dotenv.config();
-
-// using morgan for logs
-app.use(morgan("combined"));
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_ANON_KEY
+  process.env.SUPABASE_URL || "",
+  process.env.SUPABASE_ANON_KEY || ""
 );
 
 app.get("/profiles", async (req, res) => {
@@ -45,7 +41,7 @@ app.get("/profiles", async (req, res) => {
       }
       res.json(data[0]);
     }
-  } catch (error) {
+  } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
 });
@@ -93,7 +89,7 @@ app.put("/profiles", async (req, res) => {
 
     if (error) throw error;
     res.json({ message: "Updated successfully" });
-  } catch (error) {
+  } catch (error: any) {
     res.status(500).json({
       error: `Failed to insert updates: ${JSON.stringify(updates)}. Error: ${
         error.message
@@ -121,7 +117,7 @@ app.delete("/profiles", async (req, res) => {
       .match({ id: id });
     if (error) throw error;
     res.json(data);
-  } catch (error) {
+  } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
 });
@@ -133,7 +129,7 @@ app.get("/questions", async (req, res) => {
   try {
     const questions = await getAllQuestions();
     res.json(questions);
-  } catch (error) {
+  } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
 });
@@ -143,7 +139,7 @@ app.post("/questions", async (req, res) => {
     const questionData = req.body;
     const questionId = await addQuestion(questionData);
     res.json({ uuid: questionId });
-  } catch (error) {
+  } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
 });
@@ -153,7 +149,7 @@ app.put("/questions", async (req, res) => {
     const { uuid, ...updatedData } = req.body;
     await updateQuestionById(uuid, updatedData);
     res.json({ message: "Question updated successfully" });
-  } catch (error) {
+  } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
 });
@@ -163,7 +159,7 @@ app.delete("/questions", async (req, res) => {
     const { uuid } = req.body;
     await deleteQuestionById(uuid);
     res.json({ message: "Question deleted successfully" });
-  } catch (error) {
+  } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
 });
@@ -177,7 +173,7 @@ app.get("/questions/getById", async (req, res) => {
     } else {
       res.status(404).json({ message: "Question not found" });
     }
-  } catch (error) {
+  } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
 });
