@@ -1,5 +1,5 @@
-// import { firebaseDB } from "./module";
-import dotenv from 'dotenv';
+import { UUID } from 'crypto';
+import * as dotenv from 'dotenv';
 import { initializeApp } from 'firebase/app';
 import {
   addDoc,
@@ -11,6 +11,8 @@ import {
   getFirestore,
   updateDoc,
 } from 'firebase/firestore/lite';
+
+import { QuestionData } from './interface';
 
 dotenv.config();
 
@@ -35,23 +37,27 @@ export async function getAllQuestions() {
   return questionList;
 }
 
-export async function addQuestion(questionData) {
+export async function addQuestion(questionData: QuestionData) {
   const questionsCol = collection(firebaseDB, 'questions');
   const docRef = await addDoc(questionsCol, questionData);
-  return docRef._key.path.segments[1];
+  // return docRef._key.path.segments[1];
+  return docRef.id;
 }
 
-export async function updateQuestionById(uuid, updatedData) {
+export async function updateQuestionById(
+  uuid: UUID,
+  updatedData: QuestionData,
+) {
   const questionDoc = doc(firebaseDB, 'questions', uuid);
   await updateDoc(questionDoc, updatedData);
 }
 
-export async function deleteQuestionById(uuid) {
+export async function deleteQuestionById(uuid: UUID) {
   const questionDoc = doc(firebaseDB, 'questions', uuid);
   await deleteDoc(questionDoc);
 }
 
-export async function getQuestionById(uuid) {
+export async function getQuestionById(uuid: UUID) {
   const questionDoc = doc(firebaseDB, 'questions', uuid);
   const docSnapshot = await getDoc(questionDoc);
   if (docSnapshot.exists()) {
