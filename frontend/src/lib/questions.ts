@@ -1,19 +1,16 @@
 import { Question, QuestionComplexity } from '../types/question';
 
 export const getQuestions = () => {
-  if (!localStorage.getItem('questions')) {
-    throw new Error('No questions found');
-  }
-  const questions = JSON.parse(localStorage.getItem('questions')!);
+  const questions: Question[] = JSON.parse(
+    localStorage.getItem('questions') || '[]',
+  );
   return questions;
 };
 
 export const createQuestion = (question: Question) => {
   const questions: Question[] = getQuestions();
   if (questions.length === 0) {
-    const id = 1;
-    question.questionId = id;
-    questions[id] = question;
+    questions.push(question);
     localStorage.setItem('questions', JSON.stringify(questions));
     return;
   }
@@ -24,9 +21,7 @@ export const createQuestion = (question: Question) => {
   if (questionTitles.includes(question.questionTitle)) {
     throw new Error('Question already exists');
   }
-  const id: number = questions.length + 1; // sets id to the next available id
-  question.questionId = id;
-  questions[id] = question;
+  questions.push(question);
   localStorage.setItem('questions', JSON.stringify(questions));
 };
 
@@ -37,7 +32,7 @@ export const getQuestionById = (id: number) => {
 
 export const deleteQuestionById = (id: number) => {
   const questions: Question[] = getQuestions();
-  delete questions[id];
+  questions.splice(id - 1, 1);
   localStorage.setItem('questions', JSON.stringify(questions));
 };
 
