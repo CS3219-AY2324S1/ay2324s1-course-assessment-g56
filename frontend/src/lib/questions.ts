@@ -66,7 +66,10 @@ export const testing = () => {
 
   createQuestion(sampleQuestion);
 
-  if (getQuestions().length !== 1 || getQuestions()[0] !== sampleQuestion) {
+  if (
+    getQuestions().length !== 1 ||
+    JSON.stringify(getQuestions()[0]) !== JSON.stringify(sampleQuestion)
+  ) {
     throw new Error('Create question failed');
   }
 };
