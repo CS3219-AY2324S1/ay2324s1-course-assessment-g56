@@ -1,11 +1,11 @@
 module.exports = {
-  extends: [
-    'airbnb',
-    'airbnb-typescript',
-    'eslint:recommended',
-    'plugin:@typescript-eslint/recommended',
-    'prettier',
-  ],
+  extends: ['airbnb', 'airbnb-typescript', 'eslint:recommended', 'prettier'],
+  env: {
+    browser: true,
+    es2021: true,
+    node: true,
+  },
+  parser: '@typescript-eslint/parser',
   parserOptions: {
     project: ['./tsconfig.eslint.json', './*/tsconfig.json'],
     sourceType: 'module',
@@ -17,6 +17,17 @@ module.exports = {
     'react/jsx-props-no-spreading': 'off',
     'react/react-in-jsx-scope': 'off',
     'no-param-reassign': ['error', { props: false }],
+  },
+  settings: {
+    'import/parsers': {
+      '@typescript-eslint/parser': ['.ts', '.tsx'],
+    },
+    'import/resolver': {
+      typescript: {
+        alwaysTryTypes: true, // always try to resolve types under `<root>@types` directory even it doesn't contain any source code, like `@types/unist`
+        project: ['./tsconfig.eslint.json', './*/tsconfig.json'],
+      },
+    },
   },
   overrides: [
     {
@@ -50,6 +61,7 @@ module.exports = {
               // Parent imports. Put `..` last.
               ['^\\.\\.(?!/?$)', '^\\.\\./?$'],
               // Other relative imports. Put same-folder imports and `.` last.
+              ['^\\./(?=.*/)(?!/?$)', '^\\.(?!/?$)', '^\\./?$'],
               ['^\\./(?=.*/)(?!/?$)', '^\\.(?!/?$)', '^\\./?$'],
             ],
           },
