@@ -1,4 +1,4 @@
-import { Question, QuestionComplexity } from '../types/question';
+import { Question, QuestionComplexity } from '@/types/question';
 
 export const getQuestions = () => {
   const questions: Question[] = JSON.parse(

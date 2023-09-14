@@ -7,7 +7,7 @@ import {
   useColorModeValue,
   useDisclosure,
 } from '@chakra-ui/react';
-import { NavBarProps } from '../../types/props';
+import { NavBarProps } from '@/types/props';
 import SideBar from './SideBar';
 import TopBar from './TopBar';
 
