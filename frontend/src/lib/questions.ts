@@ -66,7 +66,7 @@ export const testing = () => {
 
   createQuestion(sampleQuestion);
 
-  if (getQuestions().length !== 1 || getQuestions()[1] !== sampleQuestion) {
+  if (getQuestions().length !== 1 || getQuestions()[0] !== sampleQuestion) {
     throw new Error('Create question failed');
   }
 };
