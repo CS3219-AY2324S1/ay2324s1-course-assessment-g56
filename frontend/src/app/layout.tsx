@@ -1,14 +1,11 @@
 'use client';
 
 import { ColorModeScript } from '@chakra-ui/react';
+import AppProvider from '@/contexts/AppProvider';
+import { ReactNode } from 'react';
 import Head from './head';
-import AppProvider from '../contexts/AppProvider';
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" data-theme="light">
       <Head />

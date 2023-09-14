@@ -2,7 +2,7 @@
 
 import { ReactElement } from 'react';
 import { Button, HStack, Icon, Show, Text } from '@chakra-ui/react';
-import { NavButtonProps } from '../../types/props';
+import { NavButtonProps } from '@/types/props';
 
 function NavButton(
   props: NavButtonProps,

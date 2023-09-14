@@ -14,7 +14,7 @@ import {
   FiStar,
   FiTrendingUp,
 } from 'react-icons/fi';
-import { LinkWithIconProps, SideBarProps } from '../../types/props';
+import { LinkWithIconProps, SideBarProps } from '@/types/props';
 import SideBarChild from './SideBarChild';
 
 const LinkItems: LinkWithIconProps[] = [

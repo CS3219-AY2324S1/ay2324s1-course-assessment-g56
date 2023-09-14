@@ -9,7 +9,7 @@ import {
   useColorModeValue,
 } from '@chakra-ui/react';
 import { FiMenu, FiMoon, FiSun } from 'react-icons/fi';
-import { MobileProps } from '../../types/props';
+import { MobileProps } from '@/types/props';
 import NavButton from './NavButton';
 import UserPopover from './UserPopover';
 
