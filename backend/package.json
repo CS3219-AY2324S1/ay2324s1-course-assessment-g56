@@ -14,18 +14,18 @@
   "author": "Group 56",
   "license": "ISC",
   "dependencies": {
-    "@supabase/supabase-js": "^2.33.1",
+    "@supabase/supabase-js": "^2.33.2",
     "body-parser": "^1.20.2",
     "dotenv": "^16.3.1",
-    "express": "^4.17.1",
+    "express": "^4.18.2",
     "firebase": "^10.3.1",
     "morgan": "^1.10.0",
     "nodemon": "^3.0.1"
   },
   "devDependencies": {
-    "@types/express": "^4.17.1",
+    "@types/express": "^4.17.17",
     "@types/morgan": "^1.9.5",
-    "@types/node": "^20.5.9",
+    "@types/node": "^20.6.0",
     "typescript": "^5.2.2"
   }
 }
