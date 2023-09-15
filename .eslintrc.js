@@ -16,7 +16,8 @@ module.exports = {
   rules: {
     'react/jsx-props-no-spreading': 'off',
     'react/react-in-jsx-scope': 'off',
-    'no-param-reassign': ['error', { props: false }],
+    'no-param-reassign': 'off',
+    'react/require-default-props': 'off',
   },
   settings: {
     'import/parsers': {
