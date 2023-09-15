@@ -37,7 +37,7 @@ export const deleteQuestionById = (id: number) => {
 };
 
 export const testing = () => {
-  localStorage.setItem('questions', JSON.stringify({}));
+  localStorage.setItem('questions', JSON.stringify([]));
   const sampleQuestion: Question = {
     questionTitle: 'Reverse a String',
     questionDescription: `Write a function that reverses a string. The input string is given as an array 
