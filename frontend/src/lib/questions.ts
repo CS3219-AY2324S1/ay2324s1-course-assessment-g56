@@ -25,11 +25,13 @@ export const createQuestion = (question: Question) => {
   localStorage.setItem('questions', JSON.stringify(questions));
 };
 
+// One-indexed id
 export const getQuestionById = (id: number) => {
   const questions: Question[] = getQuestions();
-  return questions[id];
+  return questions[id - 1];
 };
 
+// One-indexed id
 export const deleteQuestionById = (id: number) => {
   const questions: Question[] = getQuestions();
   questions.splice(id - 1, 1);

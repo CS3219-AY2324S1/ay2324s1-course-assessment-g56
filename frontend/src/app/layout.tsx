@@ -3,6 +3,7 @@
 import { ColorModeScript } from '@chakra-ui/react';
 import AppProvider from '@/contexts/AppProvider';
 import { ReactNode } from 'react';
+import Navbar from '@/components/navBar/NavBar';
 import Head from './head';
 
 export default function RootLayout({ children }: { children: ReactNode }) {
@@ -11,7 +12,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <Head />
       <body>
         <ColorModeScript type="cookie" nonce="testing" />
-        <AppProvider>{children}</AppProvider>
+        <AppProvider>
+          <Navbar>{children}</Navbar>
+        </AppProvider>
       </body>
     </html>
   );

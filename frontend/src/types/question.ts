@@ -10,3 +10,11 @@ export enum QuestionComplexity {
   MEDIUM = 'MEDIUM',
   HARD = 'HARD',
 }
+
+export interface QuestionRowData {
+  questionId: number;
+  questionTitle: string;
+  questionDescription: string;
+  questionCategories: string[];
+  questionComplexity: QuestionComplexity;
+}
