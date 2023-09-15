@@ -9,7 +9,7 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import Table from '@/components/table/Table';
-import { defaultColumns } from '@/constants/columns';
+import defaultColumns from '@/constants/columns';
 import { deleteQuestionById, getQuestions } from '@/lib/questions';
 import { Question, QuestionRowData } from '@/types/question';
 import { useEffect, useState } from 'react';
