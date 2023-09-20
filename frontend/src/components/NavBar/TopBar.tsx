@@ -2,6 +2,7 @@
 
 import {
   Flex,
+  FlexProps,
   HStack,
   IconButton,
   Text,
@@ -9,9 +10,12 @@ import {
   useColorModeValue,
 } from '@chakra-ui/react';
 import { FiMenu, FiMoon, FiSun } from 'react-icons/fi';
-import { MobileProps } from '@/types/props';
 import NavButton from './NavButton';
 import UserPopover from './UserPopover';
+
+interface MobileProps extends FlexProps {
+  onOpen: () => void;
+}
 
 function TopBar({ onOpen, ...rest }: MobileProps) {
   const { toggleColorMode } = useColorMode();

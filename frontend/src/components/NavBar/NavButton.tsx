@@ -1,8 +1,20 @@
 'use client';
 
 import { ReactElement } from 'react';
-import { Button, HStack, Icon, Show, Text } from '@chakra-ui/react';
-import { NavButtonProps } from '@/types/props';
+import {
+  As,
+  Button,
+  ButtonProps,
+  HStack,
+  Icon,
+  Show,
+  Text,
+} from '@chakra-ui/react';
+
+interface NavButtonProps extends ButtonProps {
+  icon: As;
+  label: string;
+}
 
 function NavButton(
   props: NavButtonProps,

@@ -1,7 +1,13 @@
 'use client';
 
-import { Box, Flex, Icon } from '@chakra-ui/react';
-import { NavItemProps } from '@/types/props';
+import { Box, Flex, FlexProps, Icon } from '@chakra-ui/react';
+import { ReactNode } from 'react';
+import { IconType } from 'react-icons';
+
+interface NavItemProps extends FlexProps {
+  icon: IconType;
+  children: ReactNode;
+}
 
 function SideBarChild({ icon, children, ...rest }: NavItemProps) {
   return (

@@ -7,9 +7,13 @@ import {
   useColorModeValue,
   useDisclosure,
 } from '@chakra-ui/react';
-import { NavBarProps } from '@/types/props';
+import { ReactNode } from 'react';
 import SideBar from './SideBar';
 import TopBar from './TopBar';
+
+interface NavBarProps {
+  children?: ReactNode;
+}
 
 function Navbar(props: NavBarProps) {
   const { isOpen, onOpen, onClose } = useDisclosure();

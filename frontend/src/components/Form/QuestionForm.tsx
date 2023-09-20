@@ -8,7 +8,15 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { QuestionComplexity } from '@/types/question';
-import { QuestionFormProps } from '@/types/props';
+import { ChangeEvent, MutableRefObject } from 'react';
+
+interface QuestionFormProps {
+  changeTitle: (e: ChangeEvent<HTMLInputElement>) => void;
+  changeDescription: (e: ChangeEvent<HTMLInputElement>) => void;
+  changeCategories: (e: ChangeEvent<HTMLInputElement>) => void;
+  changeComplexity: (e: ChangeEvent<HTMLSelectElement>) => void;
+  initialRef: MutableRefObject<null>;
+}
 
 function QuestionForm({
   initialRef,

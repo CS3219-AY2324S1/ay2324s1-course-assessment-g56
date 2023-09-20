@@ -2,6 +2,7 @@
 
 import {
   Box,
+  BoxProps,
   CloseButton,
   Flex,
   Text,
@@ -14,8 +15,17 @@ import {
   FiStar,
   FiTrendingUp,
 } from 'react-icons/fi';
-import { LinkWithIconProps, SideBarProps } from '@/types/props';
+import { IconType } from 'react-icons';
 import SideBarChild from './SideBarChild';
+
+interface LinkWithIconProps {
+  name: string;
+  icon: IconType;
+}
+
+interface SideBarProps extends BoxProps {
+  onClose: () => void;
+}
 
 const LinkItems: LinkWithIconProps[] = [
   { name: 'Home', icon: FiHome },
