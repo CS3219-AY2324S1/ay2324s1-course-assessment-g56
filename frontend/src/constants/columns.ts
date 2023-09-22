@@ -1,8 +1,35 @@
-import { ColumnDef, createColumnHelper } from '@tanstack/react-table';
-import { QuestionRowData } from '@/types/question';
+import {
+  ColumnDef,
+  createColumnHelper,
+  Row,
+  SortingFn,
+} from '@tanstack/react-table';
+import {
+  QuestionComplexity,
+  QuestionComplexityToNumberMap,
+  QuestionRowData,
+} from '@/types/question';
 import EditCell from '@/components/table/EditCell';
 
 const columnHelper = createColumnHelper<QuestionRowData>();
+
+const ComplexitySortingFn: SortingFn<QuestionRowData> = (
+  rowA: Row<QuestionRowData>,
+  rowB: Row<QuestionRowData>,
+): number => {
+  const questionComplexityA: QuestionComplexity =
+    rowA.getValue('questionComplexity');
+  const questionComplexityB: QuestionComplexity =
+    rowB.getValue('questionComplexity');
+  const rowAComplexityLevel: number =
+    QuestionComplexityToNumberMap[questionComplexityA];
+  const rowBComplexityLevel: number =
+    QuestionComplexityToNumberMap[questionComplexityB];
+  if (rowAComplexityLevel > rowBComplexityLevel) {
+    return 1;
+  }
+  return rowAComplexityLevel < rowBComplexityLevel ? -1 : 0;
+};
 
 const defaultColumns = [
   columnHelper.accessor('questionId', {
@@ -28,6 +55,7 @@ const defaultColumns = [
   }),
   columnHelper.accessor('questionComplexity', {
     cell: (complexity) => complexity.getValue(),
+    sortingFn: ComplexitySortingFn,
     header: 'Complexity',
     meta: {
       type: 'string',
