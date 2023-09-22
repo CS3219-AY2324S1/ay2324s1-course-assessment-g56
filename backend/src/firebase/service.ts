@@ -1,18 +1,18 @@
-// import { firebaseDB } from "./module";
+import { UUID } from 'crypto';
+import * as dotenv from 'dotenv';
+import { initializeApp } from 'firebase/app';
 import {
-  collection,
-  getDocs,
-  getDoc,
   addDoc,
-  updateDoc,
+  collection,
   deleteDoc,
   doc,
-} from "firebase/firestore/lite";
-import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore/lite";
-import * as dotenv from "dotenv";
-import { UUID } from "crypto";
-import { QuestionData } from "./interface";
+  getDoc,
+  getDocs,
+  getFirestore,
+  updateDoc,
+} from 'firebase/firestore/lite';
+
+import { QuestionData } from './interface';
 
 dotenv.config();
 
@@ -31,14 +31,14 @@ export const firebaseDB = getFirestore(app);
 
 // Get all questions from DB
 export async function getAllQuestions() {
-  const questionsCol = collection(firebaseDB, "questions");
+  const questionsCol = collection(firebaseDB, 'questions');
   const questionSnapshot = await getDocs(questionsCol);
   const questionList = questionSnapshot.docs.map((doc) => doc.data());
   return questionList;
 }
 
 export async function addQuestion(questionData: QuestionData) {
-  const questionsCol = collection(firebaseDB, "questions");
+  const questionsCol = collection(firebaseDB, 'questions');
   const docRef = await addDoc(questionsCol, questionData);
   // return docRef._key.path.segments[1];
   return docRef.id;
@@ -46,23 +46,22 @@ export async function addQuestion(questionData: QuestionData) {
 
 export async function updateQuestionById(
   uuid: UUID,
-  updatedData: QuestionData
+  updatedData: QuestionData,
 ) {
-  const questionDoc = doc(firebaseDB, "questions", uuid);
+  const questionDoc = doc(firebaseDB, 'questions', uuid);
   await updateDoc(questionDoc, updatedData);
 }
 
 export async function deleteQuestionById(uuid: UUID) {
-  const questionDoc = doc(firebaseDB, "questions", uuid);
+  const questionDoc = doc(firebaseDB, 'questions', uuid);
   await deleteDoc(questionDoc);
 }
 
 export async function getQuestionById(uuid: UUID) {
-  const questionDoc = doc(firebaseDB, "questions", uuid);
+  const questionDoc = doc(firebaseDB, 'questions', uuid);
   const docSnapshot = await getDoc(questionDoc);
   if (docSnapshot.exists()) {
     return docSnapshot.data();
-  } else {
-    return null;
   }
+  return null;
 }
