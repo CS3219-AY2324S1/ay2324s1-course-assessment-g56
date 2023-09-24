@@ -71,6 +71,6 @@ app.get("/questions/getById", async (req, res) => {
   }
 });
 
-app.listen(3000, () => {
-  console.log(`> Ready on http://localhost:3000`);
+app.listen(5001, () => {
+  console.log(`> Ready on http://localhost:50001`);
 });
