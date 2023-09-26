@@ -1,13 +1,14 @@
+import * as bodyParser from 'body-parser';
+import * as dotenv from 'dotenv';
+import express from 'express';
+
 import {
-  getAllQuestions,
-  getQuestionById,
   addQuestion,
   deleteQuestionById,
+  getAllQuestions,
+  getQuestionById,
   updateQuestionById,
-} from "./firebase/service";
-import express from "express";
-import * as bodyParser from "body-parser";
-import * as dotenv from "dotenv";
+} from './firebase/service';
 
 const app = express();
 dotenv.config();
@@ -18,7 +19,7 @@ app.use(bodyParser.json());
 /**
  * Firebase routes
  */
-app.get("/questions", async (req, res) => {
+app.get('/questions', async (req, res) => {
   try {
     const questions = await getAllQuestions();
     res.json(questions);
@@ -27,7 +28,7 @@ app.get("/questions", async (req, res) => {
   }
 });
 
-app.post("/questions", async (req, res) => {
+app.post('/questions', async (req, res) => {
   try {
     const questionData = req.body;
     const questionId = await addQuestion(questionData);
@@ -37,34 +38,34 @@ app.post("/questions", async (req, res) => {
   }
 });
 
-app.put("/questions", async (req, res) => {
+app.put('/questions', async (req, res) => {
   try {
     const { uuid, ...updatedData } = req.body;
     await updateQuestionById(uuid, updatedData);
-    res.json({ message: "Question updated successfully" });
+    res.json({ message: 'Question updated successfully' });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
 });
 
-app.delete("/questions", async (req, res) => {
+app.delete('/questions', async (req, res) => {
   try {
     const { uuid } = req.body;
     await deleteQuestionById(uuid);
-    res.json({ message: "Question deleted successfully" });
+    res.json({ message: 'Question deleted successfully' });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
 });
 
-app.get("/questions/getById", async (req, res) => {
+app.get('/questions/getById', async (req, res) => {
   try {
     const { uuid } = req.body;
     const question = await getQuestionById(uuid);
     if (question) {
       res.json(question);
     } else {
-      res.status(404).json({ message: "Question not found" });
+      res.status(404).json({ message: 'Question not found' });
     }
   } catch (error: any) {
     res.status(500).json({ error: error.message });
@@ -72,5 +73,5 @@ app.get("/questions/getById", async (req, res) => {
 });
 
 app.listen(5001, () => {
-  console.log(`> Ready on http://localhost:50001`);
+  console.log(`> Ready on http://localhost:5001`);
 });
