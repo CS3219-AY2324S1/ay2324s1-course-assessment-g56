@@ -33,7 +33,11 @@ export const firebaseDB = getFirestore(app);
 export async function getAllQuestions() {
   const questionsCol = collection(firebaseDB, 'questions');
   const questionSnapshot = await getDocs(questionsCol);
-  const questionList = questionSnapshot.docs.map((doc) => doc.data());
+  const questionList = questionSnapshot.docs.map((doc) => ({
+    uuid: doc.id, // Assign the document ID (UUID) to the 'uuid' property
+    ...doc.data(), // Spread the question data into the object
+  }));
+
   return questionList;
 }
 

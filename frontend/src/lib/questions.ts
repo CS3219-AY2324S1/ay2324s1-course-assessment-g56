@@ -1,41 +1,70 @@
 import { Question, QuestionComplexity } from '@/types/question';
+import axios from 'axios';
 
-export const getQuestions = () => {
-  const questions: Question[] = JSON.parse(
-    localStorage.getItem('questions') || '[]',
-  );
-  return questions;
+const apiURL = `${process.env.HOST}:${process.env.QUESTION_SERVICE_PORT}/questions`;
+
+export const getQuestions = async () => {
+  try {
+    const response = await axios.get(apiURL);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching questions:', error);
+    throw error;
+  }
 };
 
-export const createQuestion = (question: Question) => {
-  const questions: Question[] = getQuestions();
-  if (questions.length === 0) {
-    questions.push(question);
-    localStorage.setItem('questions', JSON.stringify(questions));
-    return;
+export const createQuestion = (question: Question) =>
+  getQuestions().then((questions: Question[]) => {
+    // Basic error handling to check for duplicates
+    const questionTitles: string[] = questions.map((qn: Question) => qn.title);
+
+    if (questionTitles.includes(question.title)) {
+      // Reject the promise with an error for duplicates
+      return Promise.reject(new Error('Question already exists'));
+    }
+    // Return a new promise for the POST request
+    return axios
+      .post(apiURL, question)
+      .then((response) => {
+        // Success
+        console.log('POST request successful:', response.data);
+      })
+      .catch((error) => {
+        // Failure
+        console.error('POST request error:', error);
+        // Reject the promise with the POST request error
+        return Promise.reject(error);
+      });
+  });
+
+// One-indexed id
+export const getQuestionById = async (uuid: string) => {
+  const newApiURL = `${apiURL}/getById/${uuid}`;
+  try {
+    const response = await axios.get(newApiURL);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching questions:', error);
+    throw error;
   }
-  // basic error handling to check for duplicates
-  const questionTitles: string[] = questions.map(
-    (qn: Question) => qn.questionTitle,
-  );
-  if (questionTitles.includes(question.questionTitle)) {
-    throw new Error('Question already exists');
-  }
-  questions.push(question);
-  localStorage.setItem('questions', JSON.stringify(questions));
 };
 
 // One-indexed id
-export const getQuestionById = (id: number) => {
-  const questions: Question[] = getQuestions();
-  return questions[id - 1];
-};
+export const deleteQuestionById = (uuid: string) => {
+  const body = {
+    uuid: uuid,
+  };
 
-// One-indexed id
-export const deleteQuestionById = (id: number) => {
-  const questions: Question[] = getQuestions();
-  questions.splice(id - 1, 1);
-  localStorage.setItem('questions', JSON.stringify(questions));
+  axios
+    .delete(apiURL, { data: body })
+    .then(() => {
+      // Success
+      console.log('DELETE request successful');
+    })
+    .catch((error) => {
+      // Failure
+      console.error('DELETE request error:', error);
+    });
 };
 
 export const testing = () => {

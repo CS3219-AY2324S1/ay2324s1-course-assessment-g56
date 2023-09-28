@@ -11,19 +11,33 @@ import {
 import Table from '@/components/table/Table';
 import defaultColumns from '@/constants/columns';
 import { deleteQuestionById, getQuestions } from '@/lib/questions';
-import { Question, QuestionRowData } from '@/types/question';
+import {
+  Question,
+  QuestionRowData,
+  QuestionComplexityNumberToText,
+} from '@/types/question';
 import { useEffect, useState } from 'react';
 import { FiPlus } from 'react-icons/fi';
 import QuestionFormModal from '@/components/modal/QuestionFormModal';
 
-const getData = () => {
-  const questions = getQuestions();
-  const questionList = questions.map((question: Question, idx: number) => ({
-    questionId: idx + 1,
-    ...question,
-  }));
+const uuidMapping: Record<number, string> = {};
+
+const getData = async () => {
+  const questions = await getQuestions();
+  const questionList = questions.map((question: Question, idx: number) => {
+    const questionId = idx + 1;
+    uuidMapping[questionId] = question.uuid;
+
+    return {
+      questionId,
+      ...question,
+      complexity: QuestionComplexityNumberToText[question.complexity],
+    };
+  });
   return questionList;
 };
+
+export { uuidMapping, getData };
 
 export default function Page() {
   const modalTitle = 'Add Question';
@@ -33,8 +47,18 @@ export default function Page() {
   const toast = useToast();
 
   const removeRow = (id: number) => {
-    deleteQuestionById(id);
-    setQuestionList(getData());
+    const uuid = uuidMapping[id + 1];
+    deleteQuestionById(uuid);
+
+    getData()
+      .then((data) => {
+        setQuestionList(data);
+        setAdded(true);
+      })
+      .catch((error) => {
+        throw error;
+      });
+
     toast({
       title: 'Question deleted.',
       description: "We've deleted your question.",
@@ -49,9 +73,16 @@ export default function Page() {
   };
 
   useEffect(() => {
-    if (!added) return;
-    setQuestionList(getData());
-    setAdded(false);
+    if (added) {
+      getData()
+        .then((data) => {
+          setQuestionList(data);
+          setAdded(false);
+        })
+        .catch((error) => {
+          throw error;
+        });
+    }
   }, [added]);
 
   return (

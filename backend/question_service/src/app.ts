@@ -1,4 +1,6 @@
 import * as bodyParser from 'body-parser';
+import cors from 'cors';
+import { UUID } from 'crypto';
 import * as dotenv from 'dotenv';
 import express from 'express';
 
@@ -15,6 +17,7 @@ dotenv.config();
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(cors());
 
 /**
  * Firebase routes
@@ -58,9 +61,9 @@ app.delete('/questions', async (req, res) => {
   }
 });
 
-app.get('/questions/getById', async (req, res) => {
+app.get('/questions/getById/:uuid', async (req, res) => {
   try {
-    const { uuid } = req.body;
+    const { uuid } = req.params as { uuid: UUID }; // Type assertion to specify the type of uuid
     const question = await getQuestionById(uuid);
     if (question) {
       res.json(question);

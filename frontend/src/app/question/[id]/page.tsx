@@ -1,6 +1,7 @@
 'use client';
 
 import { getQuestionById } from '@/lib/questions';
+import { Question } from '@/types/question';
 import {
   Card,
   CardBody,
@@ -8,15 +9,30 @@ import {
   HStack,
   Heading,
   IconButton,
-  Tag,
   Text,
   VStack,
 } from '@chakra-ui/react';
 import { FiArrowLeft } from 'react-icons/fi';
-
-function Page({ params }: { params: { id: number } }) {
+import { useEffect, useState } from 'react';
+// id is the UUID of question
+function Page({ params }: { params: { id: string } }) {
+  const [question, setQuestion] = useState<Question | null>(null);
   const { id } = params;
-  const question = getQuestionById(id);
+  useEffect(() => {
+    // Fetch the question by its ID and set it to the state variable 'question'
+    getQuestionById(id)
+      .then((fetchedQuestion: Question) => {
+        setQuestion(fetchedQuestion);
+      })
+      .catch((error) => {
+        console.error('Error fetching question:', error);
+      });
+  }, [id]);
+
+  if (!question) {
+    // Render loading or error message while waiting for the question to load
+    return <div>Loading...</div>;
+  }
   return (
     <VStack>
       <Grid templateColumns="repeat(3, 2fr)">
@@ -30,19 +46,13 @@ function Page({ params }: { params: { id: number } }) {
           colorScheme="teal"
         />
         <Heading fontSize="3xl" fontWeight="bold">
-          {question.questionTitle}
+          {question.title}
         </Heading>
       </Grid>
-      <HStack>
-        {question.questionCategories.map((category: string) => (
-          <Tag key={category} colorScheme="whatsapp">
-            {category}
-          </Tag>
-        ))}
-      </HStack>
+      <HStack>{question.category}</HStack>
       <Card>
         <CardBody>
-          <Text>{question.questionDescription}</Text>
+          <Text>{question.description}</Text>
         </CardBody>
       </Card>
     </VStack>

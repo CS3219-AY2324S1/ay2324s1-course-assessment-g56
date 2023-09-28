@@ -25,45 +25,51 @@ function QuestionFormModal({
   const [complexity, setComplexity] = useState<QuestionComplexity>(
     QuestionComplexity.EASY,
   );
+  const [link, setLink] = useState('');
 
   const toast = useToast();
 
   const saveQuestion = () => {
     const question: Question = {
-      questionTitle: title,
-      questionDescription: desc,
-      questionCategories: cat.split(','),
-      questionComplexity: complexity,
+      title,
+      description: desc,
+      category: cat,
+      complexity,
+      link,
     };
-    try {
-      createQuestion(question);
-      setAdded(true);
-      toast({
-        title: 'Question added.',
-        description: "We've added your question.",
-        status: 'success',
-        duration: 5000,
-        isClosable: true,
-        position: 'top',
-        containerStyle: {
-          marginTop: '20px',
-        },
+    createQuestion(question)
+      .then(() => {
+        // Success
+        setAdded(true);
+        toast({
+          title: 'Question added.',
+          description: "We've added your question.",
+          status: 'success',
+          duration: 5000,
+          isClosable: true,
+          position: 'top',
+          containerStyle: {
+            marginTop: '20px',
+          },
+        });
+      })
+      .catch((error) => {
+        // Handle errors
+        toast({
+          title: 'An error has occurred.',
+          description: error.message,
+          status: 'error',
+          duration: 5000,
+          isClosable: true,
+          position: 'top',
+          containerStyle: {
+            marginTop: '20px',
+          },
+        });
+      })
+      .finally(() => {
+        onClose();
       });
-    } catch (error: any) {
-      toast({
-        title: 'An error has occured.',
-        description: error.message,
-        status: 'error',
-        duration: 5000,
-        isClosable: true,
-        position: 'top',
-        containerStyle: {
-          marginTop: '20px',
-        },
-      });
-    } finally {
-      onClose();
-    }
   };
 
   return (
@@ -94,6 +100,7 @@ function QuestionFormModal({
         }
         changeDescription={(e) => setDesc(e.target.value)}
         changeTitle={(e) => setTitle(e.target.value)}
+        changeLink={(e) => setLink(e.target.value)}
       />
     </Modal>
   );
