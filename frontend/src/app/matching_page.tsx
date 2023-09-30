@@ -1,0 +1,98 @@
+'use client';
+
+import {
+  FormControl,
+  FormLabel,
+  Select,
+  Flex,
+  Button,
+  Box,
+  useToast,
+  Center,
+} from '@chakra-ui/react';
+import Table from '@/components/table/Table';
+import { Difficulty } from '@/constants/difficulty';
+import {
+  DISCONNECT,
+  REQ_FIND_PAIR,
+  RES_FIND_PAIR,
+} from '../constants/socket';
+import defaultColumns from '@/constants/columns';
+import { deleteQuestionById, getQuestions } from '@/lib/questions';
+import { Question, QuestionRowData } from '@/types/question';
+import { useEffect, useState } from 'react';
+import { FiPlus } from 'react-icons/fi';
+import io from 'socket.io-client';
+import QuestionFormModal from '@/components/modal/QuestionFormModal';
+
+const socket = io(`http://localhost:3000`);
+
+export default function Page() {
+
+  const modalTitle = 'Choose Matching Difficulty';
+  const placeholder = 'Choose difficulty';
+
+  const [difficulty, setDifficulty] = useState<Difficulty>(
+    Difficulty.EASY,
+  );
+
+  const changeDifficulty = (e) =>
+    setDifficulty(
+      Difficulty[
+        e.target.value as keyof typeof Difficulty
+      ],
+    );
+
+  useEffect(() => {
+    // Listen for 'message' event from the server
+    const socket = io(`http://localhost:3000`);
+
+    socket.on('connection', () => {
+      console.log("Connected to server.");
+    });
+
+
+    return (): void => {
+      socket.disconnect();
+    };
+  }, [socket]);
+
+  const sendMessage = () => {
+    socket.emit(REQ_FIND_PAIR, difficulty);
+    
+    socket.on(RES_FIND_PAIR, () => {
+      console.log("Working hard to find a match for you...");
+    });
+  };
+
+  return (
+    <>
+      <Flex 
+        direction="column" 
+        align="center" 
+        justify="center" 
+      >
+        <Box bg="white" p={5} borderRadius="md" boxShadow="lg">
+          <FormControl id="difficulty" isRequired>
+            <FormLabel textAlign="center">Matching Difficulty</FormLabel>
+            <Select textAlign="center" onChange={changeDifficulty} required maxW = "300px" m="auto">
+              <option value={placeholder} disabled>
+                {placeholder}
+              </option>
+              <option value={Difficulty.EASY}>Easy</option>
+              <option value={Difficulty.MEDIUM}>Medium</option>
+              <option value={Difficulty.HARD}>Hard</option>
+              <option value={Difficulty.ANY}>Any</option>
+            </Select>
+          </FormControl>
+          <br />
+          <Flex width="100%" justify="center">
+            <Button onClick={sendMessage} colorScheme="teal" size="md">
+              Match
+            </Button>
+          </Flex>
+        </Box>
+      </Flex>
+    </>
+  );
+}

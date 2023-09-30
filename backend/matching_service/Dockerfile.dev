@@ -1,0 +1,14 @@
+FROM node:14.17-alpine
+
+RUN mkdir -p /home/node/app
+
+WORKDIR /home/node/app/matching
+
+COPY package.json .
+COPY yarn.lock .
+
+RUN yarn install
+
+COPY . .
+
+CMD ["yarn", "start"]

@@ -1,0 +1,21 @@
+FROM node:18
+
+# Create app directory
+WORKDIR /src
+
+# Copy required config files
+COPY package*.json ./
+
+COPY tsconfig.json ./
+
+# Install app dependencies
+RUN npm install
+
+# Copy app source to the image
+COPY . .
+
+# Expose the app on port 3000
+EXPOSE 3000
+
+# Command to run the application
+CMD ["npm", "start"]
