@@ -52,7 +52,7 @@ export const getQuestionById = async (uuid: string) => {
 // One-indexed id
 export const deleteQuestionById = (uuid: string) => {
   const body = {
-    uuid: uuid,
+    uuid,
   };
 
   axios
@@ -70,8 +70,8 @@ export const deleteQuestionById = (uuid: string) => {
 export const testing = () => {
   localStorage.setItem('questions', JSON.stringify([]));
   const sampleQuestion: Question = {
-    questionTitle: 'Reverse a String',
-    questionDescription: `Write a function that reverses a string. The input string is given as an array 
+    title: 'Reverse a String',
+    description: `Write a function that reverses a string. The input string is given as an array 
       of characters s. 
       
       You must do this by modifying the input array in-place with O(1) extra 
@@ -91,16 +91,20 @@ export const testing = () => {
       
       1 <= s.length <= 105
       s[i] is a printable ascii character`,
-    questionCategories: ['String', 'Algorithms'],
-    questionComplexity: QuestionComplexity.EASY,
+    category: 'String, Algorithms',
+    complexity: QuestionComplexity.EASY,
+    link: 'example.com/101',
   };
 
   createQuestion(sampleQuestion);
 
-  if (
-    getQuestions().length !== 1 ||
-    JSON.stringify(getQuestions()[0]) !== JSON.stringify(sampleQuestion)
-  ) {
-    throw new Error('Create question failed');
-  }
+  getQuestions()
+    .then((questions: Question[]) => {
+      if (questions.length !== 1 || questions[0] !== sampleQuestion) {
+        throw new Error('Create question failed');
+      }
+    })
+    .catch((error) => {
+      throw error;
+    });
 };

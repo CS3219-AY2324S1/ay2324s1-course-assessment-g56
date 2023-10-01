@@ -14,7 +14,8 @@ import { deleteQuestionById, getQuestions } from '@/lib/questions';
 import {
   Question,
   QuestionRowData,
-  QuestionComplexityNumberToText,
+  QuestionComplexity,
+  QuestionComplexityToDisplayText,
 } from '@/types/question';
 import { useEffect, useState } from 'react';
 import { FiPlus } from 'react-icons/fi';
@@ -25,13 +26,15 @@ const uuidMapping: Record<number, string> = {};
 const getData = async () => {
   const questions = await getQuestions();
   const questionList = questions.map((question: Question, idx: number) => {
-    const questionId = idx + 1;
-    uuidMapping[questionId] = question.uuid;
+    const questionId: number = idx + 1;
+    uuidMapping[questionId] = question.uuid as string;
 
     return {
       questionId,
       ...question,
-      complexity: QuestionComplexityNumberToText[question.complexity],
+      complexity: QuestionComplexityToDisplayText(
+        QuestionComplexity[question.complexity],
+      ),
     };
   });
   return questionList;

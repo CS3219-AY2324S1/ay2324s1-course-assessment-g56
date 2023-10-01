@@ -4,11 +4,7 @@ import {
   Row,
   SortingFn,
 } from '@tanstack/react-table';
-import {
-  QuestionComplexity,
-  QuestionComplexityToNumberMap,
-  QuestionRowData,
-} from '@/types/question';
+import { QuestionComplexity, QuestionRowData } from '@/types/question';
 import EditCell from '@/components/table/EditCell';
 
 const columnHelper = createColumnHelper<QuestionRowData>();
@@ -19,10 +15,8 @@ const ComplexitySortingFn: SortingFn<QuestionRowData> = (
 ): number => {
   const questionComplexityA: QuestionComplexity = rowA.getValue('complexity');
   const questionComplexityB: QuestionComplexity = rowB.getValue('complexity');
-  const rowAComplexityLevel: number =
-    QuestionComplexityToNumberMap[questionComplexityA];
-  const rowBComplexityLevel: number =
-    QuestionComplexityToNumberMap[questionComplexityB];
+  const rowAComplexityLevel: number = questionComplexityA;
+  const rowBComplexityLevel: number = questionComplexityB;
   if (rowAComplexityLevel > rowBComplexityLevel) {
     return 1;
   }
