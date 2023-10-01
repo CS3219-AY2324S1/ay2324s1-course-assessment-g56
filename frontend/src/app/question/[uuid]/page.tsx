@@ -14,20 +14,20 @@ import {
 } from '@chakra-ui/react';
 import { FiArrowLeft } from 'react-icons/fi';
 import { useEffect, useState } from 'react';
+
 // id is the UUID of question
-function Page({ params }: { params: { id: string } }) {
+function Page({ params }: { params: { uuid: string } }) {
   const [question, setQuestion] = useState<Question | null>(null);
-  const { id } = params;
+  const { uuid } = params;
   useEffect(() => {
-    // Fetch the question by its ID and set it to the state variable 'question'
-    getQuestionById(id)
+    getQuestionById(uuid)
       .then((fetchedQuestion: Question) => {
         setQuestion(fetchedQuestion);
       })
       .catch((error) => {
         console.error('Error fetching question:', error);
       });
-  }, [id]);
+  }, [uuid]);
 
   if (!question) {
     // Render loading or error message while waiting for the question to load

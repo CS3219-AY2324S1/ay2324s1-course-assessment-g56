@@ -109,6 +109,7 @@ export default function Page() {
           tableData={questionList}
           removeRow={removeRow}
           columns={defaultColumns}
+          uuidMapping={uuidMapping}
         />
       )}
       <QuestionFormModal

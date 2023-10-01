@@ -27,6 +27,7 @@ interface TableProps<T extends object> {
   removeRow: (id: number) => void;
   columns: ColumnDef<T, any>[];
   isSortable?: boolean;
+  uuidMapping: Record<number, string>;
 }
 
 declare module '@tanstack/table-core' {
@@ -41,6 +42,7 @@ function Table<T extends object>({
   removeRow,
   columns,
   isSortable = true,
+  uuidMapping,
 }: TableProps<T>) {
   const [sortBy, setSortBy] = useState<SortingState>([]);
   const table = useReactTable<T>({
@@ -72,11 +74,13 @@ function Table<T extends object>({
           {table.getRowModel().rows.map((row) => (
             <Tr key={row.id}>
               {row.getVisibleCells().map((cell) =>
-                cell.column.id === 'questionTitle' ? (
+                cell.column.id === 'title' ? (
                   <LinkBox as={Td} key={cell.id}>
                     <LinkOverlay
                       as={NextLink}
-                      href={`/question/${parseInt(row.id, 10) + 1}`}
+                      href={`/question/${
+                        uuidMapping[parseInt(row.id, 10) + 1]
+                      }`}
                     >
                       {flexRender(
                         cell.column.columnDef.cell,
