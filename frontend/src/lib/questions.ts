@@ -67,6 +67,30 @@ export const deleteQuestionById = (uuid: string) => {
     });
 };
 
+export const updateQuestionById = (question: Question) =>
+  getQuestions().then((questions: Question[]) => {
+    // Basic error handling to check for duplicates
+    const questionTitles: string[] = questions.map((qn: Question) => qn.title);
+
+    if (questionTitles.includes(question.title)) {
+      // Reject the promise with an error for duplicates
+      return Promise.reject(new Error('Question already exists'));
+    }
+
+    return axios
+      .put(apiURL, question)
+      .then(() => {
+        // Success
+        console.log('PUT request successful');
+        return Promise.resolve();
+      })
+      .catch((error) => {
+        // Failure
+        console.error('PUT request error:', error);
+        return Promise.reject(error);
+      });
+  });
+
 export const testing = () => {
   localStorage.setItem('questions', JSON.stringify([]));
   const sampleQuestion: Question = {

@@ -75,7 +75,23 @@ export default function Page() {
     });
   };
 
+  const handlePopState = (event) => {
+    const updatedQuestion = event.state?.updatedQuestion;
+
+    if (updatedQuestion) {
+      getData()
+        .then((data) => {
+          setQuestionList(data);
+          setAdded(false);
+        })
+        .catch((error) => {
+          throw error;
+        });
+    }
+  };
+
   useEffect(() => {
+    window.addEventListener('popstate', handlePopState);
     if (added) {
       getData()
         .then((data) => {
@@ -86,6 +102,9 @@ export default function Page() {
           throw error;
         });
     }
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
   }, [added]);
 
   return (
