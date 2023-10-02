@@ -57,16 +57,11 @@ function Page({ params }: { params: { uuid: string } }) {
             marginTop: '20px',
           },
         });
-        // Pass the updated data to the main page
+
         const updatedQuestionData = { updatedQuestion };
 
-        // Use replaceState to navigate back with updated data
-        window.history.replaceState(
-          updatedQuestionData,
-          '', // You can keep the URL as-is
-        );
+        window.history.replaceState(updatedQuestionData, '');
 
-        // Trigger a popstate event to inform the main page
         const popstateEvent = new PopStateEvent('popstate', {
           state: updatedQuestionData,
         });
@@ -90,7 +85,6 @@ function Page({ params }: { params: { uuid: string } }) {
   };
 
   if (!question || !uuid) {
-    // Render loading or error message while waiting for the question or uuid to load
     return <div>Loading...</div>;
   }
   return (
