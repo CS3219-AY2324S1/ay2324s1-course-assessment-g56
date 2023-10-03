@@ -1,43 +1,20 @@
-import { PostgrestError, createClient } from "@supabase/supabase-js";
-import express from "express";
-import * as bodyParser from "body-parser";
-import * as dotenv from "dotenv";
+import { createClient } from '@supabase/supabase-js';
+import * as bodyParser from 'body-parser';
+import cors from 'cors';
+import * as dotenv from 'dotenv';
+import express from 'express';
 
 const app = express();
 dotenv.config();
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(cors());
 
 const supabase = createClient(
   process.env.SUPABASE_URL || '',
   process.env.SUPABASE_ANON_KEY || '',
 );
-
-app.get('/profiles', async (req, res) => {
-  const { id } = req.body;
-
-  try {
-    if (!id) {
-      // Dispatch all users if no id is provided
-      const { data, error } = await supabase.from('profiles').select('*');
-      if (error) throw error;
-      res.json(data);
-    } else {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', id);
-      if (error) throw error;
-      if (data.length === 0) {
-        return res.status(404).json({ message: 'User not found' });
-      }
-      res.json(data[0]);
-    }
-  } catch (error: any) {
-    res.status(500).json({ error: error.message });
-  }
-});
 
 /**
  * Generates a magic link for a user to login or signup
@@ -59,6 +36,31 @@ app.get('/profiles/magic-link', async (req, res) => {
   }
 
   res.json(data);
+});
+
+app.get('/profiles/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    if (!id) {
+      // Dispatch all users if no id is provided
+      const { data, error } = await supabase.from('profiles').select('*');
+      if (error) throw error;
+      res.json(data);
+    } else {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', id);
+      if (error) throw error;
+      if (data.length === 0) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+      res.json(data[0]);
+    }
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 /**
@@ -116,5 +118,5 @@ app.delete('/profiles', async (req, res) => {
 });
 
 app.listen(5000, () => {
-  console.log(`> Ready on http://localhost:5000`);	
+  console.log(`> Ready on http://localhost:5000`);
 });

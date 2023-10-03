@@ -5,6 +5,7 @@ import {
   Box,
   Flex,
   HStack,
+  Link,
   Menu,
   MenuButton,
   MenuDivider,
@@ -47,7 +48,10 @@ function UserPopover() {
           bg={useColorModeValue('white', 'gray.900')}
           borderColor={useColorModeValue('gray.200', 'gray.700')}
         >
-          <MenuItem>Profile</MenuItem>
+          <Link href="/profile/ff8a55f9-fb2d-4ca2-b8ee-4ac410923f64">
+            {/* TODO: REMOVE ONCE LOGIN AUTHENTICATION OBTAINED */}
+            <MenuItem>Profile</MenuItem>
+          </Link>
           <MenuItem>Settings</MenuItem>
           <MenuItem>Billing</MenuItem>
           <MenuDivider />
