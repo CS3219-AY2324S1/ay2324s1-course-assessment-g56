@@ -15,7 +15,6 @@ import { Question, QuestionRowData } from '@/types/question';
 import { useEffect, useState } from 'react';
 import { FiPlus } from 'react-icons/fi';
 import QuestionFormModal from '@/components/modal/QuestionFormModal';
-import AuthForm from '@/components/login/AuthForm';
 
 const getData = () => {
   const questions = getQuestions();
@@ -57,9 +56,32 @@ export default function Page() {
 
   return (
     <>
-      <div className="col-6 auth-widget">
-        <AuthForm />
-      </div>{' '}
+      <Flex minWidth="max-content" alignItems="center" gap="2" margin={2}>
+        <Heading fontSize="3xl" fontWeight="bold">
+          Questions
+        </Heading>
+        <Spacer />
+        <Button
+          leftIcon={<FiPlus />}
+          variant="solid"
+          colorScheme="blue"
+          onClick={onOpen}
+        >
+          {modalTitle}
+        </Button>
+      </Flex>
+      {questionList !== undefined && (
+        <Table
+          tableData={questionList}
+          removeRow={removeRow}
+          columns={defaultColumns}
+        />
+      )}
+      <QuestionFormModal
+        isOpen={isOpen}
+        onClose={onClose}
+        setAdded={setAdded}
+      />
     </>
   );
 }
