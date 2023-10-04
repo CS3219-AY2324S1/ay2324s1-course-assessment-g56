@@ -15,6 +15,7 @@ import { Question, QuestionRowData } from '@/types/question';
 import { useEffect, useState } from 'react';
 import { FiPlus } from 'react-icons/fi';
 import QuestionFormModal from '@/components/modal/QuestionFormModal';
+import AuthForm from '@/components/login/AuthForm';
 
 const getData = () => {
   const questions = getQuestions();
@@ -82,6 +83,9 @@ export default function Page() {
         onClose={onClose}
         setAdded={setAdded}
       />
+      <div className="col-6 auth-widget">
+        <AuthForm />
+      </div>{' '}
     </>
   );
 }
