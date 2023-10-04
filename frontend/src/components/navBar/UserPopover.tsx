@@ -15,6 +15,7 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { FiChevronDown } from 'react-icons/fi';
+import Link from 'next/link';
 
 function UserPopover() {
   return (
@@ -48,7 +49,9 @@ function UserPopover() {
           borderColor={useColorModeValue('gray.200', 'gray.700')}
         >
           <MenuItem>Profile</MenuItem>
-          <MenuItem>Settings</MenuItem>
+          <Link href="/account">
+            <MenuItem>Settings</MenuItem>
+          </Link>
           <MenuItem>Billing</MenuItem>
           <MenuDivider />
           <MenuItem>Sign out</MenuItem>

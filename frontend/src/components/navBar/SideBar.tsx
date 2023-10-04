@@ -16,6 +16,7 @@ import {
   FiTrendingUp,
 } from 'react-icons/fi';
 import { IconType } from 'react-icons';
+import Link from 'next/link';
 import SideBarChild from './SideBarChild';
 
 interface LinkWithIconProps {
@@ -53,11 +54,17 @@ function SideBar({ onClose, ...rest }: SideBarProps) {
         </Text>
         <CloseButton display={{ base: 'flex', md: 'none' }} onClick={onClose} />
       </Flex>
-      {LinkItems.map((link) => (
-        <SideBarChild key={link.name} icon={link.icon}>
-          {link.name}
-        </SideBarChild>
-      ))}
+      {LinkItems.map((link) =>
+        link.name === 'Settings' ? (
+          <Link href="/account" key={link.name}>
+            <SideBarChild icon={link.icon}>{link.name}</SideBarChild>
+          </Link>
+        ) : (
+          <SideBarChild key={link.name} icon={link.icon}>
+            {link.name}
+          </SideBarChild>
+        ),
+      )}
     </Box>
   );
 }
