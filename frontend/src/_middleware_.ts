@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 
 import type { NextRequest } from 'next/server';
 
-export async function authMiddleware(req: NextRequest) {
+export default async function authMiddleware(req: NextRequest) {
   const res = NextResponse.next();
   const supabase = createMiddlewareClient({ req, res });
 
@@ -12,6 +12,7 @@ export async function authMiddleware(req: NextRequest) {
   } = await supabase.auth.getUser();
 
   // if user is signed in and the current path is / redirect the user to /account
+  console.log('user: ', user);
   if (user && req.nextUrl.pathname === '/') {
     return NextResponse.redirect(new URL('/account', req.url));
   }
