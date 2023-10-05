@@ -7,9 +7,7 @@ import { Server as SocketServer } from 'socket.io';
 
 import setUpIo from './socket';
 
-import * as dotenv from 'dotenv';
-
-dotenv.config();
+require("dotenv").config();
 
 const corsOptions: CorsOptions = {
     origin: '*',
@@ -19,8 +17,8 @@ export class ApiServer {
   public server: Server | null = null;
   public io: SocketServer | null = null;
 
-  async initialize(port = 6006): Promise<void> {
-    
+  async initialize(port = process.env.MATCHING_PORT): Promise<void> {
+    console.log(process.env.SUPABASE_URL);
     const app = express();
     app.use(express.json({ limit: '20mb' }) as RequestHandler);
     app.use(
