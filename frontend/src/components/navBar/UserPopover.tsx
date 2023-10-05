@@ -16,8 +16,24 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { FiChevronDown } from 'react-icons/fi';
+import Link from 'next/link';
 
 function UserPopover() {
+  const handleSignOut = async () => {
+    try {
+      const response = await fetch('/auth/signout', {
+        method: 'POST',
+      });
+      if (response.ok) {
+        window.location.href = '/';
+      } else {
+        console.error('Sign out failed');
+      }
+    } catch (error) {
+      console.error('There was an error signing out', error);
+    }
+  };
+
   return (
     <Flex alignItems="center">
       <Menu>
@@ -48,14 +64,15 @@ function UserPopover() {
           bg={useColorModeValue('white', 'gray.900')}
           borderColor={useColorModeValue('gray.200', 'gray.700')}
         >
-          <Link href="/profile/ff8a55f9-fb2d-4ca2-b8ee-4ac410923f64">
-            {/* TODO: REMOVE ONCE LOGIN AUTHENTICATION OBTAINED */}
-            <MenuItem>Profile</MenuItem>
+          <MenuItem>Profile</MenuItem>
+          <Link href="/account">
+            <MenuItem>Settings</MenuItem>
           </Link>
-          <MenuItem>Settings</MenuItem>
           <MenuItem>Billing</MenuItem>
           <MenuDivider />
-          <MenuItem>Sign out</MenuItem>
+          <form action="/auth/signout" method="post">
+            <MenuItem type="submit">Sign out</MenuItem>
+          </form>{' '}
         </MenuList>
       </Menu>
     </Flex>
