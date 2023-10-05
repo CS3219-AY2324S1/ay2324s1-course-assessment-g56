@@ -17,7 +17,11 @@ export default function AuthForm() {
     <Auth
       supabaseClient={supabase}
       view="magic_link"
-      appearance={{ theme: ThemeSupa }}
+      appearance={{ theme: ThemeSupa,
+        style: {
+          anchor: { color: 'blue' },
+          message: { color: 'black' },
+        }, }}
       theme="dark"
       showLinks={false}
       providers={[]}
