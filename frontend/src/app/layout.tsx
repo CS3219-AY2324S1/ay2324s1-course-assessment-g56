@@ -7,7 +7,7 @@ import Navbar from '@/components/navBar/NavBar';
 import Head from './head';
 
 export default function RootLayout({ children }: { children: ReactNode }) {
-  if (window !== undefined && window.location.pathname === '/') {
+  if (typeof window !== 'undefined' && window.location.pathname === '/') {
     return (
       <html lang="en" data-theme="light">
         <Head />

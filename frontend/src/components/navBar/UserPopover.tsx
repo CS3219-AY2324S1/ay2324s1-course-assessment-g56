@@ -18,6 +18,21 @@ import { FiChevronDown } from 'react-icons/fi';
 import Link from 'next/link';
 
 function UserPopover() {
+  const handleSignOut = async () => {
+    try {
+      const response = await fetch('/auth/signout', {
+        method: 'POST',
+      });
+      if (response.ok) {
+        window.location.href = '/';
+      } else {
+        console.error('Sign out failed');
+      }
+    } catch (error) {
+      console.error('There was an error signing out', error);
+    }
+  };
+
   return (
     <Flex alignItems="center">
       <Menu>
@@ -54,7 +69,9 @@ function UserPopover() {
           </Link>
           <MenuItem>Billing</MenuItem>
           <MenuDivider />
-          <MenuItem>Sign out</MenuItem>
+          <form action="/auth/signout" method="post">
+            <MenuItem type="submit">Sign out</MenuItem>
+          </form>{' '}
         </MenuList>
       </Menu>
     </Flex>
