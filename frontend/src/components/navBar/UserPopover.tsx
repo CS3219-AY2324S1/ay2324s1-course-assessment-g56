@@ -11,10 +11,10 @@ import {
   MenuItem,
   MenuList,
   Text,
-  useColorModeValue,
   VStack,
 } from '@chakra-ui/react';
 import { FiChevronDown } from 'react-icons/fi';
+import Link from 'next/link';
 
 function UserPopover() {
   return (
@@ -43,15 +43,15 @@ function UserPopover() {
             </Box>
           </HStack>
         </MenuButton>
-        <MenuList
-          bg={useColorModeValue('white', 'gray.900')}
-          borderColor={useColorModeValue('gray.200', 'gray.700')}
-        >
+        <MenuList>
           <MenuItem>Profile</MenuItem>
-          <MenuItem>Settings</MenuItem>
-          <MenuItem>Billing</MenuItem>
+          <Link href="/account">
+            <MenuItem>Settings</MenuItem>
+          </Link>
           <MenuDivider />
-          <MenuItem>Sign out</MenuItem>
+          <form action="/auth/signout" method="post">
+            <MenuItem type="submit">Sign out</MenuItem>
+          </form>
         </MenuList>
       </Menu>
     </Flex>
