@@ -8,20 +8,16 @@ import {
   Text,
   useColorModeValue,
 } from '@chakra-ui/react';
-import {
-  FiHome,
-  FiCompass,
-  FiSettings,
-  FiStar,
-  FiTrendingUp,
-} from 'react-icons/fi';
+import { FiHome, FiSettings } from 'react-icons/fi';
+import { LuUnplug } from 'react-icons/lu';
 import { IconType } from 'react-icons';
-import Link from 'next/link';
+import NextLink from 'next/link';
 import SideBarChild from './SideBarChild';
 
 interface LinkWithIconProps {
   name: string;
   icon: IconType;
+  href: string;
 }
 
 interface SideBarProps extends BoxProps {
@@ -29,17 +25,14 @@ interface SideBarProps extends BoxProps {
 }
 
 const LinkItems: LinkWithIconProps[] = [
-  { name: 'Home', icon: FiHome },
-  { name: 'Trending', icon: FiTrendingUp },
-  { name: 'Explore', icon: FiCompass },
-  { name: 'Favourites', icon: FiStar },
-  { name: 'Settings', icon: FiSettings },
+  { name: 'Home', icon: FiHome, href: '/home' },
+  { name: 'Find Match', icon: LuUnplug, href: '/matching' },
+  { name: 'Settings', icon: FiSettings, href: '/account' },
 ];
 
 function SideBar({ onClose, ...rest }: SideBarProps) {
   return (
     <Box
-      transition="3s ease"
       bg={useColorModeValue('white', 'gray.900')}
       borderRight="1px"
       borderRightColor={useColorModeValue('gray.200', 'gray.700')}
@@ -49,22 +42,25 @@ function SideBar({ onClose, ...rest }: SideBarProps) {
       {...rest}
     >
       <Flex h="20" alignItems="center" mx="8" justifyContent="space-between">
-        <Text fontSize="2xl" fontFamily="monospace" fontWeight="bold">
-          Logo
+        <Text
+          as={NextLink}
+          href="/"
+          fontSize="2xl"
+          fontFamily="monospace"
+          fontWeight="bold"
+        >
+          PeerPrep
         </Text>
         <CloseButton display={{ base: 'flex', md: 'none' }} onClick={onClose} />
       </Flex>
-      {LinkItems.map((link) =>
-        link.name === 'Settings' ? (
-          <Link href="/account" key={link.name}>
-            <SideBarChild icon={link.icon}>{link.name}</SideBarChild>
-          </Link>
-        ) : (
-          <SideBarChild key={link.name} icon={link.icon}>
-            {link.name}
-          </SideBarChild>
-        ),
-      )}
+      {LinkItems.map((link) => (
+        <SideBarChild
+          key={link.name}
+          name={link.name}
+          icon={link.icon}
+          href={link.href}
+        />
+      ))}
     </Box>
   );
 }

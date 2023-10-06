@@ -10,6 +10,7 @@ import {
   useColorModeValue,
 } from '@chakra-ui/react';
 import { FiMenu, FiMoon, FiSun } from 'react-icons/fi';
+import NextLink from 'next/link';
 import NavButton from './NavButton';
 import UserPopover from './UserPopover';
 
@@ -42,12 +43,14 @@ function TopBar({ onOpen, ...rest }: MobileProps) {
       />
 
       <Text
+        as={NextLink}
         display={{ base: 'flex', md: 'none' }}
         fontSize="2xl"
         fontFamily="monospace"
         fontWeight="bold"
+        href="/"
       >
-        Logo
+        PeerPrep
       </Text>
 
       <HStack spacing={{ base: '0', md: '6' }}>
