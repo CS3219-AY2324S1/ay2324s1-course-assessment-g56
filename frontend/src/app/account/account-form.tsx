@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import { Database } from '@/types/database.types';
 import {
   Box,
@@ -15,13 +15,22 @@ import {
   createClientComponentClient,
 } from '@supabase/auth-helpers-nextjs';
 
+interface ProfileData {
+  fullName: string | null;
+  username: string | null;
+  website: string | null;
+  avatarUrl: string | null;
+}
+
 export default function AccountForm({ session }: { session: Session | null }) {
   const supabase = createClientComponentClient<Database>();
   const [loading, setLoading] = useState(true);
-  const [fullname, setFullname] = useState<string | null>(null);
-  const [username, setUsername] = useState<string | null>(null);
-  const [website, setWebsite] = useState<string | null>(null);
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [profileData, setProfileData] = useState<ProfileData>({
+    fullName: null,
+    username: null,
+    website: null,
+    avatarUrl: null,
+  });
   const user = session?.user;
 
   const getProfile = useCallback(async () => {
@@ -31,18 +40,20 @@ export default function AccountForm({ session }: { session: Session | null }) {
       const { data, error, status } = await supabase
         .from('profiles')
         .select(`full_name, username, website, avatar_url`)
-        .eq('id', user?.id)
+        .eq('id', user!.id)
         .single();
 
       if (error && status !== 406) {
-        throw new Error(error);
+        throw new Error(error.message);
       }
 
       if (data) {
-        setFullname(data.full_name);
-        setUsername(data.username);
-        setWebsite(data.website);
-        setAvatarUrl(data.avatar_url);
+        setProfileData({
+          fullName: data.full_name,
+          username: data.username,
+          website: data.website,
+          avatarUrl: data.avatar_url,
+        });
       }
     } catch (error) {
       alert('Error loading user data!');
@@ -55,35 +66,34 @@ export default function AccountForm({ session }: { session: Session | null }) {
     getProfile();
   }, [user, getProfile]);
 
-  async function updateProfile({
-    username: user_name,
-    website: website_,
-    avatar_url,
-  }: {
-    username: string | null;
-    fullname: string | null;
-    website: string | null;
-    avatar_url: string | null;
-  }) {
+  const updateProfile = async () => {
     try {
       setLoading(true);
 
       const { error } = await supabase.from('profiles').upsert({
         id: user?.id as string,
-        full_name: fullname,
-        username: user_name,
-        website: website_,
-        avatar_url,
+        full_name: profileData.fullName,
+        username: profileData.username,
+        website: profileData.website,
+        avatar_url: profileData.avatarUrl,
         updated_at: new Date().toISOString(),
       });
-      if (error) throw new Error(error);
+      if (error) throw new Error(error.message);
       alert('Profile updated!');
     } catch (error) {
       alert('Error updating the data!');
     } finally {
       setLoading(false);
     }
-  }
+  };
+
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setProfileData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
 
   return (
     <VStack spacing={4} className="form-widget">
@@ -97,8 +107,8 @@ export default function AccountForm({ session }: { session: Session | null }) {
         <Input
           id="fullName"
           type="text"
-          value={fullname || ''}
-          onChange={(e) => setFullname(e.target.value)}
+          value={profileData.fullName || ''}
+          onChange={handleInputChange}
         />
       </FormControl>
 
@@ -107,8 +117,8 @@ export default function AccountForm({ session }: { session: Session | null }) {
         <Input
           id="username"
           type="text"
-          value={username || ''}
-          onChange={(e) => setUsername(e.target.value)}
+          value={profileData.username || ''}
+          onChange={handleInputChange}
         />
       </FormControl>
 
@@ -117,23 +127,12 @@ export default function AccountForm({ session }: { session: Session | null }) {
         <Input
           id="website"
           type="url"
-          value={website || ''}
-          onChange={(e) => setWebsite(e.target.value)}
+          value={profileData.website || ''}
+          onChange={handleInputChange}
         />
       </FormControl>
 
-      <Button
-        colorScheme="blue"
-        onClick={() =>
-          updateProfile({
-            fullname,
-            username,
-            website,
-            avatar_url: avatarUrl,
-          })
-        }
-        isLoading={loading}
-      >
+      <Button colorScheme="blue" onClick={updateProfile} isLoading={loading}>
         Update
       </Button>
 
