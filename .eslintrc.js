@@ -18,6 +18,7 @@ module.exports = {
     'react/react-in-jsx-scope': 'off',
     'no-param-reassign': 'off',
     'react/require-default-props': 'off',
+    'import/prefer-default-export': 'off',
   },
   settings: {
     'import/parsers': {

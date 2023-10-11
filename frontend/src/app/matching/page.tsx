@@ -10,7 +10,7 @@ import {
 } from '@chakra-ui/react';
 import Difficulty from '@/constants/difficulty';
 import { REQ_FIND_PAIR, RES_FIND_PAIR } from '@/constants/socket';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import io from 'socket.io-client';
 import * as dotenv from 'dotenv';
 
@@ -26,16 +26,6 @@ export default function Page() {
 
   const changeDifficulty = (e) =>
     setDifficulty(Difficulty[e.target.value as keyof typeof Difficulty]);
-
-  useEffect(() => {
-    socket.on('connection', () => {
-      console.log('Connected to server.');
-    });
-
-    return (): void => {
-      socket.disconnect();
-    };
-  }, [socket]);
 
   const sendMessage = () => {
     socket.emit(REQ_FIND_PAIR, difficulty);

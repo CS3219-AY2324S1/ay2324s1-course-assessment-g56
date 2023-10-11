@@ -4,9 +4,11 @@ FROM node:18
 WORKDIR /src
 
 # Copy required config files
-COPY package*.json ./
+COPY src/package*.json ./
 
-COPY tsconfig.json ./
+COPY src/tsconfig.json ./
+
+COPY src/.env ./
 
 # Install app dependencies
 RUN npm install
@@ -14,7 +16,7 @@ RUN npm install
 # Copy app source to the image
 COPY . .
 
-# Expose the app on port 3000
+# Expose the app on port 6006
 EXPOSE 6006
 
 # Command to run the application
