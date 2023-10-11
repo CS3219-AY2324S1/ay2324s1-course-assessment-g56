@@ -63,9 +63,12 @@ export const deleteQuestionById = (uuid: string) => {
 
 export const updateQuestionById = (question: Question) =>
   getQuestions().then((questions: Question[]) => {
-    const questionTitles: string[] = questions.map((qn: Question) => qn.title);
+    const existingQuestionWithSameTitle: Question | undefined = questions.find(
+      (qn: Question) =>
+        qn.title === question.title && qn.uuid !== question.uuid,
+    );
 
-    if (questionTitles.includes(question.title)) {
+    if (existingQuestionWithSameTitle) {
       return Promise.reject(new Error('Question already exists'));
     }
 

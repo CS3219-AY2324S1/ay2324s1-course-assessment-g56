@@ -22,9 +22,7 @@ function QuestionFormModal({
   const [title, setTitle] = useState('');
   const [desc, setDesc] = useState('');
   const [cat, setCat] = useState('');
-  const [complexity, setComplexity] = useState<QuestionComplexity>(
-    QuestionComplexity.EASY,
-  );
+  const [complexity, setComplexity] = useState<number>(QuestionComplexity.EASY);
   const [link, setLink] = useState('');
 
   const toast = useToast();
@@ -91,13 +89,7 @@ function QuestionFormModal({
       <QuestionForm
         initialRef={initialRef}
         changeCategories={(e) => setCat(e.target.value)}
-        changeComplexity={(e) =>
-          setComplexity(
-            QuestionComplexity[
-              e.target.value as keyof typeof QuestionComplexity
-            ],
-          )
-        }
+        changeComplexity={(e) => setComplexity(parseInt(e.target.value, 10))}
         changeDescription={(e) => setDesc(e.target.value)}
         changeTitle={(e) => setTitle(e.target.value)}
         changeLink={(e) => setLink(e.target.value)}

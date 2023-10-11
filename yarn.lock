@@ -1938,12 +1938,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-dom@npm:^18.2.7":
-  version: 18.2.7
-  resolution: "@types/react-dom@npm:18.2.7"
+"@types/react-dom@npm:^18":
+  version: 18.2.10
+  resolution: "@types/react-dom@npm:18.2.10"
   dependencies:
     "@types/react": "*"
-  checksum: d36264631028d021b73cd9e015f10b95c4959ae1ce8f7a7419f318d1f05b1d063e6afffcd2a349a6bccd64ccc9ee9d2d976e1f0437643f0e7db621fa035bca65
+  checksum: ced70643d82dd9d165cd6d1a98ec7556daf77d8fdec1ed19badb744a2a2370a84cc109248667536d7f850409e85432c300ec9f8c87d46e066ad295ddf9b6ab03
   languageName: node
   linkType: hard
 
@@ -2877,6 +2877,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"delayed-stream@npm:~1.0.0":
+  version: 1.0.0
+  resolution: "delayed-stream@npm:1.0.0"
+  checksum: 46fe6e83e2cb1d85ba50bd52803c68be9bd953282fa7096f51fc29edd5d67ff84ff753c51966061e5ba7cb5e47ef6d36a91924eddb7f3f3483b1c560f77a0020
+  languageName: node
+  linkType: hard
+
 "delegates@npm:^1.0.0":
   version: 1.0.0
   resolution: "delegates@npm:1.0.0"
@@ -3743,7 +3750,8 @@ __metadata:
     "@tanstack/react-table": ^8.9.9
     "@types/node": 20.6.0
     "@types/react": ^18.2.21
-    "@types/react-dom": ^18.2.7
+    "@types/react-dom": ^18
+    axios: ^1.5.1
     chakra-react-select: ^4.7.2
     dotenv: ^16.3.1
     framer-motion: ^10.16.4
@@ -5548,7 +5556,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-dom@npm:18.2.0, react-dom@npm:^18.2.0":
+"react-dom@npm:^18.2.0":
   version: 18.2.0
   resolution: "react-dom@npm:18.2.0"
   dependencies:
