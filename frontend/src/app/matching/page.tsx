@@ -15,9 +15,8 @@ import {
 } from '@/constants/socket';
 import { useEffect, useState } from 'react';
 import io from 'socket.io-client';
-import * as dotenv from "dotenv";
 
-dotenv.config();
+require("dotenv").config();
 
 const socket = io(process.env.MATCHING_PORT || 'http://localhost:6006');
 
