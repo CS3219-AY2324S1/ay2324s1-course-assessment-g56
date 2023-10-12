@@ -8,6 +8,7 @@ import {
   FormControl,
   FormLabel,
   Input,
+  Skeleton,
   VStack,
 } from '@chakra-ui/react';
 import {
@@ -25,6 +26,7 @@ interface ProfileData {
 export default function AccountForm({ session }: { session: Session | null }) {
   const supabase = createClientComponentClient<Database>();
   const [loading, setLoading] = useState(true);
+  const [updating, setUpdating] = useState(false);
   const [profileData, setProfileData] = useState<ProfileData>({
     fullName: null,
     username: null,
@@ -68,7 +70,7 @@ export default function AccountForm({ session }: { session: Session | null }) {
 
   const updateProfile = async () => {
     try {
-      setLoading(true);
+      setUpdating(true);
 
       const { error } = await supabase.from('profiles').upsert({
         id: user?.id as string,
@@ -83,7 +85,7 @@ export default function AccountForm({ session }: { session: Session | null }) {
     } catch (error) {
       alert('Error updating the data!');
     } finally {
-      setLoading(false);
+      setUpdating(false);
     }
   };
 
@@ -104,35 +106,46 @@ export default function AccountForm({ session }: { session: Session | null }) {
 
       <FormControl>
         <FormLabel htmlFor="fullName">Full Name</FormLabel>
-        <Input
-          id="fullName"
-          type="text"
-          value={profileData.fullName || ''}
-          onChange={handleInputChange}
-        />
+        <Skeleton isLoaded={!loading} style={{ borderRadius: '0.375rem' }}>
+          <Input
+            id="fullName"
+            type="text"
+            value={profileData.fullName || ''}
+            onChange={handleInputChange}
+          />
+        </Skeleton>
       </FormControl>
 
       <FormControl>
         <FormLabel htmlFor="username">Username</FormLabel>
-        <Input
-          id="username"
-          type="text"
-          value={profileData.username || ''}
-          onChange={handleInputChange}
-        />
+        <Skeleton isLoaded={!loading} style={{ borderRadius: '0.375rem' }}>
+          <Input
+            id="username"
+            type="text"
+            value={profileData.username || ''}
+            onChange={handleInputChange}
+          />
+        </Skeleton>
       </FormControl>
 
       <FormControl>
         <FormLabel htmlFor="website">Website</FormLabel>
-        <Input
-          id="website"
-          type="url"
-          value={profileData.website || ''}
-          onChange={handleInputChange}
-        />
+        <Skeleton isLoaded={!loading} style={{ borderRadius: '0.375rem' }}>
+          <Input
+            id="website"
+            type="url"
+            value={profileData.website || ''}
+            onChange={handleInputChange}
+          />
+        </Skeleton>
       </FormControl>
 
-      <Button colorScheme="blue" onClick={updateProfile} isLoading={loading}>
+      <Button
+        colorScheme="blue"
+        onClick={updateProfile}
+        isLoading={updating}
+        isDisabled={loading}
+      >
         Update
       </Button>
 
