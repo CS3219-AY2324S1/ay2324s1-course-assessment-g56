@@ -88,7 +88,7 @@ function QuestionFormModal({
         changeComplexity={(e) =>
           setComplexity(
             QuestionComplexity[
-              e.target.value as keyof typeof QuestionComplexity
+              e.target.value.toUpperCase() as keyof typeof QuestionComplexity
             ],
           )
         }

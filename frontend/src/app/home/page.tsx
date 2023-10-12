@@ -33,7 +33,7 @@ export default function Page() {
   const toast = useToast();
 
   const removeRow = (id: number) => {
-    deleteQuestionById(id);
+    deleteQuestionById(id + 1);
     setQuestionList(getData());
     toast({
       title: 'Question deleted.',
