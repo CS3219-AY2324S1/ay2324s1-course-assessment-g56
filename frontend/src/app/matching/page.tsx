@@ -84,7 +84,7 @@ function Page() {
         borderRadius="md"
         boxShadow="lg"
       >
-        <VStack spacing={4} align="center">
+        <VStack spacing={8} align="center">
           <Text textAlign="center" fontSize="xl" fontWeight="bold">
             Choose Matching Difficulty
           </Text>

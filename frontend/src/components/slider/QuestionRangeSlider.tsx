@@ -38,15 +38,23 @@ export default function QuestionRangeSlider({
     getTrackProps,
   } = useRangeSlider(sliderOptions);
 
-  const { onKeyDown: onThumbKeyDownFirstIndex, ...thumbPropsFirstIndex } =
-    getThumbProps({
-      index: 0,
-    });
+  const {
+    onKeyDown: onThumbKeyDownFirstIndex,
+    // eslint no-unused-vars: ["error", { "ignoreRestSiblings": true }]
+    role: roleFirstIndex,
+    ...thumbPropsFirstIndex
+  } = getThumbProps({
+    index: 0,
+  });
 
-  const { onKeyDown: onThumbKeyDownSecondIndex, ...thumbPropsSecondIndex } =
-    getThumbProps({
-      index: 1,
-    });
+  const {
+    onKeyDown: onThumbKeyDownSecondIndex,
+    // eslint no-unused-vars: ["error", { "ignoreRestSiblings": true }]
+    role: roleSecondIndex,
+    ...thumbPropsSecondIndex
+  } = getThumbProps({
+    index: 1,
+  });
 
   const markers = [1, 2, 3].map((i) => getMarkerProps({ value: i }));
 

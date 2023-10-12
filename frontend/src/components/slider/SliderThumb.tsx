@@ -1,4 +1,4 @@
-import { Box } from '@chakra-ui/react';
+import { Box, useColorModeValue } from '@chakra-ui/react';
 import { KeyboardEvent } from 'react';
 
 type Props = {
@@ -19,11 +19,13 @@ export default function Thumb({
 }: Props) {
   return (
     <Box
-      top="1%"
       boxSize={8}
       bgColor={bgColor}
       borderRadius="full"
-      _focusVisible={{
+      transform="translateX(-50%)"
+      mt={-4}
+      _focus={{
+        backgroundColor: useColorModeValue('teal.800', 'teal.100'),
         outline: 'none',
       }}
       onKeyDown={(e) => {
