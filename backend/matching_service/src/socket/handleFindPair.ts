@@ -1,6 +1,4 @@
 import { Server, Socket } from 'socket.io';
-import { User } from '../constants/user';
-import { Difficulty } from '../constants/difficulty';
 
 import {
   ERROR_FIND_PAIR,
@@ -8,22 +6,37 @@ import {
   RES_FIND_PAIR,
   RES_FOUND_PAIR,
 } from '../constants/socket';
-import MatchingQueue from '../logic/MatchingQueue';
+import MatchingQueue from '../structs/MatchingQueue';
+import UidToCallbackMap from '../structs/UidToCallbackMap';
+import { QuestionComplexity } from '../types/question';
+import { User } from '../types/user';
 
-type FindPairFunction = (difficulty: Difficulty) => Promise<void>;
+type FindPairFunction = (
+  lowerBoundDifficulty: QuestionComplexity,
+  upperBoundDifficulty: QuestionComplexity,
+) => Promise<void>;
 const TIMEOUT_DURATION = 30000;
 
-export const handleFindPair = (
-  socket: Socket,
-  io: Server,
-): FindPairFunction => {
-  return async (difficulty: Difficulty): Promise<void> => {
+const handleFindPair =
+  (socket: Socket, io: Server): FindPairFunction =>
+  async (
+    lowerBoundDifficulty: QuestionComplexity,
+    upperBoundDifficulty: QuestionComplexity,
+  ): Promise<void> => {
     const newUser: User = {
-        sid: socket.id,
-        difficulty: difficulty
+      sid: socket.id,
+      lowerBoundDifficulty,
+      upperBoundDifficulty,
     };
 
-    console.log('Socket', newUser.sid, 'finding pair for', difficulty);
+    console.log(
+      'Socket',
+      newUser.sid,
+      'finding pair for',
+      lowerBoundDifficulty,
+      'to',
+      upperBoundDifficulty,
+    );
 
     socket.join(newUser.sid);
 
@@ -54,11 +67,13 @@ export const handleFindPair = (
     if (result == null) {
       console.log('No current match found, setting timeout.');
       const timeout = setTimeout(() => {
-        console.log("Could not find pair in time", newUser.sid);
+        console.log('Could not find pair in time', newUser.sid);
         // Leave the queue
         MatchingQueue.remove(newUser);
+        UidToCallbackMap.remove(newUser.sid);
         socket.emit(RES_CANNOT_FIND_PAIR);
       }, TIMEOUT_DURATION);
+      UidToCallbackMap.insert(newUser.sid, timeout);
       return;
     }
 
@@ -67,14 +82,16 @@ export const handleFindPair = (
     console.log('Match found:', user1.sid, user2.sid);
 
     io.to(user1.sid).emit(RES_FOUND_PAIR, {
-      roomId: "test"
+      roomId: 'test',
     });
     io.to(user2.sid).emit(RES_FOUND_PAIR, {
-        roomId: "test"
+      roomId: 'test',
     });
 
     MatchingQueue.remove(user1);
     MatchingQueue.remove(user2);
+    UidToCallbackMap.stopAndRemove(user1.sid);
+    UidToCallbackMap.stopAndRemove(user2.sid);
     console.log('Match found, timeouts cleared, room created.');
   };
-};
+export default handleFindPair;

@@ -1,91 +1,111 @@
 'use client';
 
 import {
-  FormControl,
-  FormLabel,
-  Select,
-  Flex,
+  Text,
   Button,
   Box,
+  useColorModeValue,
+  Center,
+  VStack,
 } from '@chakra-ui/react';
-import { Difficulty } from '@/constants/difficulty';
+import { QuestionComplexity } from '@/types/question';
 import {
+  DISCONNECT,
   REQ_FIND_PAIR,
+  RES_CANNOT_FIND_PAIR,
   RES_FIND_PAIR,
+  RES_FOUND_PAIR,
 } from '@/constants/socket';
 import { useEffect, useState } from 'react';
 import io from 'socket.io-client';
+import 'dotenv/config';
+import QuestionRangeSlider from '../../components/slider/QuestionRangeSlider';
 
-require("dotenv").config();
+const socket = io(process.env.MATCHING_PORT || 'http://localhost:6006', {
+  autoConnect: false,
+});
 
-const socket = io(process.env.MATCHING_PORT || 'http://localhost:6006');
+function Page() {
+  const [lowerBoundDifficulty, setLowerBoundDifficulty] =
+    useState<QuestionComplexity>(QuestionComplexity.EASY);
 
-export default function Page() {
+  const [upperBoundDifficulty, setUpperBoundDifficulty] =
+    useState<QuestionComplexity>(QuestionComplexity.HARD);
 
-  const modalTitle = 'Choose Matching Difficulty';
-  const placeholder = 'Choose difficulty';
-
-  const [difficulty, setDifficulty] = useState<Difficulty>(
-    Difficulty.EASY,
-  );
-
-  const changeDifficulty = (e) =>
-    setDifficulty(
-      Difficulty[
-        e.target.value as keyof typeof Difficulty
-      ],
-    );
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
     // Listen for 'message' event from the server
-    const socket = io(process.env.MATCHING_PORT || 'http://localhost:6006');
+    const onConnect = () => {
+      // console.log('Connected to server.');
+      setIsConnected(true);
+    };
 
-    socket.on('connection', () => {
-      console.log("Connected to server.");
-    });
+    socket.on('connect', onConnect);
 
+    socket.connect();
 
     return (): void => {
-      socket.disconnect();
+      socket.off('connect', onConnect);
     };
-  }, [socket]);
+  }, []);
 
   const sendMessage = () => {
-    socket.emit(REQ_FIND_PAIR, difficulty);
-    
+    setIsSubmitting(true);
+    socket.emit(REQ_FIND_PAIR, lowerBoundDifficulty, upperBoundDifficulty);
+
     socket.on(RES_FIND_PAIR, () => {
-      console.log("Working hard to find a match for you...");
+      // console.log('Working hard to find a match for you...');
+    });
+
+    socket.on(DISCONNECT, () => {
+      setIsSubmitting(false);
+      // console.log('Disconnected from server.');
+    });
+
+    socket.on(RES_CANNOT_FIND_PAIR, () => {
+      setIsSubmitting(false);
+      // console.log('Cannot find a match for you.');
+    });
+
+    socket.on(RES_FOUND_PAIR, () => {
+      setIsSubmitting(false);
+      // console.log('Found a match for you!');
     });
   };
 
   return (
-    <>
-      <Flex 
-        direction="column" 
-        align="center" 
-        justify="center" 
+    <Center>
+      <Box
+        bg={useColorModeValue('white', 'gray.800')}
+        p={10}
+        width={600}
+        borderRadius="md"
+        boxShadow="lg"
       >
-        <Box bg="white" p={5} borderRadius="md" boxShadow="lg">
-          <FormControl id="difficulty" isRequired>
-            <FormLabel textAlign="center">Matching Difficulty</FormLabel>
-            <Select textAlign="center" onChange={changeDifficulty} required maxW = "300px" m="auto">
-              <option value={placeholder} disabled>
-                {placeholder}
-              </option>
-              <option value={Difficulty.EASY}>Easy</option>
-              <option value={Difficulty.MEDIUM}>Medium</option>
-              <option value={Difficulty.HARD}>Hard</option>
-              <option value={Difficulty.ANY}>Any</option>
-            </Select>
-          </FormControl>
-          <br />
-          <Flex width="100%" justify="center">
-            <Button onClick={sendMessage} colorScheme="teal" size="md">
-              Send
-            </Button>
-          </Flex>
-        </Box>
-      </Flex>
-    </>
+        <VStack spacing={4} align="center">
+          <Text textAlign="center" fontSize="xl" fontWeight="bold">
+            Choose Matching Difficulty
+          </Text>
+          <QuestionRangeSlider
+            setLowerBoundDifficulty={setLowerBoundDifficulty}
+            setUpperBoundDifficulty={setUpperBoundDifficulty}
+          />
+          <Button
+            onClick={sendMessage}
+            colorScheme="green"
+            size="md"
+            isLoading={isSubmitting}
+            isDisabled={!isConnected}
+            mt="40px"
+            loadingText="Finding a match..."
+          >
+            Find match
+          </Button>
+        </VStack>
+      </Box>
+    </Center>
   );
 }
+export default Page;

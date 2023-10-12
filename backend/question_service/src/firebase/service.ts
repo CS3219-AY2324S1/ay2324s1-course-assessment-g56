@@ -1,5 +1,4 @@
 import { UUID } from 'crypto';
-import * as dotenv from 'dotenv';
 import { initializeApp } from 'firebase/app';
 import {
   addDoc,
@@ -12,9 +11,9 @@ import {
   updateDoc,
 } from 'firebase/firestore/lite';
 
-import { QuestionData } from './interface';
+import 'dotenv/config';
 
-dotenv.config();
+import { QuestionData } from './interface';
 
 const firebaseConfig = {
   apiKey: process.env.apiKey,

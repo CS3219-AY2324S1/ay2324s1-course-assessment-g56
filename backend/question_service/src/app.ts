@@ -1,6 +1,7 @@
 import * as bodyParser from 'body-parser';
-import * as dotenv from 'dotenv';
 import express from 'express';
+
+import 'dotenv/config';
 
 import {
   addQuestion,
@@ -11,7 +12,6 @@ import {
 } from './firebase/service';
 
 const app = express();
-dotenv.config();
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
