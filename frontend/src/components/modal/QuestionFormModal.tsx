@@ -10,11 +10,11 @@ import Modal from './Modal';
 function QuestionFormModal({
   isOpen,
   onClose,
-  setAdded,
+  setLoading,
 }: {
   isOpen: boolean;
   onClose: () => void;
-  setAdded: Dispatch<SetStateAction<boolean>>;
+  setLoading: Dispatch<SetStateAction<boolean>>;
 }) {
   const modalTitle = 'Add Question';
   const initialRef = useRef(null);
@@ -37,7 +37,7 @@ function QuestionFormModal({
     };
     try {
       createQuestion(question);
-      setAdded(true);
+      setLoading(true);
       toast({
         title: 'Question added.',
         description: "We've added your question.",

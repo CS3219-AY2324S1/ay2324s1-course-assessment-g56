@@ -28,7 +28,7 @@ const getData = () => {
 export default function Page() {
   const modalTitle = 'Add Question';
   const [questionList, setQuestionList] = useState<QuestionRowData[]>([]);
-  const [added, setAdded] = useState(true);
+  const [loading, setLoading] = useState(true);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
 
@@ -49,10 +49,10 @@ export default function Page() {
   };
 
   useEffect(() => {
-    if (!added) return;
+    if (!loading) return;
     setQuestionList(getData());
-    setAdded(false);
-  }, [added]);
+    setLoading(false);
+  }, [loading]);
 
   return (
     <>
@@ -70,17 +70,16 @@ export default function Page() {
           {modalTitle}
         </Button>
       </Flex>
-      {questionList !== undefined && (
-        <Table
-          tableData={questionList}
-          removeRow={removeRow}
-          columns={defaultColumns}
-        />
-      )}
+      <Table
+        isLoading={loading}
+        tableData={questionList}
+        removeRow={removeRow}
+        columns={defaultColumns}
+      />
       <QuestionFormModal
         isOpen={isOpen}
         onClose={onClose}
-        setAdded={setAdded}
+        setLoading={setLoading}
       />
     </>
   );
