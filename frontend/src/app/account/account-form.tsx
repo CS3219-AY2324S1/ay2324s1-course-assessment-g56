@@ -24,6 +24,20 @@ export default function AccountForm({ session }: { session: Session | null }) {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const user = session?.user;
 
+  const handleDelete = (e) => {
+    if (!user) {
+      alert('You must be logged in to delete your account!');
+      return;
+    }
+
+    const userConfirmed = window.confirm(
+      'Are you sure you want to delete your account?',
+    );
+    if (!userConfirmed) {
+      e.preventDefault(); // Prevent the form from submitting
+    }
+  };
+
   const getProfile = useCallback(async () => {
     try {
       setLoading(true);
@@ -38,6 +52,10 @@ export default function AccountForm({ session }: { session: Session | null }) {
         throw new Error(error);
       }
 
+      if (!data) {
+        alert('User not found!');
+        return;
+      }
       if (data) {
         setFullname(data.full_name);
         setUsername(data.username);
@@ -140,6 +158,16 @@ export default function AccountForm({ session }: { session: Session | null }) {
       <Box>
         <form action="/auth/signout" method="post">
           <Button type="submit">Sign out</Button>
+        </form>
+      </Box>
+
+      <Box>
+        <form action="/auth/delete" method="post">
+          <input type="hidden" name="userId" value={user?.id} />
+
+          <Button type="submit" onClick={handleDelete} colorScheme="red">
+            Delete Account
+          </Button>
         </form>
       </Box>
     </VStack>
