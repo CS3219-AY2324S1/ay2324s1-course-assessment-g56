@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/interactive-supports-focus */
-import { FC, ReactElement, useEffect, useState } from 'react';
+import { ReactElement, useEffect, useState } from 'react';
 import {
   AgoraVideoPlayer,
   createClient,
@@ -12,9 +12,10 @@ import AgoraRTC, {
   IMicrophoneAudioTrack,
 } from 'agora-rtc-sdk-ng';
 
-import Typography from 'components/typography';
-import { useUser } from 'contexts/UserContext';
-import VideoApi from 'lib/videoService';
+// import Typography from 'components/typography';
+// import { useUser } from 'contexts/UserContext';
+// import VideoApi from 'lib/videoService';
+
 
 import './VideoCollection.scss';
 
@@ -32,10 +33,10 @@ if (process.env.NODE_ENV !== 'development') {
 const useClient = createClient(config);
 const useMicrophoneAndCameraTracks = createMicrophoneAndCameraTracks();
 
-const Controls = (props: {
+function Controls(props: {
   tracks?: [IMicrophoneAudioTrack, ICameraVideoTrack];
   username: string;
-}): ReactElement<'div'> => {
+}): ReactElement<'div'> {
   const { tracks, username } = props;
   const [trackState, setTrackState] = useState({ video: true, audio: true });
 
@@ -45,22 +46,18 @@ const Controls = (props: {
     }
     if (type === 'audio') {
       await tracks[0].setEnabled(!trackState.audio);
-      setTrackState((ps) => {
-        return { ...ps, audio: !ps.audio };
-      });
+      setTrackState((ps) => ({ ...ps, audio: !ps.audio }));
     } else if (type === 'video') {
       await tracks[1].setEnabled(!trackState.video);
-      setTrackState((ps) => {
-        return { ...ps, video: !ps.video };
-      });
+      setTrackState((ps) => ({ ...ps, video: !ps.video }));
     }
   };
 
   return (
     <div className="controls">
-      <Typography className="controls--username" size="regular">
+      {/* <Typography className="controls--username" size="regular"> */}
         {username}
-      </Typography>
+      {/* </Typography> */}
       {tracks && (
         <div className="controls--icons">
           <div className="controls--icon-wrapper">
@@ -71,6 +68,7 @@ const Controls = (props: {
               onClick={(): Promise<void> => toggle('audio')}
               onKeyDown={(): Promise<void> => toggle('audio')}
               role="button"
+              aria-label="Mute microphone"
             />
           </div>
           <div className="controls--icon-wrapper">
@@ -81,36 +79,38 @@ const Controls = (props: {
               onClick={(): Promise<void> => toggle('video')}
               onKeyDown={(): Promise<void> => toggle('video')}
               role="button"
+              aria-label="Hide video"
             />
           </div>
         </div>
       )}
     </div>
   );
-};
+}
 
 interface Props {
   partnerUsername: string;
   roomId: string;
 }
 
-const VideoCollection: FC<Props> = ({ partnerUsername, roomId }) => {
+  const getToken = async (roomId: string): Promise<string> => 
+     `${roomId  }`;
+    // try {
+    //   const response = await VideoApi.getToken(roomId);
+    //   return response.token;
+    // } catch (error) {
+    //   return '';
+    // }
+  ;
+
+function VideoCollection({ partnerUsername, roomId }: Props): ReactElement<'div'> | null {
   const [inCall, setInCall] = useState(true);
   const [users, setUsers] = useState<IAgoraRTCRemoteUser[]>([]);
   const [start, setStart] = useState<boolean>(false);
   const [hasInitialised, setHasInitialised] = useState<boolean>(false);
   const client = useClient();
   const { ready, tracks } = useMicrophoneAndCameraTracks();
-  const user = useUser();
-
-  const getToken = async (roomId: string): Promise<string> => {
-    try {
-      const response = await VideoApi.getToken(roomId);
-      return response.token;
-    } catch (error) {
-      return '';
-    }
-  };
+  // const userProfile = useUser();
 
   useEffect(() => {
     // function to initialise the SDK
@@ -122,9 +122,7 @@ const VideoCollection: FC<Props> = ({ partnerUsername, roomId }) => {
       client.on('user-published', async (user, mediaType) => {
         await client.subscribe(user, mediaType);
         if (mediaType === 'video') {
-          setUsers((prevUsers) => {
-            return [...prevUsers, user];
-          });
+          setUsers((prevUsers) => [...prevUsers, user]);
         }
         if (mediaType === 'audio') {
           user.audioTrack?.play();
@@ -136,16 +134,12 @@ const VideoCollection: FC<Props> = ({ partnerUsername, roomId }) => {
           user.audioTrack?.stop();
         }
         if (type === 'video') {
-          setUsers((prevUsers) => {
-            return prevUsers.filter((User) => User.uid !== user.uid);
-          });
+          setUsers((prevUsers) => prevUsers.filter((User) => User.uid !== user.uid));
         }
       });
 
       client.on('user-left', (user) => {
-        setUsers((prevUsers) => {
-          return prevUsers.filter((User) => User.uid !== user.uid);
-        });
+        setUsers((prevUsers) => prevUsers.filter((User) => User.uid !== user.uid));
       });
 
       const token = await getToken(channelName);
@@ -163,9 +157,9 @@ const VideoCollection: FC<Props> = ({ partnerUsername, roomId }) => {
     }
   }, [roomId, client, ready, tracks, hasInitialised]);
 
-  if (!client || !user) {
-    return null;
-  }
+  // if (!client || !userProfile) {
+  //   return null;
+  // }
 
   return (
     <div className="video-call-container">
@@ -173,7 +167,7 @@ const VideoCollection: FC<Props> = ({ partnerUsername, roomId }) => {
         <>
           <div className="video-panel">
             <AgoraVideoPlayer className="video" videoTrack={tracks[1]} />
-            <Controls tracks={tracks} username={user.githubUsername} />
+            <Controls tracks={tracks} username="cheng yi" />
           </div>
           {users.length > 0 && users[0].videoTrack ? (
             <div className="video-panel">
