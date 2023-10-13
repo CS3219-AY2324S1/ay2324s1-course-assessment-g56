@@ -1,0 +1,100 @@
+.video-call-container {
+  align-items: center;
+  bottom: 0;
+  display: flex;
+  flex-direction: row-reverse;
+  height: 25vw;
+  justify-content: space-between;
+  padding: 0.5rem;
+  position: absolute;
+  right: 0;
+  width: calc(100vw - 1rem);
+  z-index: 4;
+}
+
+/* Assuming the media query for '>mobile', '<=tablet' is something like (min-width: 481px) and (max-width: 1024px) */
+@media (min-width: 481px) and (max-width: 1024px) {
+  .video-call-container {
+    height: 15vw;
+    width: 50vw;
+  }
+}
+
+/* Assuming the media query for '>tablet', '<=desktop' is something like (min-width: 1025px) and (max-width: 1440px) */
+@media (min-width: 1025px) and (max-width: 1440px) {
+  .video-call-container {
+    height: 10vw;
+    width: 33vw;
+  }
+}
+
+/* Assuming the media query for '>desktop' is something like (min-width: 1441px) */
+@media (min-width: 1441px) {
+  .video-call-container {
+    height: 8vw;
+    width: 27vw;
+  }
+}
+
+.video-call-container .video-panel {
+  background-color: black;
+  border-radius: /* Assuming $video-border-radius is a variable with a value, e.g., 5px */ 5px;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+  width: 48%;
+}
+
+.video-call-container .video-panel .video {
+  height: 100%;
+  width: 100%;
+}
+
+.video-call-container .controls {
+  background-color: rgba(0, 0, 0, 0.4);
+  bottom: 0;
+  display: flex;
+  flex-direction: row-reverse;
+  font-size: 0.9rem;
+  justify-content: space-between;
+  min-width: 0;
+  padding: 0.3rem;
+  position: absolute;
+  width: calc(100% - 0.6rem);
+}
+
+.video-call-container .controls--username {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.video-call-container .controls--icons {
+  display: flex;
+  flex-shrink: 0;
+}
+
+.video-call-container .controls--icon-wrapper {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  margin-right: 0.2rem;
+  width: 20px;
+}
+
+.video-call-container .controls--icon-wrapper .fa-microphone-slash {
+  margin-left: -4px;
+}
+
+.video-call-container .controls--icon-wrapper .fa-microphone {
+  margin-left: 4px;
+}
+
+.video-call-container .controls--icon-wrapper .fa-video {
+  margin-left: 1px;
+}
+
+.video-call-container i {
+  cursor: pointer;
+  width: 1rem;
+}
