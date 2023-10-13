@@ -1,27 +1,26 @@
-import { Server, Socket } from 'socket.io';
-import { User } from '../constants/user';
-import { Difficulty } from '../constants/difficulty';
+import { Socket } from 'socket.io';
 
-import MatchingQueue from '../logic/MatchingQueue';
+import MatchingQueue from '../structs/MatchingQueue';
+import { QuestionComplexity } from '../types/question';
+import { User } from '../types/user';
 
 type DisconnectFunction = () => Promise<void>;
 
-export const handleDisconnect = (
-  socket: Socket,
-  _io: Server,
-): DisconnectFunction => {
-  return async (): Promise<void> => {
+const handleDisconnect =
+  (socket: Socket): DisconnectFunction =>
+  async (): Promise<void> => {
     console.log('Socket', socket.id, 'is disconnecting.');
 
     const disconnectedUser: User = {
-        sid: socket.id,
-        difficulty: Difficulty.UNKNOWN
+      sid: socket.id,
+      lowerBoundDifficulty: QuestionComplexity.EASY,
+      upperBoundDifficulty: QuestionComplexity.HARD,
     };
 
-    MatchingQueue.remove(disconnectedUser)
+    MatchingQueue.remove(disconnectedUser);
     console.log('User', disconnectedUser.sid, 'removed from queue.');
- 
+
     socket.leave(disconnectedUser.sid);
     console.log('Socket', socket.id, 'has disconnected.');
   };
-};
+export default handleDisconnect;

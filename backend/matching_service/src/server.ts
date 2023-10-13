@@ -5,16 +5,17 @@ import { createServer, Server } from 'http';
 import morgan from 'morgan';
 import { Server as SocketServer } from 'socket.io';
 
+import 'dotenv/config';
+
 import setUpIo from './socket';
 
-require("dotenv").config();
-
 const corsOptions: CorsOptions = {
-    origin: '*',
+  origin: '*',
 };
 
 export class ApiServer {
   public server: Server | null = null;
+
   public io: SocketServer | null = null;
 
   async initialize(port = process.env.MATCHING_PORT): Promise<void> {
@@ -32,7 +33,7 @@ export class ApiServer {
     }
 
     const httpServer = createServer(app);
-    
+
     const io = new SocketServer(httpServer, {
       cors: {
         origin: '*',
@@ -60,5 +61,3 @@ export class ApiServer {
 }
 
 export default ApiServer;
-
-

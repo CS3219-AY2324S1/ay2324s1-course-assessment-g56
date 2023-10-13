@@ -6,7 +6,7 @@
   "author": "Team 56",
   "private": true,
   "workspaces": [
-    "backend",
+    "backend/*/src",
     "frontend"
   ],
   "devDependencies": {
@@ -32,8 +32,6 @@
     "typescript": "^5.2.2"
   },
   "scripts": {
-    "backend": "yarn workspace backend",
-    "frontend": "yarn workspace frontend",
     "lint": "prettier --check \"*/src/**/*.{ts,tsx}\" && eslint . --ext .ts,.js,.tsx,.jsx",
     "lint:fix": "prettier --write \"*/src/**/*.{ts,tsx}\" && eslint . --ext .ts,.js,.tsx,.jsx --fix",
     "postinstall": "husky install"
