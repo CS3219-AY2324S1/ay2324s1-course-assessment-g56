@@ -92,14 +92,17 @@ interface Props {
   roomId: string;
 }
 
-const getToken = async (roomId: string): Promise<string> => `${roomId}`;
-try {
-  // const response = await VideoApi.getToken(roomId);
-  // return response.token;
-  return '007eJxTYGD+HOb4nOHOhHBp7hzzptkbuURf3pnudYkr5+DE5YpWFWEKDKlJxgZGFmmmaRapqSZGJqmWhknJiZbGyWmmZiYpycaWO49rpDYEMjLcmHiEhZEBAkF8FoYQ1+AQBgYA6p8elQ==';
-} catch (error) {
-  // return '';
+  const getToken = async (roomId: string): Promise<string> => {
+    try {
+      // const response = await VideoApi.getToken(roomId);
+      // return response.token;
+      return "007eJxTYGD+HOb4nOHOhHBp7hzzptkbuURf3pnudYkr5+DE5YpWFWEKDKlJxgZGFmmmaRapqSZGJqmWhknJiZbGyWmmZiYpycaWO49rpDYEMjLcmHiEhZEBAkF8FoYQ1+AQBgYA6p8elQ=="
+    } catch (error) {
+      return '';
+    }
+  };
 }
+
 function VideoCollection({
   partnerUsername,
   roomId,
