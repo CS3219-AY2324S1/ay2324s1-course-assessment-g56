@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/interactive-supports-focus */
 import { ReactElement, useEffect, useState } from 'react';
 import {
   AgoraVideoPlayer,
@@ -67,7 +68,6 @@ function Controls(props: {
               onKeyDown={(): Promise<void> => toggle('audio')}
               role="button"
               aria-label="Mute microphone"
-              tabIndex={0}
             />
           </div>
           <div className="controls--icon-wrapper">
@@ -79,7 +79,6 @@ function Controls(props: {
               onKeyDown={(): Promise<void> => toggle('video')}
               role="button"
               aria-label="Hide video"
-              tabIndex={0}
             />
           </div>
         </div>
@@ -93,16 +92,16 @@ interface Props {
   roomId: string;
 }
 
-  const getToken = async (roomId: string): Promise<string> => {
-    try {
-      // const response = await VideoApi.getToken(roomId);
-      // return response.token;
-      return "007eJxTYGD+HOb4nOHOhHBp7hzzptkbuURf3pnudYkr5+DE5YpWFWEKDKlJxgZGFmmmaRapqSZGJqmWhknJiZbGyWmmZiYpycaWO49rpDYEMjLcmHiEhZEBAkF8FoYQ1+AQBgYA6p8elQ=="
-    } catch (error) {
-      return '';
-    }
-  };
-}
+const TEMP_TOKEN =
+  '007eJxTYGD+HOb4nOHOhHBp7hzzptkbuURf3pnudYkr5+DE5YpWFWEKDKlJxgZGFmmmaRapqSZGJqmWhknJiZbGyWmmZiYpycaWO49rpDYEMjLcmHiEhZEBAkF8FoYQ1+AQBgYA6p8elQ==';
+
+const getToken = async (roomId: string): Promise<string> => `${roomId}`;
+// try {
+//   const response = await VideoApi.getToken(roomId);
+//   return response.token;
+// } catch (error) {
+//   return '';
+// }
 
 function VideoCollection({
   partnerUsername,
@@ -150,7 +149,8 @@ function VideoCollection({
         );
       });
 
-      const token = await getToken(channelName);
+      // const token = await getToken(channelName);
+      const token = TEMP_TOKEN;
       await client.join(appId, channelName, token, null);
       setInCall(true);
       if (tracks) {
