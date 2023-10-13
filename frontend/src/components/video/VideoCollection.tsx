@@ -17,6 +17,8 @@ import AgoraRTC, {
 // import VideoApi from 'lib/videoService';
 
 import './VideoCollection.css';
+import { FiMic, FiMicOff, FiVideo, FiVideoOff } from 'react-icons/fi';
+import { HStack, IconButton, Text } from '@chakra-ui/react';
 
 const config: ClientConfig = {
   mode: 'rtc',
@@ -53,37 +55,38 @@ function Controls(props: {
   };
 
   return (
-    <div className="controls">
-      {/* <Typography className="controls--username" size="regular"> */}
-      {username}
-      {/* </Typography> */}
+    <HStack
+      backgroundColor="rgba(0, 0, 0, 0.4)"
+      bottom={0}
+      justifyContent="space-between"
+      minH={7}
+      position="absolute"
+      px={2}
+      py={0.5}
+      width="100%"
+    >
+      <Text color="white" fontSize="xs" noOfLines={1}>
+        {username}
+      </Text>
       {tracks && (
-        <div className="controls--icons">
-          <div className="controls--icon-wrapper">
-            <i
-              className={`fas ${
-                trackState.audio ? 'fa-microphone' : 'fa-microphone-slash'
-              }`}
-              onClick={(): Promise<void> => toggle('audio')}
-              onKeyDown={(): Promise<void> => toggle('audio')}
-              role="button"
-              aria-label="Mute microphone"
-            />
-          </div>
-          <div className="controls--icon-wrapper">
-            <i
-              className={`fas ${
-                trackState.video ? 'fa-video' : 'fa-video-slash'
-              }`}
-              onClick={(): Promise<void> => toggle('video')}
-              onKeyDown={(): Promise<void> => toggle('video')}
-              role="button"
-              aria-label="Hide video"
-            />
-          </div>
-        </div>
+        <HStack>
+          <IconButton
+            aria-label="Audio"
+            color="white"
+            icon={trackState.audio ? <FiMic /> : <FiMicOff />}
+            onClick={(): Promise<void> => toggle('audio')}
+            size="xs"
+          />
+          <IconButton
+            aria-label="Video"
+            color="white"
+            icon={trackState.video ? <FiVideo /> : <FiVideoOff />}
+            onClick={(): Promise<void> => toggle('video')}
+            size="xs"
+          />
+        </HStack>
       )}
-    </div>
+    </HStack>
   );
 }
 
