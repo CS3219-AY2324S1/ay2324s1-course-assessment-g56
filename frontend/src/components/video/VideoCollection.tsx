@@ -23,7 +23,7 @@ const config: ClientConfig = {
   codec: 'vp8',
 };
 
-const appId = process.env.REACT_APP_AGORA_APP_ID ?? '';
+const appId = process.env.NEXT_PUBLIC_AGORA_ID ?? '';
 
 if (process.env.NODE_ENV !== 'development') {
   AgoraRTC.setLogLevel(4);
@@ -93,7 +93,7 @@ interface Props {
 }
 
 const TEMP_TOKEN =
-  '007eJxTYGD+HOb4nOHOhHBp7hzzptkbuURf3pnudYkr5+DE5YpWFWEKDKlJxgZGFmmmaRapqSZGJqmWhknJiZbGyWmmZiYpycaWO49rpDYEMjLcmHiEhZEBAkF8FoYQ1+AQBgYA6p8elQ==';
+  '007eJxTYOCWFFFhYzV3EcqboaNZppjkt1g8nUH/zU2llxtLy5h6hBUYUpOMDYws0kzTLFJTTYxMUi0Nk5ITLY2T00zNTFKSjS3X3dBIbQhkZDCIZmZghEIQn4UhxDU4hIEBAFjXGO4=';
 
 const getToken = async (roomId: string): Promise<string> => `${roomId}`;
 // try {

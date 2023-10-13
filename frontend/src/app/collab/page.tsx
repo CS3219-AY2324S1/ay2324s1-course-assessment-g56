@@ -1,7 +1,7 @@
 'use client';
 
 // import VideoCollection from '@/components/video/VideoCollection';
-import { Box } from '@chakra-ui/react';
+import { Box, Text } from '@chakra-ui/react';
 // import { useEffect } from 'react';
 
 import dynamic from 'next/dynamic';
@@ -16,7 +16,8 @@ function Page() {
 
   return (
     <Box>
-      <VideoCollection roomId="1" partnerUsername="Test" />{' '}
+      <VideoCollection roomId="TEST" partnerUsername="TEST" />
+      {/* <Text>Collab</Text> */}
     </Box>
   );
 }
