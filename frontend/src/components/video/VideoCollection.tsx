@@ -16,7 +16,7 @@ import AgoraRTC, {
 // import { useUser } from 'contexts/UserContext';
 // import VideoApi from 'lib/videoService';
 
-import './VideoCollection.scss';
+import './VideoCollection.css';
 
 const config: ClientConfig = {
   mode: 'rtc',
