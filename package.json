@@ -56,6 +56,8 @@
     "@codemirror/state": "^6.3.0",
     "@codemirror/theme-one-dark": "^6.1.2",
     "@codemirror/view": "^6.21.3",
-    "y-codemirror.next": "^0.3.2"
+    "y-codemirror.next": "^0.3.2",
+    "lib0": "^0.2.86",
+    "y-protocols": "^1.0.6"
   }
 }

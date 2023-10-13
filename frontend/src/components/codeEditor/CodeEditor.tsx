@@ -12,9 +12,9 @@ import {
   CURSOR_COLOR_TO_SEND_PARTNER,
   ONE_DARK_BACKGROUND_COLOR,
 } from './colors';
-import { getLanguageExtension } from './languages';
+import getLanguageExtension from './languages';
 import { YjsProvider } from './YjsProvider';
-import './CodeEditor.scss';
+import './CodeEditor.css';
 
 interface Props {
   language: Language | null;
