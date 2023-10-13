@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/interactive-supports-focus */
 import { ReactElement, useEffect, useState } from 'react';
 import {
   AgoraVideoPlayer,
@@ -69,6 +68,7 @@ function Controls(props: {
               onKeyDown={(): Promise<void> => toggle('audio')}
               role="button"
               aria-label="Mute microphone"
+              tabIndex={0}
             />
           </div>
           <div className="controls--icon-wrapper">
@@ -80,6 +80,7 @@ function Controls(props: {
               onKeyDown={(): Promise<void> => toggle('video')}
               role="button"
               aria-label="Hide video"
+              tabIndex={0}
             />
           </div>
         </div>
