@@ -16,7 +16,6 @@ import AgoraRTC, {
 // import { useUser } from 'contexts/UserContext';
 // import VideoApi from 'lib/videoService';
 
-
 import './VideoCollection.scss';
 
 const config: ClientConfig = {
@@ -56,7 +55,7 @@ function Controls(props: {
   return (
     <div className="controls">
       {/* <Typography className="controls--username" size="regular"> */}
-        {username}
+      {username}
       {/* </Typography> */}
       {tracks && (
         <div className="controls--icons">
@@ -93,17 +92,18 @@ interface Props {
   roomId: string;
 }
 
-  const getToken = async (roomId: string): Promise<string> => 
-     `${roomId  }`;
-    // try {
-    //   const response = await VideoApi.getToken(roomId);
-    //   return response.token;
-    // } catch (error) {
-    //   return '';
-    // }
-  ;
-
-function VideoCollection({ partnerUsername, roomId }: Props): ReactElement<'div'> | null {
+const getToken = async (roomId: string): Promise<string> => `${roomId}`;
+try {
+  // const response = await VideoApi.getToken(roomId);
+  // return response.token;
+  return '007eJxTYGD+HOb4nOHOhHBp7hzzptkbuURf3pnudYkr5+DE5YpWFWEKDKlJxgZGFmmmaRapqSZGJqmWhknJiZbGyWmmZiYpycaWO49rpDYEMjLcmHiEhZEBAkF8FoYQ1+AQBgYA6p8elQ==';
+} catch (error) {
+  // return '';
+}
+function VideoCollection({
+  partnerUsername,
+  roomId,
+}: Props): ReactElement<'div'> | null {
   const [inCall, setInCall] = useState(true);
   const [users, setUsers] = useState<IAgoraRTCRemoteUser[]>([]);
   const [start, setStart] = useState<boolean>(false);
@@ -134,12 +134,16 @@ function VideoCollection({ partnerUsername, roomId }: Props): ReactElement<'div'
           user.audioTrack?.stop();
         }
         if (type === 'video') {
-          setUsers((prevUsers) => prevUsers.filter((User) => User.uid !== user.uid));
+          setUsers((prevUsers) =>
+            prevUsers.filter((User) => User.uid !== user.uid),
+          );
         }
       });
 
       client.on('user-left', (user) => {
-        setUsers((prevUsers) => prevUsers.filter((User) => User.uid !== user.uid));
+        setUsers((prevUsers) =>
+          prevUsers.filter((User) => User.uid !== user.uid),
+        );
       });
 
       const token = await getToken(channelName);
@@ -186,6 +190,6 @@ function VideoCollection({ partnerUsername, roomId }: Props): ReactElement<'div'
       )}
     </div>
   );
-};
+}
 
 export default VideoCollection;
