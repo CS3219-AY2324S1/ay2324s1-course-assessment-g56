@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import { Database } from '@/types/database.types';
 import {
   Box,
@@ -8,6 +8,7 @@ import {
   FormControl,
   FormLabel,
   Input,
+  Skeleton,
   VStack,
 } from '@chakra-ui/react';
 import {
@@ -15,14 +16,38 @@ import {
   createClientComponentClient,
 } from '@supabase/auth-helpers-nextjs';
 
+interface ProfileData {
+  fullName: string | null;
+  username: string | null;
+  website: string | null;
+  avatarUrl: string | null;
+}
+
 export default function AccountForm({ session }: { session: Session | null }) {
   const supabase = createClientComponentClient<Database>();
   const [loading, setLoading] = useState(true);
-  const [fullname, setFullname] = useState<string | null>(null);
-  const [username, setUsername] = useState<string | null>(null);
-  const [website, setWebsite] = useState<string | null>(null);
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [updating, setUpdating] = useState(false);
+  const [profileData, setProfileData] = useState<ProfileData>({
+    fullName: null,
+    username: null,
+    website: null,
+    avatarUrl: null,
+  });
   const user = session?.user;
+
+  const handleDelete = (e) => {
+    if (!user) {
+      alert('You must be logged in to delete your account!');
+      return;
+    }
+
+    const userConfirmed = window.confirm(
+      'Are you sure you want to delete your account?',
+    );
+    if (!userConfirmed) {
+      e.preventDefault(); // Prevent the form from submitting
+    }
+  };
 
   const getProfile = useCallback(async () => {
     try {
@@ -31,18 +56,24 @@ export default function AccountForm({ session }: { session: Session | null }) {
       const { data, error, status } = await supabase
         .from('profiles')
         .select(`full_name, username, website, avatar_url`)
-        .eq('id', user?.id)
+        .eq('id', user!.id)
         .single();
 
       if (error && status !== 406) {
-        throw new Error(error);
+        throw new Error(error.message);
       }
 
+      if (!data) {
+        alert('User not found!');
+        return;
+      }
       if (data) {
-        setFullname(data.full_name);
-        setUsername(data.username);
-        setWebsite(data.website);
-        setAvatarUrl(data.avatar_url);
+        setProfileData({
+          fullName: data.full_name,
+          username: data.username,
+          website: data.website,
+          avatarUrl: data.avatar_url,
+        });
       }
     } catch (error) {
       alert('Error loading user data!');
@@ -55,35 +86,34 @@ export default function AccountForm({ session }: { session: Session | null }) {
     getProfile();
   }, [user, getProfile]);
 
-  async function updateProfile({
-    username: user_name,
-    website: website_,
-    avatar_url,
-  }: {
-    username: string | null;
-    fullname: string | null;
-    website: string | null;
-    avatar_url: string | null;
-  }) {
+  const updateProfile = async () => {
     try {
-      setLoading(true);
+      setUpdating(true);
 
       const { error } = await supabase.from('profiles').upsert({
         id: user?.id as string,
-        full_name: fullname,
-        username: user_name,
-        website: website_,
-        avatar_url,
+        full_name: profileData.fullName,
+        username: profileData.username,
+        website: profileData.website,
+        avatar_url: profileData.avatarUrl,
         updated_at: new Date().toISOString(),
       });
-      if (error) throw new Error(error);
+      if (error) throw new Error(error.message);
       alert('Profile updated!');
     } catch (error) {
       alert('Error updating the data!');
     } finally {
-      setLoading(false);
+      setUpdating(false);
     }
-  }
+  };
+
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setProfileData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
 
   return (
     <VStack spacing={4} className="form-widget">
@@ -94,45 +124,45 @@ export default function AccountForm({ session }: { session: Session | null }) {
 
       <FormControl>
         <FormLabel htmlFor="fullName">Full Name</FormLabel>
-        <Input
-          id="fullName"
-          type="text"
-          value={fullname || ''}
-          onChange={(e) => setFullname(e.target.value)}
-        />
+        <Skeleton isLoaded={!loading} style={{ borderRadius: '0.375rem' }}>
+          <Input
+            id="fullName"
+            type="text"
+            value={profileData.fullName || ''}
+            onChange={handleInputChange}
+          />
+        </Skeleton>
       </FormControl>
 
       <FormControl>
         <FormLabel htmlFor="username">Username</FormLabel>
-        <Input
-          id="username"
-          type="text"
-          value={username || ''}
-          onChange={(e) => setUsername(e.target.value)}
-        />
+        <Skeleton isLoaded={!loading} style={{ borderRadius: '0.375rem' }}>
+          <Input
+            id="username"
+            type="text"
+            value={profileData.username || ''}
+            onChange={handleInputChange}
+          />
+        </Skeleton>
       </FormControl>
 
       <FormControl>
         <FormLabel htmlFor="website">Website</FormLabel>
-        <Input
-          id="website"
-          type="url"
-          value={website || ''}
-          onChange={(e) => setWebsite(e.target.value)}
-        />
+        <Skeleton isLoaded={!loading} style={{ borderRadius: '0.375rem' }}>
+          <Input
+            id="website"
+            type="url"
+            value={profileData.website || ''}
+            onChange={handleInputChange}
+          />
+        </Skeleton>
       </FormControl>
 
       <Button
         colorScheme="blue"
-        onClick={() =>
-          updateProfile({
-            fullname,
-            username,
-            website,
-            avatar_url: avatarUrl,
-          })
-        }
-        isLoading={loading}
+        onClick={updateProfile}
+        isLoading={updating}
+        isDisabled={loading}
       >
         Update
       </Button>
@@ -140,6 +170,16 @@ export default function AccountForm({ session }: { session: Session | null }) {
       <Box>
         <form action="/auth/signout" method="post">
           <Button type="submit">Sign out</Button>
+        </form>
+      </Box>
+
+      <Box>
+        <form action="/auth/delete" method="post">
+          <input type="hidden" name="userId" value={user?.id} />
+
+          <Button type="submit" onClick={handleDelete} colorScheme="red">
+            Delete Account
+          </Button>
         </form>
       </Box>
     </VStack>

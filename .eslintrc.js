@@ -47,6 +47,7 @@ module.exports = {
         '@typescript-eslint/no-throw-literal': 'off',
         'consistent-return': 'off',
         'no-console': 'off',
+        'no-undef': 'off',
         'no-underscore-dangle': 'off',
         'simple-import-sort/imports': [
           'error',
