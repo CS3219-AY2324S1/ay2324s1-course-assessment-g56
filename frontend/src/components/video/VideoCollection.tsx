@@ -70,13 +70,13 @@ function Controls(props: {
       </Text>
       {tracks && (
         <HStack>
-          <IconButton
+          {/* <IconButton
             aria-label="Audio"
             color="white"
             icon={trackState.audio ? <FiMic /> : <FiMicOff />}
             onClick={(): Promise<void> => toggle('audio')}
             size="xs"
-          />
+          /> */}
           <IconButton
             aria-label="Video"
             color="white"
