@@ -1,7 +1,11 @@
 'use client';
 
-import { getQuestionById, updateQuestionById } from '@/lib/questions';
-import { Question, QuestionComplexity } from '@/types/question';
+import { updateQuestionById } from '@/lib/questions';
+import {
+  Question,
+  QuestionComplexity,
+  QuestionRowData,
+} from '@/types/question';
 import {
   Button,
   Flex,
@@ -15,22 +19,55 @@ import {
 } from '@chakra-ui/react';
 import { FiArrowLeft } from 'react-icons/fi';
 import React, { useEffect, useState } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { QUESTION_LIST_KEY } from '@/types/queryKey';
 
-// id is the UUID of question
-function Page({ params }: { params: { uuid: string } }) {
+function Page({ params }: { params: { id: string } }) {
   const [question, setQuestion] = useState<Question | null>(null);
-  const { uuid } = params;
+  const { id } = params;
   const toast = useToast();
+  const queryClient = useQueryClient();
+
+  const mutateQuestion = useMutation({
+    mutationFn: updateQuestionById,
+    onSuccess: (data) => {
+      queryClient.setQueryData([QUESTION_LIST_KEY, { id }], data);
+      toast({
+        title: 'Question updated.',
+        description: "We've updated your question.",
+        status: 'success',
+        duration: 5000,
+        isClosable: true,
+        position: 'top',
+        containerStyle: {
+          marginTop: '20px',
+        },
+      });
+      window.history.back();
+    },
+    onError: (error) => {
+      toast({
+        title: 'Fail to update Question.',
+        description: `We've failed to update your question.${error}`,
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+        position: 'top',
+        containerStyle: {
+          marginTop: '20px',
+        },
+      });
+    },
+  });
 
   useEffect(() => {
-    getQuestionById(uuid)
-      .then((fetchedQuestion: Question) => {
-        setQuestion(fetchedQuestion);
-      })
-      .catch((error) => {
-        console.error('Error fetching question:', error);
-      });
-  }, [uuid]);
+    const questionList = queryClient.getQueryData([QUESTION_LIST_KEY]);
+    const fetchedQuestion = questionList.find(
+      (questionInList: QuestionRowData) =>
+        questionInList.questionId === parseInt(id, 10),
+    );
+    setQuestion(fetchedQuestion);
+  }, []);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
@@ -40,51 +77,24 @@ function Page({ params }: { params: { uuid: string } }) {
   };
 
   const handleSubmit = () => {
-    const updatedQuestion = {
-      ...question,
-      uuid,
-    };
-    updateQuestionById(updatedQuestion as Question)
-      .then(() => {
-        toast({
-          title: 'Question updated.',
-          description: "We've updated your question.",
-          status: 'success',
-          duration: 5000,
-          isClosable: true,
-          position: 'top',
-          containerStyle: {
-            marginTop: '20px',
-          },
-        });
-
-        const updatedQuestionData = { updatedQuestion };
-
-        window.history.replaceState(updatedQuestionData, '');
-
-        const popstateEvent = new PopStateEvent('popstate', {
-          state: updatedQuestionData,
-        });
-        window.dispatchEvent(popstateEvent);
-        window.history.back();
-      })
-      .catch((error) => {
-        toast({
-          title: 'Fail to update Question.',
-          description: `We've failed to update your question.${error}`,
-          status: 'error',
-          duration: 5000,
-          isClosable: true,
-          position: 'top',
-          containerStyle: {
-            marginTop: '20px',
-          },
-        });
-        window.history.back();
+    if (question !== null) {
+      mutateQuestion.mutate(question);
+    } else {
+      toast({
+        title: 'Something Went Wrong!',
+        description: `Something Went Wrong when submitting: question is null`,
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+        position: 'top',
+        containerStyle: {
+          marginTop: '20px',
+        },
       });
+    }
   };
 
-  if (!question || !uuid) {
+  if (!question) {
     return <div>Loading...</div>;
   }
   return (

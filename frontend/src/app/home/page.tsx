@@ -5,6 +5,7 @@ import {
   Flex,
   Heading,
   Spacer,
+  Spinner,
   useDisclosure,
   useToast,
 } from '@chakra-ui/react';
@@ -14,98 +15,83 @@ import { deleteQuestionById, getQuestions } from '@/lib/questions';
 import {
   Question,
   QuestionRowData,
-  QuestionComplexity,
-  QuestionComplexityToDisplayText,
+  NumberToQuestionComplexityMap,
 } from '@/types/question';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { FiPlus } from 'react-icons/fi';
 import QuestionFormModal from '@/components/modal/QuestionFormModal';
-
-const uuidMapping: Record<number, string> = {};
+import { useQueryClient, useQuery } from '@tanstack/react-query';
+import { QUESTION_LIST_KEY } from '@/types/queryKey';
 
 const getData = async () => {
   const questions = await getQuestions();
   const questionList = questions.map((question: Question, idx: number) => {
     const questionId: number = idx + 1;
-    uuidMapping[questionId] = question.uuid as string;
-
     return {
       questionId,
       ...question,
-      complexity: QuestionComplexityToDisplayText(
-        QuestionComplexity[question.complexity],
-      ),
+      complexity:
+        NumberToQuestionComplexityMap[parseInt(question.complexity, 10)],
     };
   });
   return questionList;
 };
 
-export { uuidMapping, getData };
-
 export default function Page() {
   const modalTitle = 'Add Question';
-  const [questionList, setQuestionList] = useState<QuestionRowData[]>([]);
-  const [added, setAdded] = useState(true);
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const [loading, setLoading] = useState(true);
   const toast = useToast();
 
-  const removeRow = (id: number) => {
-    const uuid = uuidMapping[id + 1];
-    deleteQuestionById(uuid);
+  const { data: questionList } = useQuery({
+    queryKey: [QUESTION_LIST_KEY],
+    queryFn: getData,
+    onSuccess: () => {
+      setLoading(false);
+    },
+    onError: () => {
+      setLoading(false);
+    },
+  });
+  const queryClient = useQueryClient();
 
-    getData()
-      .then((data) => {
-        setQuestionList(data);
-        setAdded(true);
-      })
-      .catch((error) => {
-        throw error;
+  const removeRow = async (id: number) => {
+    setLoading(true);
+    const questions = queryClient.getQueryData([QUESTION_LIST_KEY]);
+    const questionToRemove = questions.find(
+      (question: QuestionRowData) => question.questionId === id,
+    );
+    try {
+      await deleteQuestionById(questionToRemove.uuid);
+      queryClient.invalidateQueries([QUESTION_LIST_KEY]);
+      setLoading(false);
+      toast({
+        title: 'Question deleted.',
+        description: "We've deleted your question.",
+        status: 'success',
+        duration: 5000,
+        isClosable: true,
+        position: 'top',
+        containerStyle: {
+          marginTop: '20px',
+        },
       });
-
-    toast({
-      title: 'Question deleted.',
-      description: "We've deleted your question.",
-      status: 'success',
-      duration: 5000,
-      isClosable: true,
-      position: 'top',
-      containerStyle: {
-        marginTop: '20px',
-      },
-    });
-  };
-
-  const handlePopState = (event) => {
-    const updatedQuestion = event.state?.updatedQuestion;
-
-    if (updatedQuestion) {
-      getData()
-        .then((data) => {
-          setQuestionList(data);
-          setAdded(false);
-        })
-        .catch((error) => {
-          throw error;
-        });
+    } catch (error) {
+      toast({
+        title: 'Something Went Wrong.',
+        description: "We've failed to delete your question.",
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+        position: 'top',
+        containerStyle: {
+          marginTop: '20px',
+        },
+      });
+    } finally {
+      setLoading(false);
     }
   };
-
-  useEffect(() => {
-    window.addEventListener('popstate', handlePopState);
-    if (added) {
-      getData()
-        .then((data) => {
-          setQuestionList(data);
-          setAdded(false);
-        })
-        .catch((error) => {
-          throw error;
-        });
-    }
-    return () => {
-      window.removeEventListener('popstate', handlePopState);
-    };
-  }, [added]);
 
   return (
     <>
@@ -123,19 +109,18 @@ export default function Page() {
           {modalTitle}
         </Button>
       </Flex>
-      {questionList !== undefined && (
-        <Table
-          tableData={questionList}
-          removeRow={removeRow}
-          columns={defaultColumns}
-          uuidMapping={uuidMapping}
-        />
+      {loading ? (
+        <Spinner size="sm" color="blue.500" />
+      ) : (
+        <>
+          <Table
+            tableData={questionList}
+            removeRow={removeRow}
+            columns={defaultColumns}
+          />
+          <QuestionFormModal isOpen={isOpen} onClose={onClose} />
+        </>
       )}
-      <QuestionFormModal
-        isOpen={isOpen}
-        onClose={onClose}
-        setAdded={setAdded}
-      />
     </>
   );
 }

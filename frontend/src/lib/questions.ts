@@ -1,4 +1,9 @@
-import { Question, QuestionComplexity } from '@/types/question';
+import { DatabaseQuestion } from '@/types/database.types';
+import {
+  Question,
+  QuestionComplexity,
+  QuestionComplexityToNumberMap,
+} from '@/types/question';
 import axios from 'axios';
 
 const apiURL = `${process.env.HOST}:${process.env.QUESTION_SERVICE_PORT}/questions`;
@@ -13,6 +18,17 @@ export const getQuestions = async () => {
   }
 };
 
+function convertQuestionToDatabaseQuestion(question: Question) {
+  return {
+    uuid: question.uuid,
+    title: question.title,
+    description: question.description,
+    category: question.category,
+    complexity: QuestionComplexityToNumberMap[question.complexity],
+    link: question.link,
+  };
+}
+
 export const createQuestion = (question: Question) =>
   getQuestions().then((questions: Question[]) => {
     // Basic error handling to check for duplicates
@@ -21,11 +37,15 @@ export const createQuestion = (question: Question) =>
     if (questionTitles.includes(question.title)) {
       return Promise.reject(new Error('Question already exists'));
     }
+    const questionForDb: DatabaseQuestion =
+      convertQuestionToDatabaseQuestion(question);
 
     return axios
-      .post(apiURL, question)
+      .post(apiURL, questionForDb)
       .then((response) => {
         console.log('POST request successful:', response.data);
+        questionForDb.uuid = response.data.uuid;
+        return questionForDb;
       })
       .catch((error) => {
         console.error('POST request error:', error);
@@ -46,19 +66,17 @@ export const getQuestionById = async (uuid: string) => {
 };
 
 // One-indexed id
-export const deleteQuestionById = (uuid: string) => {
+export const deleteQuestionById = async (uuid: string) => {
   const body = {
     uuid,
   };
 
-  axios
-    .delete(apiURL, { data: body })
-    .then(() => {
-      console.log('DELETE request successful');
-    })
-    .catch((error) => {
-      console.error('DELETE request error:', error);
-    });
+  try {
+    await axios.delete(apiURL, { data: body });
+    console.log('DELETE request successful');
+  } catch (error) {
+    console.error('DELETE request error:', error);
+  }
 };
 
 export const updateQuestionById = (question: Question) =>
@@ -72,11 +90,13 @@ export const updateQuestionById = (question: Question) =>
       return Promise.reject(new Error('Question already exists'));
     }
 
+    const questionForDb = convertQuestionToDatabaseQuestion(question);
+
     return axios
-      .put(apiURL, question)
+      .put(apiURL, questionForDb)
       .then(() => {
         console.log('PUT request successful');
-        return Promise.resolve();
+        return question;
       })
       .catch((error) => {
         console.error('PUT request error:', error);
