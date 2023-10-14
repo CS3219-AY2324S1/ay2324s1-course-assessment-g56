@@ -29,29 +29,21 @@ function convertQuestionToDatabaseQuestion(question: Question) {
   };
 }
 
-export const createQuestion = (question: Question) =>
-  getQuestions().then((questions: Question[]) => {
-    // Basic error handling to check for duplicates
-    const questionTitles: string[] = questions.map((qn: Question) => qn.title);
+export const createQuestion = (question: Question) => {
+  const questionForDb: DatabaseQuestion =
+    convertQuestionToDatabaseQuestion(question);
 
-    if (questionTitles.includes(question.title)) {
-      return Promise.reject(new Error('Question already exists'));
-    }
-    const questionForDb: DatabaseQuestion =
-      convertQuestionToDatabaseQuestion(question);
-
-    return axios
-      .post(apiURL, questionForDb)
-      .then((response) => {
-        console.log('POST request successful:', response.data);
-        questionForDb.uuid = response.data.uuid;
-        return questionForDb;
-      })
-      .catch((error) => {
-        console.error('POST request error:', error);
-        return Promise.reject(error);
-      });
-  });
+  return axios
+    .post(apiURL, questionForDb)
+    .then((response) => {
+      console.log('POST request successful:', response.data);
+      questionForDb.uuid = response.data.uuid;
+      return questionForDb;
+    })
+    .catch((error) => {
+      throw new Error(error.response.data.error);
+    });
+};
 
 // One-indexed id
 export const getQuestionById = async (uuid: string) => {
@@ -79,30 +71,19 @@ export const deleteQuestionById = async (uuid: string) => {
   }
 };
 
-export const updateQuestionById = (question: Question) =>
-  getQuestions().then((questions: Question[]) => {
-    const existingQuestionWithSameTitle: Question | undefined = questions.find(
-      (qn: Question) =>
-        qn.title === question.title && qn.uuid !== question.uuid,
-    );
+export const updateQuestionById = (question: Question) => {
+  const questionForDb = convertQuestionToDatabaseQuestion(question);
 
-    if (existingQuestionWithSameTitle) {
-      return Promise.reject(new Error('Question already exists'));
-    }
-
-    const questionForDb = convertQuestionToDatabaseQuestion(question);
-
-    return axios
-      .put(apiURL, questionForDb)
-      .then(() => {
-        console.log('PUT request successful');
-        return question;
-      })
-      .catch((error) => {
-        console.error('PUT request error:', error);
-        return Promise.reject(error);
-      });
-  });
+  return axios
+    .put(apiURL, questionForDb)
+    .then(() => {
+      console.log('PUT request successful');
+      return question;
+    })
+    .catch((error) => {
+      throw new Error(error.response.data.error);
+    });
+};
 
 export const testing = () => {
   localStorage.setItem('questions', JSON.stringify([]));

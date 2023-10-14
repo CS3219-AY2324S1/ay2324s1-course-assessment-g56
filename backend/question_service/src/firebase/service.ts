@@ -42,6 +42,13 @@ export async function getAllQuestions() {
 
 export async function addQuestion(questionData: QuestionData) {
   const questionsCol = collection(firebaseDB, 'questions');
+
+  const questionList: QuestionData[] = await getAllQuestions();
+  const questionTitles = questionList.map((qn) => qn.title);
+  if (questionTitles.includes(questionData.title)) {
+    throw new Error('Question already exists');
+  }
+
   const docRef = await addDoc(questionsCol, questionData);
   // return docRef._key.path.segments[1];
   return docRef.id;
@@ -52,6 +59,15 @@ export async function updateQuestionById(
   updatedData: QuestionData,
 ) {
   const questionDoc = doc(firebaseDB, 'questions', uuid);
+
+  const questionList: QuestionData[] = await getAllQuestions();
+  const duplicateQuestions = questionList.filter(
+    (qn) => qn.title === updatedData.title && qn.uuid !== updatedData.uuid,
+  );
+
+  if (duplicateQuestions) {
+    throw new Error('Question already exists');
+  }
   await updateDoc(questionDoc, updatedData);
 }
 
