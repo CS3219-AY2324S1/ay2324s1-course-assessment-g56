@@ -27,7 +27,7 @@ app.get('/questions', async (req, res) => {
     const questions = await getAllQuestions();
     res.json(questions);
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    res.status(400).json({ error: error.message });
   }
 });
 
@@ -37,7 +37,7 @@ app.post('/questions', async (req, res) => {
     const questionId = await addQuestion(questionData);
     res.json({ uuid: questionId });
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    res.status(400).json({ error: error.message });
   }
 });
 
@@ -47,7 +47,7 @@ app.put('/questions', async (req, res) => {
     await updateQuestionById(uuid, updatedData);
     res.json({ message: 'Question updated successfully' });
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    res.status(400).json({ error: error.message });
   }
 });
 
@@ -57,7 +57,7 @@ app.delete('/questions', async (req, res) => {
     await deleteQuestionById(uuid);
     res.json({ message: 'Question deleted successfully' });
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    res.status(400).json({ error: error.message });
   }
 });
 
@@ -71,7 +71,7 @@ app.get('/questions/getById/:uuid', async (req, res) => {
       res.status(404).json({ message: 'Question not found' });
     }
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    res.status(400).json({ error: error.message });
   }
 });
 

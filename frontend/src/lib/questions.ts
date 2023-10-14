@@ -73,9 +73,13 @@ export const deleteQuestionById = async (uuid: string) => {
 
 export const updateQuestionById = (question: Question) => {
   const questionForDb = convertQuestionToDatabaseQuestion(question);
+  const questionForDbWithUuid = {
+    ...questionForDb,
+    uuid: question.uuid,
+  };
 
   return axios
-    .put(apiURL, questionForDb)
+    .put(apiURL, questionForDbWithUuid)
     .then(() => {
       console.log('PUT request successful');
       return question;

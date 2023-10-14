@@ -62,10 +62,10 @@ export async function updateQuestionById(
 
   const questionList: QuestionData[] = await getAllQuestions();
   const duplicateQuestions = questionList.filter(
-    (qn) => qn.title === updatedData.title && qn.uuid !== updatedData.uuid,
+    (qn) => qn.title === updatedData.title && qn.uuid !== uuid,
   );
 
-  if (duplicateQuestions) {
+  if (duplicateQuestions.length !== 0) {
     throw new Error('Question already exists');
   }
   await updateDoc(questionDoc, updatedData);
