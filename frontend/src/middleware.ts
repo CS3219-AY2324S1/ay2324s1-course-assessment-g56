@@ -11,6 +11,7 @@ export default async function authMiddleware(req: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
+  console.log(user); // TODO: Remove once middleware implemented. This is to avoid eslint issues when pushing commits.
   /**
    * TODO: Fix the reloading issue, middleware is stuck in boundcing between '/' and '/home'
    *

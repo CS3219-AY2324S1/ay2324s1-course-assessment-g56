@@ -1,4 +1,6 @@
 import * as bodyParser from 'body-parser';
+import cors from 'cors';
+import { UUID } from 'crypto';
 import express from 'express';
 
 import 'dotenv/config';
@@ -15,6 +17,7 @@ const app = express();
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(cors());
 
 /**
  * Firebase routes
@@ -24,7 +27,7 @@ app.get('/questions', async (req, res) => {
     const questions = await getAllQuestions();
     res.json(questions);
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    res.status(400).json({ error: error.message });
   }
 });
 
@@ -34,7 +37,7 @@ app.post('/questions', async (req, res) => {
     const questionId = await addQuestion(questionData);
     res.json({ uuid: questionId });
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    res.status(400).json({ error: error.message });
   }
 });
 
@@ -44,7 +47,7 @@ app.put('/questions', async (req, res) => {
     await updateQuestionById(uuid, updatedData);
     res.json({ message: 'Question updated successfully' });
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    res.status(400).json({ error: error.message });
   }
 });
 
@@ -54,13 +57,13 @@ app.delete('/questions', async (req, res) => {
     await deleteQuestionById(uuid);
     res.json({ message: 'Question deleted successfully' });
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    res.status(400).json({ error: error.message });
   }
 });
 
-app.get('/questions/getById', async (req, res) => {
+app.get('/questions/getById/:uuid', async (req, res) => {
   try {
-    const { uuid } = req.body;
+    const { uuid } = req.params as { uuid: UUID }; // Type assertion to specify the type of uuid
     const question = await getQuestionById(uuid);
     if (question) {
       res.json(question);
@@ -68,7 +71,7 @@ app.get('/questions/getById', async (req, res) => {
       res.status(404).json({ message: 'Question not found' });
     }
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    res.status(400).json({ error: error.message });
   }
 });
 
