@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
 
   const adminAuthClient = supabaseAuthClient.auth.admin;
 
-  if (session == undefined) {
+  if (session === undefined || session === null) {
     console.error('No user ID provided');
     return NextResponse.redirect(new URL('/', req.url));
   }
@@ -23,6 +23,10 @@ export async function POST(req: NextRequest) {
   const { data, error } = await adminAuthClient.deleteUser(session.user.id);
 
   console.log('data: ', data);
+
+  if (error) {
+    console.log('error:', error);
+  }
 
   return NextResponse.redirect(new URL('/', req.url));
 }

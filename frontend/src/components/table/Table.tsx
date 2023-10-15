@@ -8,7 +8,6 @@ import {
   Tbody,
   Td,
   Text,
-  Tr,
 } from '@chakra-ui/react';
 import {
   useReactTable,
@@ -16,12 +15,12 @@ import {
   getSortedRowModel,
   SortingState,
   ColumnDef,
-  flexRender,
   RowData,
 } from '@tanstack/react-table';
 import { useState } from 'react';
 import NextLink from 'next/link';
 import TableHeader from './TableHeader';
+import { Tr, flexRender } from './TableUtils';
 
 interface TableProps<T extends object> {
   tableData: T[];
@@ -49,7 +48,7 @@ function Table<T extends object>({
     columns,
     meta: {
       removeRow: (id: number) => {
-        removeRow(id);
+        removeRow(id + 1);
       },
     },
     state: {
@@ -73,7 +72,7 @@ function Table<T extends object>({
           {table.getRowModel().rows.map((row) => (
             <Tr key={row.id}>
               {row.getVisibleCells().map((cell) =>
-                cell.column.id === 'questionTitle' ? (
+                cell.column.id === 'title' ? (
                   <LinkBox as={Td} key={cell.id}>
                     <LinkOverlay
                       as={NextLink}

@@ -2,19 +2,24 @@
 
 import { createQuestion } from '@/lib/questions';
 import { Button, useToast } from '@chakra-ui/react';
-import { Dispatch, SetStateAction, useRef, useState } from 'react';
-import { Question, QuestionComplexity } from '@/types/question';
-import QuestionForm from '../form/QuestionForm';
+import { useRef, useState } from 'react';
+import {
+  NumberToQuestionComplexityMap,
+  Question,
+  QuestionComplexity,
+} from '@/types/question';
+import { useQueryClient, useMutation } from '@tanstack/react-query';
+import { QUESTION_LIST_KEY } from '@/types/queryKey';
+
 import Modal from './Modal';
+import QuestionForm from '../form/QuestionForm';
 
 function QuestionFormModal({
   isOpen,
   onClose,
-  setAdded,
 }: {
   isOpen: boolean;
   onClose: () => void;
-  setAdded: Dispatch<SetStateAction<boolean>>;
 }) {
   const modalTitle = 'Add Question';
   const initialRef = useRef(null);
@@ -25,19 +30,24 @@ function QuestionFormModal({
   const [complexity, setComplexity] = useState<QuestionComplexity>(
     QuestionComplexity.EASY,
   );
+  const [link, setLink] = useState('');
 
   const toast = useToast();
-
-  const saveQuestion = () => {
-    const question: Question = {
-      questionTitle: title,
-      questionDescription: desc,
-      questionCategories: cat.split(','),
-      questionComplexity: complexity,
-    };
-    try {
-      createQuestion(question);
-      setAdded(true);
+  const queryClient = useQueryClient();
+  const mutateQuestion = useMutation({
+    mutationFn: createQuestion,
+    onSuccess: (data) => {
+      const questionList = queryClient.getQueryData([QUESTION_LIST_KEY]);
+      const newQuestionId = questionList.length + 1;
+      const dataWithQuestionId = {
+        ...data,
+        questionId: newQuestionId,
+        complexity: NumberToQuestionComplexityMap[data.complexity],
+      };
+      queryClient.setQueryData([QUESTION_LIST_KEY], (old) => {
+        const newData = [...old, dataWithQuestionId];
+        return newData;
+      });
       toast({
         title: 'Question added.',
         description: "We've added your question.",
@@ -49,9 +59,10 @@ function QuestionFormModal({
           marginTop: '20px',
         },
       });
-    } catch (error: any) {
+    },
+    onError: (error) => {
       toast({
-        title: 'An error has occured.',
+        title: 'An error has occurred.',
         description: error.message,
         status: 'error',
         duration: 5000,
@@ -61,9 +72,24 @@ function QuestionFormModal({
           marginTop: '20px',
         },
       });
-    } finally {
+    },
+    onSettled: () => {
       onClose();
-    }
+    },
+  });
+
+  const handleSubmit = () => {
+    const question: Question = {
+      title,
+      description: desc,
+      category: cat,
+      complexity,
+      link,
+    };
+
+    mutateQuestion.mutate({
+      ...question,
+    });
   };
 
   return (
@@ -75,7 +101,7 @@ function QuestionFormModal({
       finalRef={finalRef}
       actions={
         <>
-          <Button colorScheme="blue" mr={3} onClick={saveQuestion}>
+          <Button colorScheme="blue" mr={3} onClick={handleSubmit}>
             Save
           </Button>
           <Button onClick={onClose}>Cancel</Button>
@@ -85,15 +111,10 @@ function QuestionFormModal({
       <QuestionForm
         initialRef={initialRef}
         changeCategories={(e) => setCat(e.target.value)}
-        changeComplexity={(e) =>
-          setComplexity(
-            QuestionComplexity[
-              e.target.value as keyof typeof QuestionComplexity
-            ],
-          )
-        }
+        changeComplexity={(e) => setComplexity(e.target.value)}
         changeDescription={(e) => setDesc(e.target.value)}
         changeTitle={(e) => setTitle(e.target.value)}
+        changeLink={(e) => setLink(e.target.value)}
       />
     </Modal>
   );
