@@ -1,14 +1,20 @@
 export interface Question {
-  questionTitle: string;
-  questionDescription: string;
-  questionCategories: string[];
-  questionComplexity: QuestionComplexity;
+  uuid?: string;
+  title: string;
+  description: string;
+  category: string;
+  complexity: QuestionComplexity;
+  link: string;
 }
 
 export enum QuestionComplexity {
   EASY = 'Easy',
   MEDIUM = 'Medium',
   HARD = 'Hard',
+}
+
+export function QuestionComplexityToDisplayText(complexity: string): string {
+  return complexity.charAt(0) + complexity.slice(1).toLowerCase();
 }
 
 export const QuestionComplexityToNumberMap: Record<QuestionComplexity, number> =
@@ -27,8 +33,10 @@ export const NumberToQuestionComplexityMap: Record<number, QuestionComplexity> =
 
 export interface QuestionRowData {
   questionId: number;
-  questionTitle: string;
-  questionDescription: string;
-  questionCategories: string[];
-  questionComplexity: QuestionComplexity;
+  title: string;
+  description: string;
+  category: string;
+  complexity: QuestionComplexity;
+  link: string;
+  uuid: string;
 }
