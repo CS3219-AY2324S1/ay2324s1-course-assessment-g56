@@ -6,6 +6,7 @@ import {
   LinkBox,
   LinkOverlay,
   Spinner,
+  Skeleton,
   Tbody,
   Td,
   Text,
@@ -30,6 +31,7 @@ interface TableProps<T extends object> {
   tableData: T[];
   removeRow: (id: number) => void;
   columns: ColumnDef<T, any>[];
+  isLoading?: boolean;
   isSortable?: boolean;
 }
 
@@ -40,10 +42,13 @@ declare module '@tanstack/table-core' {
   }
 }
 
+const skeletonRows = Array.from({ length: 10 });
+
 function Table<T extends object>({
   tableData,
   removeRow,
   columns,
+  isLoading = false,
   isSortable = true,
 }: TableProps<T>) {
   const [sortBy, setSortBy] = useState<SortingState>([]);
@@ -89,6 +94,29 @@ function Table<T extends object>({
           isSortable={isSortable}
         />
         <Tbody>
+          {isLoading
+            ? skeletonRows.map(() => (
+                <Tr>
+                  <Td
+                    textAlign="center"
+                    colSpan={table.getAllColumns().length}
+                    paddingY={3}
+                  >
+                    <Skeleton isLoaded={!isLoading} h="18px" w="100%" />
+                  </Td>
+                </Tr>
+              ))
+            : table.getRowModel().rows.length === 0 && (
+                <Tr>
+                  <Td
+                    textAlign="center"
+                    colSpan={table.getAllColumns().length}
+                    paddingY={8}
+                  >
+                    <Text color="gray.500">No questions found</Text>
+                  </Td>
+                </Tr>
+              )}
           {table.getRowModel().rows.map((row) => (
             <Tr key={row.id}>
               {row.getVisibleCells().map((cell) =>
@@ -114,17 +142,6 @@ function Table<T extends object>({
               )}
             </Tr>
           ))}
-          {table.getRowModel().rows.length === 0 && (
-            <Tr>
-              <Td
-                textAlign="center"
-                colSpan={table.getAllColumns().length}
-                paddingY={8}
-              >
-                <Text color="gray.500">No questions found</Text>
-              </Td>
-            </Tr>
-          )}
         </Tbody>
       </ChakraTable>
     </Card>

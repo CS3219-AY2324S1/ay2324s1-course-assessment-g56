@@ -1,15 +1,7 @@
 'use client';
 
 import { ReactElement } from 'react';
-import {
-  As,
-  Button,
-  ButtonProps,
-  HStack,
-  Icon,
-  Show,
-  Text,
-} from '@chakra-ui/react';
+import { As, Button, ButtonProps, HStack, Icon, Text } from '@chakra-ui/react';
 
 interface NavButtonProps extends ButtonProps {
   icon: As;
@@ -24,9 +16,7 @@ function NavButton(
     <Button justifyContent="start" variant="ghost" {...buttonProps}>
       <HStack spacing={3}>
         <Icon as={icon} boxSize={6} color="subtle" />
-        <Show above="md">
-          <Text>{label}</Text>
-        </Show>
+        <Text display={{ base: 'none', md: 'undefined' }}>{label}</Text>
       </HStack>
     </Button>
   );
