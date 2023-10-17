@@ -11,49 +11,31 @@ import {
 } from '@chakra-ui/react';
 import Table from '@/components/table/Table';
 import defaultColumns from '@/constants/columns';
-import { deleteQuestionById, getQuestions } from '@/lib/questions';
-import {
-  Question,
-  QuestionRowData,
-  NumberToQuestionComplexityMap,
-} from '@/types/question';
-import { useState } from 'react';
+import { deleteQuestionById } from '@/lib/questions';
+import { QuestionRowData } from '@/types/question';
+import { useState, useEffect } from 'react';
 import { FiPlus } from 'react-icons/fi';
 import QuestionFormModal from '@/components/modal/QuestionFormModal';
-import { useQueryClient, useQuery } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import { QUESTION_LIST_KEY } from '@/types/queryKey';
-
-const getData = async () => {
-  const questions = await getQuestions();
-  const questionList = questions.map((question: Question, idx: number) => {
-    const questionId: number = idx + 1;
-    return {
-      questionId,
-      ...question,
-      complexity:
-        NumberToQuestionComplexityMap[parseInt(question.complexity, 10)],
-    };
-  });
-  return questionList;
-};
+import { useUserData } from '@/hooks/useUserData';
+import { useQuestionData } from '@/hooks/useQuestionData';
 
 export default function Page() {
   const modalTitle = 'Add Question';
+  const queryClient = useQueryClient();
+  const { data: profileData, isLoading: profileLoading } = useUserData();
+  const { data: questionList, isLoading: questionLoading } = useQuestionData();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [loading, setLoading] = useState(true);
+
   const toast = useToast();
 
-  const { data: questionList } = useQuery({
-    queryKey: [QUESTION_LIST_KEY],
-    queryFn: getData,
-    onSuccess: () => {
+  useEffect(() => {
+    if (!profileLoading && !questionLoading) {
       setLoading(false);
-    },
-    onError: () => {
-      setLoading(false);
-    },
-  });
-  const queryClient = useQueryClient();
+    }
+  }, [profileLoading, questionLoading]);
 
   const removeRow = async (id: number) => {
     setLoading(true);
@@ -95,30 +77,42 @@ export default function Page() {
 
   return (
     <>
-      <Flex minWidth="max-content" alignItems="center" gap="2" margin={2}>
-        <Heading fontSize="3xl" fontWeight="bold">
-          Questions
-        </Heading>
-        <Spacer />
-        <Button
-          leftIcon={<FiPlus />}
-          variant="solid"
-          colorScheme="blue"
-          onClick={onOpen}
-        >
-          {modalTitle}
-        </Button>
-      </Flex>
+      {/* eslint-disable react/jsx-no-useless-fragment */}
       {loading ? (
         <Spinner size="sm" color="blue.500" />
       ) : (
         <>
-          <Table
-            tableData={questionList}
-            removeRow={removeRow}
-            columns={defaultColumns}
-          />
-          <QuestionFormModal isOpen={isOpen} onClose={onClose} />
+          <Flex minWidth="max-content" alignItems="center" gap="2" margin={2}>
+            <Heading fontSize="3xl" fontWeight="bold">
+              Questions
+            </Heading>
+            <Spacer />
+            {profileData !== undefined && profileData.role !== 'Maintainer' ? (
+              <></>
+            ) : (
+              /* eslint-disable react/jsx-no-useless-fragment */
+              <Button
+                leftIcon={<FiPlus />}
+                variant="solid"
+                colorScheme="blue"
+                onClick={onOpen}
+              >
+                {modalTitle}
+              </Button>
+            )}
+          </Flex>
+          {profileLoading || questionLoading ? (
+            <Spinner size="sm" color="blue.500" />
+          ) : (
+            <>
+              <Table
+                tableData={questionList}
+                removeRow={removeRow}
+                columns={defaultColumns}
+              />
+              <QuestionFormModal isOpen={isOpen} onClose={onClose} />
+            </>
+          )}
         </>
       )}
     </>
