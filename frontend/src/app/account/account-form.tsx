@@ -21,6 +21,7 @@ interface ProfileData {
   username: string | null;
   website: string | null;
   avatarUrl: string | null;
+  role: string | 'User';
 }
 
 export default function AccountForm({ session }: { session: Session | null }) {
@@ -32,6 +33,7 @@ export default function AccountForm({ session }: { session: Session | null }) {
     username: null,
     website: null,
     avatarUrl: null,
+    role: 'User',
   });
   const user = session?.user;
 
@@ -55,7 +57,7 @@ export default function AccountForm({ session }: { session: Session | null }) {
 
       const { data, error, status } = await supabase
         .from('profiles')
-        .select(`full_name, username, website, avatar_url`)
+        .select(`full_name, username, website, avatar_url, role`)
         .eq('id', user!.id)
         .single();
 
@@ -73,6 +75,7 @@ export default function AccountForm({ session }: { session: Session | null }) {
           username: data.username,
           website: data.website,
           avatarUrl: data.avatar_url,
+          role: data.role,
         });
       }
     } catch (error) {
@@ -97,6 +100,7 @@ export default function AccountForm({ session }: { session: Session | null }) {
         website: profileData.website,
         avatar_url: profileData.avatarUrl,
         updated_at: new Date().toISOString(),
+        role: profileData.role,
       });
       if (error) throw new Error(error.message);
       alert('Profile updated!');
@@ -108,10 +112,10 @@ export default function AccountForm({ session }: { session: Session | null }) {
   };
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+    const { id, value } = e.target;
     setProfileData((prevData) => ({
       ...prevData,
-      [name]: value,
+      [id]: value,
     }));
   };
 

@@ -5,8 +5,9 @@ import {
   QuestionComplexityToNumberMap,
 } from '@/types/question';
 import axios from 'axios';
+import 'dotenv/config';
 
-const apiURL = `${process.env.HOST}:${process.env.QUESTION_SERVICE_PORT}/questions`;
+const apiURL = `${process.env.NEXT_PUBLIC_HOST}:${process.env.NEXT_PUBLIC_QUESTION_SERVICE_PORT}/questions`;
 
 export const getQuestions = async () => {
   try {
