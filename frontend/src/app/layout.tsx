@@ -1,7 +1,6 @@
-import { ColorModeScript } from '@chakra-ui/react';
 import AppProvider from '@/contexts/AppProvider';
 import { ReactNode } from 'react';
-import theme from '@/styles/theme';
+import { cookies } from 'next/headers';
 
 export const metadata = {
   title: 'PeerPrep',
@@ -9,11 +8,21 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
+  const cookieStore = cookies();
+  const defaultTheme = 'dark';
+  const uiColorMode =
+    (cookieStore.get('chakra-ui-color-mode')?.value as 'light' | 'dark') ||
+    defaultTheme;
+
   return (
-    <html lang="en" data-theme={theme.config.initialColorMode}>
-      <body>
-        <ColorModeScript type="cookie" nonce="testing" />
-        <AppProvider>{children}</AppProvider>
+    <html
+      lang="en"
+      data-theme={uiColorMode}
+      style={{ colorScheme: uiColorMode }}
+    >
+      <head />
+      <body className={`chakra-ui-${uiColorMode}`}>
+        <AppProvider colorMode={uiColorMode}>{children}</AppProvider>
       </body>
     </html>
   );
