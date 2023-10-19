@@ -45,10 +45,12 @@ module.exports = {
         '@typescript-eslint/no-non-null-assertion': 'off',
         '@typescript-eslint/no-shadow': 'off',
         '@typescript-eslint/no-throw-literal': 'off',
+        '@typescript-eslint/no-unused-vars': 'off',
         'consistent-return': 'off',
         'no-console': 'off',
         'no-undef': 'off',
         'no-underscore-dangle': 'off',
+        'no-unused-vars': 'off',
         'simple-import-sort/imports': [
           'error',
           {
