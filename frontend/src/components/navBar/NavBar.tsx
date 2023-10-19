@@ -20,10 +20,7 @@ function Navbar(props: NavBarProps) {
   const { children } = props;
   return (
     <Box minH="100vh" bg={useColorModeValue('gray.100', 'gray.900')}>
-      <SideBar
-        onClose={() => onClose}
-        display={{ base: 'none', md: 'block' }}
-      />
+      <SideBar onClose={onClose} display={{ base: 'none', md: 'block' }} />
       <Drawer
         isOpen={isOpen}
         placement="left"
