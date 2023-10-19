@@ -7,19 +7,20 @@ import { useState, useEffect } from 'react';
 import { Socket, io } from 'socket.io-client';
 
 function Page() {
-  const [socket, setSocket] = useState<Socket | null>(null);
+  // const [socket, setSocket] = useState<Socket | null>(null);
 
-  useEffect(() => {
-    const newSocket = io(`http://localhost:6006/`, {
-      autoConnect: false,
-    });
+  const socket = io(`http://localhost:6006`, {
+    autoConnect: false,
+  });
 
-    setSocket(newSocket);
-    // Cleanup the socket connection when the component is unmounted
-    return () => {
-      newSocket.disconnect();
-    };
-  }, []);
+  useEffect(
+    () =>
+      // Cleanup the socket connection when the component is unmounted
+      () => {
+        socket.disconnect();
+      },
+    [],
+  );
 
   return <CollabRoomRight socket={socket} />;
 }

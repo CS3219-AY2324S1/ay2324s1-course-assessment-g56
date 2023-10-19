@@ -28,11 +28,13 @@ function CollabRoomRight(props: { socket: Socket | null }) {
   const finalWidth = '100%';
   const language = Language.PYTHON_THREE;
 
+  // Socket is not needed for now
   const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
     const onConnect = () => {
       setIsConnected(true);
+      console.log('Connected to server.');
     };
 
     socket?.on('connect', onConnect);

@@ -8,12 +8,15 @@ import { yCollab } from 'y-codemirror.next';
 import { Doc } from 'yjs';
 import { Language } from '@/types/code';
 
+import { WebrtcProvider } from 'y-webrtc';
+import { CodeMirrorBinding } from 'y-codemirror';
+
 import {
   CURSOR_COLOR_TO_SEND_PARTNER,
   ONE_DARK_BACKGROUND_COLOR,
 } from './colors';
 import getLanguageExtension from './languages';
-import { YjsProvider } from './YjsProvider';
+// import { YjsProvider } from './YjsProvider';
 import './CodeEditor.css';
 
 interface Props {
@@ -52,14 +55,10 @@ export default function CodeEditor({
       return;
     }
 
-    const yDoc = new Doc();
-    const provider = new YjsProvider(socket, yDoc);
-    const yText = yDoc.getText(roomSlug);
+    const ydoc = new Doc();
+    const provider = new WebrtcProvider(roomSlug, ydoc);
+    const yText = ydoc.getText(roomSlug);
 
-    console.log('yText: ', yText);
-    console.log('yDoc: ', yDoc);
-    console.log('provider: ', provider);
-    console.log('socket: ', socket);
     provider.awareness.setLocalStateField('user', {
       name: username,
       color: CURSOR_COLOR_TO_SEND_PARTNER.color,

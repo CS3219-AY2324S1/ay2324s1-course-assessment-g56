@@ -40,6 +40,7 @@ function Page() {
     const onConnect = () => {
       // console.log('Connected to server.');
       setIsConnected(true);
+      console.log('Connected to server.');
     };
 
     socket.on('connect', onConnect);
