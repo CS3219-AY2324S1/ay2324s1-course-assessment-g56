@@ -19,7 +19,7 @@ import './CodeEditor.css';
 interface Props {
   language: Language | null;
   username: string;
-  socket: Socket;
+  socket: Socket | null;
   roomSlug: string;
   width?: string;
   height?: string;
@@ -56,6 +56,10 @@ export default function CodeEditor({
     const provider = new YjsProvider(socket, yDoc);
     const yText = yDoc.getText(roomSlug);
 
+    console.log('yText: ', yText);
+    console.log('yDoc: ', yDoc);
+    console.log('provider: ', provider);
+    console.log('socket: ', socket);
     provider.awareness.setLocalStateField('user', {
       name: username,
       color: CURSOR_COLOR_TO_SEND_PARTNER.color,
