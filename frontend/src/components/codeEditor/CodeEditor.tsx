@@ -2,14 +2,17 @@ import { ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
 import { useColorMode } from '@chakra-ui/react';
 import { Compartment, EditorState } from '@codemirror/state';
 import { oneDark } from '@codemirror/theme-one-dark';
-import { EditorView } from '@codemirror/view';
+import { EditorView, keymap } from '@codemirror/view';
 import { Socket } from 'socket.io-client';
 import { yCollab } from 'y-codemirror.next';
 import { Doc } from 'yjs';
 import { Language } from '@/types/code';
 
 import { WebrtcProvider } from 'y-webrtc';
-import { CodeMirrorBinding } from 'y-codemirror';
+import { defaultKeymap, insertTab, indentLess } from '@codemirror/commands';
+
+// import { CodeMirrorBinding } from 'y-codemirror';
+// import { WebsocketProvider } from 'y-websocket';
 
 import {
   CURSOR_COLOR_TO_SEND_PARTNER,
@@ -74,16 +77,30 @@ export default function CodeEditor({
           yCollab(yText, provider.awareness),
           ...(isDark ? [oneDark] : []),
           EditorView.theme({}, { dark: isDark }),
+          keymap.of([
+            {
+              key: 'Tab',
+              preventDefault: true,
+              run: insertTab,
+            },
+            {
+              key: 'Shift-Tab',
+              preventDefault: true,
+              run: indentLess,
+            },
+          ]),
         ],
       }),
       parent: element,
     });
     setView(view);
 
+    console.log('view', view);
+
     return (): void => {
       view?.destroy();
       provider.disconnect();
-      yDoc.destroy();
+      ydoc.destroy();
     };
   }, [element, isDark, username, roomSlug, socket]);
 
