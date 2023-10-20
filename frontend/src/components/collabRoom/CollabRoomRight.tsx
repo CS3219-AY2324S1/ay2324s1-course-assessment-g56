@@ -4,7 +4,7 @@ import useWindowDimensions from '@/utils/hookUtils';
 
 import { Language } from '@/types/code';
 import dynamic from 'next/dynamic';
-import { useEffect, useState } from 'react';
+// import { useEffect, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 
 function CollabRoomRight(props: { socket: Socket | null }) {
@@ -29,21 +29,21 @@ function CollabRoomRight(props: { socket: Socket | null }) {
   const language = Language.PYTHON_THREE;
 
   // Socket is not needed for now
-  const [isConnected, setIsConnected] = useState(false);
+  // const [isConnected, setIsConnected] = useState(false);
 
-  useEffect(() => {
-    const onConnect = () => {
-      setIsConnected(true);
-      console.log('Connected to server.');
-    };
+  // useEffect(() => {
+  //   const onConnect = () => {
+  //     setIsConnected(true);
+  //     console.log('Connected to server.');
+  //   };
 
-    socket?.on('connect', onConnect);
-    socket?.connect();
+  //   socket?.on('connect', onConnect);
+  //   socket?.connect();
 
-    return (): void => {
-      socket?.off('connect', onConnect);
-    };
-  }, []);
+  //   return (): void => {
+  //     socket?.off('connect', onConnect);
+  //   };
+  // }, []);
 
   return (
     <VStack>
@@ -55,7 +55,7 @@ function CollabRoomRight(props: { socket: Socket | null }) {
         height={finalHeight}
         language={language}
         roomSlug="TEST"
-        socket={socket}
+        // socket={socket}
         username="Linus"
         width={finalWidth}
       />

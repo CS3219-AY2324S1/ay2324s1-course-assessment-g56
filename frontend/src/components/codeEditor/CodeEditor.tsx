@@ -1,15 +1,21 @@
-import { ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
-import { useColorMode } from '@chakra-ui/react';
+import React, {
+  ReactElement,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
+import { useColorMode, Select } from '@chakra-ui/react';
 import { Compartment, EditorState } from '@codemirror/state';
 import { oneDark } from '@codemirror/theme-one-dark';
 import { EditorView, keymap } from '@codemirror/view';
-import { Socket } from 'socket.io-client';
+// import { Socket } from 'socket.io-client';
 import { yCollab } from 'y-codemirror.next';
 import { Doc } from 'yjs';
 import { Language } from '@/types/code';
 
 import { WebrtcProvider } from 'y-webrtc';
-import { defaultKeymap, insertTab, indentLess } from '@codemirror/commands';
+import { insertTab, indentLess } from '@codemirror/commands';
 
 // import { CodeMirrorBinding } from 'y-codemirror';
 // import { WebsocketProvider } from 'y-websocket';
@@ -25,7 +31,7 @@ import './CodeEditor.css';
 interface Props {
   language: Language | null;
   username: string;
-  socket: Socket | null;
+  // socket: Socket | null;
   roomSlug: string;
   width?: string;
   height?: string;
@@ -34,7 +40,7 @@ interface Props {
 export default function CodeEditor({
   height,
   width,
-  socket,
+  // socket,
   roomSlug,
   language,
   username,
@@ -43,7 +49,16 @@ export default function CodeEditor({
   const isDark = colorMode === 'dark';
   const [element, setElement] = useState<HTMLElement>();
   const [view, setView] = useState<EditorView>();
+  const [selectedLanguage, setSelectedLanguage] = useState<Language | null>(
+    language,
+  );
   const languageCompartment = useMemo(() => new Compartment(), []);
+
+  const handleLanguageChange = (
+    event: React.ChangeEvent<HTMLSelectElement>,
+  ) => {
+    setSelectedLanguage(event.target.value as Language);
+  };
 
   const ref = useCallback((node: HTMLElement | null): void => {
     if (!node) {
@@ -95,33 +110,45 @@ export default function CodeEditor({
     });
     setView(view);
 
-    console.log('view', view);
-
     return (): void => {
       view?.destroy();
       provider.disconnect();
       ydoc.destroy();
     };
-  }, [element, isDark, username, roomSlug, socket]);
+    // }, [element, isDark, username, roomSlug, socket]);
+  }, [element, isDark, username, roomSlug]);
 
   useEffect(() => {
-    if (view && language) {
+    if (view && language && selectedLanguage) {
       view.dispatch({
         effects: languageCompartment.reconfigure(
-          getLanguageExtension(language),
+          getLanguageExtension(selectedLanguage),
         ),
       });
     }
-  }, [language, languageCompartment, view]);
+  }, [selectedLanguage, language, languageCompartment, view]);
 
   return (
-    <div
-      ref={ref}
-      style={{
-        height,
-        width,
-        backgroundColor: isDark ? ONE_DARK_BACKGROUND_COLOR : 'snow',
-      }}
-    />
+    <div style={{ padding: '1rem' }}>
+      <Select
+        value={selectedLanguage}
+        onChange={handleLanguageChange}
+        marginBottom="1rem"
+      >
+        {Object.values(Language).map((lang) => (
+          <option key={lang} value={lang}>
+            {lang}
+          </option>
+        ))}
+      </Select>
+      <div
+        ref={ref}
+        style={{
+          height: height,
+          width: width,
+          backgroundColor: isDark ? ONE_DARK_BACKGROUND_COLOR : 'snow',
+        }}
+      />
+    </div>
   );
 }
