@@ -61,12 +61,17 @@ function Page({ params }: { params: { id: string } }) {
   });
 
   useEffect(() => {
-    const questionList = queryClient.getQueryData([QUESTION_LIST_KEY]);
-    const fetchedQuestion = questionList.find(
-      (questionInList: QuestionRowData) =>
-        questionInList.questionId === parseInt(id, 10),
-    );
-    setQuestion(fetchedQuestion);
+    const questionList: QuestionRowData[] | undefined =
+      queryClient.getQueryData([QUESTION_LIST_KEY]);
+    if (questionList !== undefined && questionList !== null) {
+      const fetchedQuestion = questionList.find(
+        (questionInList: QuestionRowData) =>
+          questionInList.questionId === parseInt(id, 10),
+      );
+      if (fetchedQuestion !== undefined) {
+        setQuestion(fetchedQuestion);
+      }
+    }
   }, []);
 
   const handleChange = (

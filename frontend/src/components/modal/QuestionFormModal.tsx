@@ -7,6 +7,7 @@ import {
   NumberToQuestionComplexityMap,
   Question,
   QuestionComplexity,
+  QuestionRowData,
 } from '@/types/question';
 import { useQueryClient, useMutation } from '@tanstack/react-query';
 import { QUESTION_LIST_KEY } from '@/types/queryKey';
@@ -37,17 +38,20 @@ function QuestionFormModal({
   const mutateQuestion = useMutation({
     mutationFn: createQuestion,
     onSuccess: (data) => {
-      const questionList = queryClient.getQueryData([QUESTION_LIST_KEY]);
-      const newQuestionId = questionList.length + 1;
-      const dataWithQuestionId = {
-        ...data,
-        questionId: newQuestionId,
-        complexity: NumberToQuestionComplexityMap[data.complexity],
-      };
-      queryClient.setQueryData([QUESTION_LIST_KEY], (old) => {
-        const newData = [...old, dataWithQuestionId];
-        return newData;
-      });
+      const questionList: QuestionRowData[] | undefined =
+        queryClient.getQueryData([QUESTION_LIST_KEY]);
+      if (questionList !== undefined) {
+        const newQuestionId = questionList.length + 1;
+        const dataWithQuestionId = {
+          ...data,
+          questionId: newQuestionId,
+          complexity: NumberToQuestionComplexityMap[data.complexity],
+        };
+
+        const newQuestionList = [...questionList, dataWithQuestionId];
+        queryClient.setQueryData([QUESTION_LIST_KEY], newQuestionList);
+      }
+
       toast({
         title: 'Question added.',
         description: "We've added your question.",
@@ -60,7 +64,7 @@ function QuestionFormModal({
         },
       });
     },
-    onError: (error) => {
+    onError: (error: Error) => {
       toast({
         title: 'An error has occurred.',
         description: error.message,
@@ -111,7 +115,9 @@ function QuestionFormModal({
       <QuestionForm
         initialRef={initialRef}
         changeCategories={(e) => setCat(e.target.value)}
-        changeComplexity={(e) => setComplexity(e.target.value)}
+        changeComplexity={(e) =>
+          setComplexity(e.target.value as QuestionComplexity)
+        }
         changeDescription={(e) => setDesc(e.target.value)}
         changeTitle={(e) => setTitle(e.target.value)}
         changeLink={(e) => setLink(e.target.value)}
