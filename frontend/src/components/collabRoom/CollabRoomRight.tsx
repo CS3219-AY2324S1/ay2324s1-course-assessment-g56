@@ -1,6 +1,6 @@
 import { Box, VStack } from '@chakra-ui/react';
 // import { useEffect } from 'react';
-import useWindowDimensions from '@/utils/hookUtils';
+// import useWindowDimensions from '@/utils/hookUtils';
 
 import { Language } from '@/types/code';
 import dynamic from 'next/dynamic';
@@ -21,11 +21,6 @@ function CollabRoomRight(props: { socket: Socket | null }) {
     { ssr: false },
   );
 
-  const { width, height } = useWindowDimensions();
-  const fullLength = height - 96; // 48 (top) + 48 (bottom)
-  const editorSize = 0.5;
-  const finalHeight = `${fullLength * editorSize - 16}px`;
-  const finalWidth = '100%';
   const language = Language.PYTHON_THREE;
 
   // Socket is not needed for now
@@ -46,19 +41,18 @@ function CollabRoomRight(props: { socket: Socket | null }) {
   // }, []);
 
   return (
-    <VStack>
-      <Box>
-        <VideoCollection roomId="TEST" partnerUsername="TEST" />
-        {/* <Text>Collab</Text> */}
+    <VStack spacing={4} align="start" height="100vh">
+      <Box height="60vh" width="100%">
+        <CodeEditor
+          language={language}
+          roomSlug="TEST"
+          // socket={socket}
+          username="Linus"
+        />
       </Box>
-      <CodeEditor
-        height={finalHeight}
-        language={language}
-        roomSlug="TEST"
-        // socket={socket}
-        username="Linus"
-        width={finalWidth}
-      />
+      <Box height="40vh">
+        <VideoCollection roomId="TEST" partnerUsername="TEST" />
+      </Box>
     </VStack>
   );
 }

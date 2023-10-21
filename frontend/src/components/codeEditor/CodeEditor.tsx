@@ -5,7 +5,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { useColorMode, Select } from '@chakra-ui/react';
+import { useColorMode, Select, Flex, Box } from '@chakra-ui/react';
 import { Compartment, EditorState } from '@codemirror/state';
 import { oneDark } from '@codemirror/theme-one-dark';
 import { EditorView, keymap } from '@codemirror/view';
@@ -38,8 +38,6 @@ interface Props {
 }
 
 export default function CodeEditor({
-  height,
-  width,
   // socket,
   roomSlug,
   language,
@@ -129,26 +127,26 @@ export default function CodeEditor({
   }, [selectedLanguage, language, languageCompartment, view]);
 
   return (
-    <div style={{ padding: '1rem' }}>
-      <Select
-        value={selectedLanguage}
-        onChange={handleLanguageChange}
-        marginBottom="1rem"
-      >
-        {Object.values(Language).map((lang) => (
-          <option key={lang} value={lang}>
-            {lang}
-          </option>
-        ))}
-      </Select>
-      <div
-        ref={ref}
-        style={{
-          height: height,
-          width: width,
-          backgroundColor: isDark ? ONE_DARK_BACKGROUND_COLOR : 'snow',
-        }}
-      />
-    </div>
+    <Flex direction="column" padding={4} height="100%" width="100%">
+      <Box width="max-content">
+        <Select value={selectedLanguage} onChange={handleLanguageChange}>
+          {Object.values(Language).map((lang) => (
+            <option key={lang} value={lang}>
+              {lang}
+            </option>
+          ))}
+        </Select>
+      </Box>
+      <Box flex="1" minHeight="0">
+        <div
+          ref={ref}
+          style={{
+            height: '100%',
+            width: '100%',
+            backgroundColor: isDark ? ONE_DARK_BACKGROUND_COLOR : 'snow',
+          }}
+        />
+      </Box>
+    </Flex>
   );
 }

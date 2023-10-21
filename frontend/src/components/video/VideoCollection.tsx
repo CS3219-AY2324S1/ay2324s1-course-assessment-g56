@@ -96,7 +96,7 @@ interface Props {
 }
 
 const TEMP_TOKEN =
-  '007eJxTYOCWFFFhYzV3EcqboaNZppjkt1g8nUH/zU2llxtLy5h6hBUYUpOMDYws0kzTLFJTTYxMUi0Nk5ITLY2T00zNTFKSjS3X3dBIbQhkZDCIZmZghEIQn4UhxDU4hIEBAFjXGO4=';
+  '007eJxTYFA7Uam369Tt2w7C277stbqomDvb7VGKdf5Vwflb5Zf+5nmnwJCaZGxgZJFmmmaRmmpiZJJqaZiUnGhpnJxmamaSkmxsGShpnNoQyMhwkO8ZCyMDBIL4LAwhrsEhDAwAsi0f+w==';
 
 const getToken = async (roomId: string): Promise<string> => `${roomId}`;
 // try {
