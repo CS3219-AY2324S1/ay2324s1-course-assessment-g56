@@ -5,12 +5,10 @@ import { ThemeSupa } from '@supabase/auth-ui-shared';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { Database } from '@/types/database.types';
 
-import * as dotenv from 'dotenv';
+import 'dotenv/config';
 import { useEffect, useState } from 'react';
 
-dotenv.config();
-
-export default function AuthForm() {
+export default function AuthForm({ returnUrl }: { returnUrl: string }) {
   const supabase = createClientComponentClient<Database>({
     supabaseUrl: process.env.SUPABASE_URL,
     supabaseKey: process.env.SUPABASE_ANON_KEY,
@@ -19,7 +17,9 @@ export default function AuthForm() {
   const [redirectUrl, setRedirectUrl] = useState('');
 
   useEffect(() => {
-    setRedirectUrl(`${window.location.origin}/auth/callback`);
+    setRedirectUrl(
+      `${window.location.origin}/auth/callback?return_to=${returnUrl}`,
+    );
   }, []);
 
   return (

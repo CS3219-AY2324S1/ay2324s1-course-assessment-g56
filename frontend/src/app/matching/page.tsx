@@ -7,13 +7,17 @@ import {
   useColorModeValue,
   Center,
   VStack,
+  useToast,
+  Alert,
+  AlertIcon,
+  useDisclosure,
+  CloseButton,
 } from '@chakra-ui/react';
 import { QuestionComplexity } from '@/types/question';
 import {
   DISCONNECT,
   REQ_FIND_PAIR,
   RES_CANNOT_FIND_PAIR,
-  RES_FIND_PAIR,
   RES_FOUND_PAIR,
 } from '@/constants/socket';
 import { useEffect, useState } from 'react';
@@ -35,10 +39,17 @@ function Page() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
 
+  const {
+    isOpen: isVisible,
+    onClose,
+    onOpen,
+  } = useDisclosure({ defaultIsOpen: true });
+
+  const toast = useToast();
+
   useEffect(() => {
     // Listen for 'message' event from the server
     const onConnect = () => {
-      // console.log('Connected to server.');
       setIsConnected(true);
     };
 
@@ -55,23 +66,34 @@ function Page() {
     setIsSubmitting(true);
     socket.emit(REQ_FIND_PAIR, lowerBoundDifficulty, upperBoundDifficulty);
 
-    socket.on(RES_FIND_PAIR, () => {
-      // console.log('Working hard to find a match for you...');
-    });
-
     socket.on(DISCONNECT, () => {
       setIsSubmitting(false);
-      // console.log('Disconnected from server.');
+      setIsConnected(false);
+      onOpen();
     });
 
     socket.on(RES_CANNOT_FIND_PAIR, () => {
       setIsSubmitting(false);
-      // console.log('Cannot find a match for you.');
+      if (!toast.isActive('cannot-find-pair')) {
+        toast({
+          id: 'cannot-find-pair',
+          title: 'Cannot find a match for you.',
+          description: 'Please try again later.',
+          status: 'error',
+        });
+      }
     });
 
     socket.on(RES_FOUND_PAIR, () => {
       setIsSubmitting(false);
-      // console.log('Found a match for you!');
+      if (!toast.isActive('found-pair')) {
+        toast({
+          id: 'found-pair',
+          title: 'Found a match for you!',
+          description: 'Please wait while we redirect you to the room.',
+          status: 'success',
+        });
+      }
     });
   };
 
@@ -85,6 +107,13 @@ function Page() {
         boxShadow="lg"
       >
         <VStack spacing={8} align="center">
+          {isVisible && !isConnected && (
+            <Alert status="error">
+              <AlertIcon />
+              Disconnected from server.
+              <CloseButton position="absolute" right={2} onClick={onClose} />
+            </Alert>
+          )}
           <Text textAlign="center" fontSize="xl" fontWeight="bold">
             Choose Matching Difficulty
           </Text>

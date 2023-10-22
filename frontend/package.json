@@ -12,6 +12,7 @@
     "@chakra-ui/anatomy": "^2.2.1",
     "@chakra-ui/next-js": "^2.1.5",
     "@chakra-ui/react": "^2.8.1",
+    "@chakra-ui/theme-tools": "^2.1.1",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@supabase/auth-helpers-nextjs": "^0.8.1",
