@@ -1,6 +1,12 @@
 'use client';
 
-import { ChangeEvent, useCallback, useEffect, useState } from 'react';
+import {
+  ChangeEvent,
+  useCallback,
+  useEffect,
+  useState,
+  MouseEvent,
+} from 'react';
 import { Database } from '@/types/database.types';
 import {
   Box,
@@ -37,7 +43,7 @@ export default function AccountForm({ session }: { session: Session | null }) {
   });
   const user = session?.user;
 
-  const handleDelete = (e) => {
+  const handleDelete = (e: MouseEvent) => {
     if (!user) {
       alert('You must be logged in to delete your account!');
       return;

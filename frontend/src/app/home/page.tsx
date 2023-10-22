@@ -39,39 +39,45 @@ export default function Page() {
 
   const removeRow = async (id: number) => {
     setLoading(true);
-    const questions = queryClient.getQueryData([QUESTION_LIST_KEY]);
-    const questionToRemove = questions.find(
-      (question: QuestionRowData) => question.questionId === id,
-    );
-    try {
-      await deleteQuestionById(questionToRemove.uuid);
-      queryClient.invalidateQueries([QUESTION_LIST_KEY]);
-      setLoading(false);
-      toast({
-        title: 'Question deleted.',
-        description: "We've deleted your question.",
-        status: 'success',
-        duration: 5000,
-        isClosable: true,
-        position: 'top',
-        containerStyle: {
-          marginTop: '20px',
-        },
-      });
-    } catch (error) {
-      toast({
-        title: 'Something Went Wrong.',
-        description: "We've failed to delete your question.",
-        status: 'error',
-        duration: 5000,
-        isClosable: true,
-        position: 'top',
-        containerStyle: {
-          marginTop: '20px',
-        },
-      });
-    } finally {
-      setLoading(false);
+    const questions: QuestionRowData[] | undefined = queryClient.getQueryData([
+      QUESTION_LIST_KEY,
+    ]);
+    if (questions !== undefined) {
+      const questionToRemove = questions.find(
+        (question: QuestionRowData) => question.questionId === id,
+      );
+      if (questionToRemove !== undefined) {
+        try {
+          await deleteQuestionById(questionToRemove.uuid);
+          queryClient.invalidateQueries([QUESTION_LIST_KEY]);
+          setLoading(false);
+          toast({
+            title: 'Question deleted.',
+            description: "We've deleted your question.",
+            status: 'success',
+            duration: 5000,
+            isClosable: true,
+            position: 'top',
+            containerStyle: {
+              marginTop: '20px',
+            },
+          });
+        } catch (error) {
+          toast({
+            title: 'Something Went Wrong.',
+            description: "We've failed to delete your question.",
+            status: 'error',
+            duration: 5000,
+            isClosable: true,
+            position: 'top',
+            containerStyle: {
+              marginTop: '20px',
+            },
+          });
+        } finally {
+          setLoading(false);
+        }
+      }
     }
   };
 
@@ -101,7 +107,7 @@ export default function Page() {
               </Button>
             )}
           </Flex>
-          {profileLoading || questionLoading ? (
+          {profileLoading || questionLoading || questionList === undefined ? (
             <Spinner size="sm" color="blue.500" />
           ) : (
             <>
