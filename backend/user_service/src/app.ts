@@ -1,10 +1,10 @@
-import { createClient, PostgrestError } from '@supabase/supabase-js';
+import { createClient } from '@supabase/supabase-js';
 import * as bodyParser from 'body-parser';
-import * as dotenv from 'dotenv';
 import express from 'express';
 
+import 'dotenv/config';
+
 const app = express();
-dotenv.config();
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -14,7 +14,7 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_KEY || '',
 );
 
-app.get('/user', async (req, res) => {
+app.get('/user', async (_req, res) => {
   try {
     const { data, error } = await supabase.from('profiles').select('*');
     if (error) throw error;
@@ -38,12 +38,13 @@ app.get('/user', async (req, res) => {
  *Alternatively, we can keep it as it is and do a soft delete (set isDeleted to true) and remove all profile data instead of a hard delete
  */
 app.delete('/user', async (req, res) => {
-  const jwt = req.headers.authorization;
+  let jwt = req.headers.authorization;
   if (!jwt) {
     res
       .status(401)
       .json({ errors: [{ msg: 'Not authorized, no access token' }] });
   } else {
+    jwt = jwt.replace('Bearer ', '');
     const {
       data: { user },
       error,
@@ -53,10 +54,12 @@ app.delete('/user', async (req, res) => {
         .status(401)
         .json({ errors: [{ msg: 'Not authorized, access token failed' }] });
     } else {
-      const { data, error } = await supabase.auth.admin.deleteUser(user.id);
+      const { data, error } = await supabase.auth.admin.deleteUser(user!.id);
       console.log('data: ', data);
       if (error) {
         res.status(500).json({ error: error.message });
+      } else {
+        res.sendStatus(204);
       }
     }
   }

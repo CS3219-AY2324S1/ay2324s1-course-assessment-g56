@@ -22,12 +22,14 @@ export async function POST() {
   try {
     await axios.delete(`${process.env.USER_SERVICE}/user`, {
       headers: {
-        Authorization: `token ${process.env.GITHUB_TOKEN}`,
+        Authorization: `Bearer ${session.access_token}`,
       },
     });
   } catch (error) {
     console.error('Error deleting user:', error);
   }
 
-  return NextResponse.redirect(new URL('/', process.env.FRONTEND_SERVICE));
+  return NextResponse.redirect(new URL('/', process.env.FRONTEND_SERVICE), {
+    status: 301,
+  });
 }
