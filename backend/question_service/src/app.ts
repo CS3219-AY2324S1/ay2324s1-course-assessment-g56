@@ -75,6 +75,6 @@ app.get('/questions/getById/:uuid', async (req, res) => {
   }
 });
 
-app.listen(5001, () => {
-  console.log(`> Ready on http://localhost:5001`);
+app.listen(process.env.QUESTION_SERVICE_PORT, () => {
+  console.log(`> Ready on http://localhost:${process.env.QUESTION_SERVICE_PORT}`);	
 });

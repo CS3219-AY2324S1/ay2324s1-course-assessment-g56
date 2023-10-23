@@ -111,7 +111,7 @@ export default function AccountForm({ session }: { session: Session | null }) {
       if (error) throw new Error(error.message);
       alert('Profile updated!');
     } catch (error) {
-      alert('Error updating the data!');
+      alert(`Error updating the data! ${error.message}`);
     } finally {
       setUpdating(false);
     }
