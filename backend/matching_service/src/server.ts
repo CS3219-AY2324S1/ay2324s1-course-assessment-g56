@@ -18,7 +18,7 @@ export class ApiServer {
 
   public io: SocketServer | null = null;
 
-  async initialize(port = process.env.MATCHING_PORT): Promise<void> {
+  async initialize(port = process.env.MATCHING_SERVICE_PORT): Promise<void> {
     console.log(process.env.SUPABASE_URL);
     const app = express();
     app.use(express.json({ limit: '20mb' }) as RequestHandler);

@@ -12,8 +12,10 @@ import {
 import { useQueryClient, useMutation } from '@tanstack/react-query';
 import { QUESTION_LIST_KEY } from '@/types/queryKey';
 
+import { DatabaseQuestion } from '@/types/database.types';
 import Modal from './Modal';
 import QuestionForm from '../form/QuestionForm';
+
 
 function QuestionFormModal({
   isOpen,
@@ -43,9 +45,9 @@ function QuestionFormModal({
       if (questionList !== undefined) {
         const newQuestionId = questionList.length + 1;
         const dataWithQuestionId = {
-          ...data,
+          ...data as DatabaseQuestion,
           questionId: newQuestionId,
-          complexity: NumberToQuestionComplexityMap[data.complexity],
+          complexity: NumberToQuestionComplexityMap[(data as DatabaseQuestion).complexity],
         };
 
         const newQuestionList = [...questionList, dataWithQuestionId];

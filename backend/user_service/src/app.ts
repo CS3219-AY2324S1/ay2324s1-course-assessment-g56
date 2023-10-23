@@ -115,6 +115,6 @@ app.delete('/profiles', async (req, res) => {
   }
 });
 
-app.listen(5000, () => {
-  console.log(`> Ready on http://localhost:5000`);	
+app.listen(process.env.USER_SERVICE_PORT, () => {
+  console.log(`> Ready on http://localhost:${process.env.USER_SERVICE_PORT}`);	
 });
