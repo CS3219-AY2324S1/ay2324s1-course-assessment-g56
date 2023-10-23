@@ -10,8 +10,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 const supabase = createClient(
-  process.env.SUPABASE_URL || '',
-  process.env.SUPABASE_ANON_KEY || '',
+  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
 );
 
 app.get('/profiles', async (req, res) => {
@@ -116,5 +116,5 @@ app.delete('/profiles', async (req, res) => {
 });
 
 app.listen(process.env.USER_SERVICE_PORT, () => {
-  console.log(`> Ready on http://localhost:${process.env.USER_SERVICE_PORT}`);
+  console.log(`> Ready on port:${process.env.USER_SERVICE_PORT}`);
 });

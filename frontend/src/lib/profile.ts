@@ -1,5 +1,4 @@
 import axios from 'axios';
-import 'dotenv/config';
 
 const apiURL = `${process.env.USER_SERVICE}/profiles`;
 

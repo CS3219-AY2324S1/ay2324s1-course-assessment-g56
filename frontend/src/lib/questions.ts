@@ -4,8 +4,7 @@ import {
   QuestionComplexity,
   QuestionComplexityToNumberMap,
 } from '@/types/question';
-
-const axios = require('axios');
+import axios from 'axios';
 
 const apiURL = `${process.env.QUESTION_SERVICE}/questions`;
 

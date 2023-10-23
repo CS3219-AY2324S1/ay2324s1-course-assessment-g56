@@ -22,7 +22,6 @@ import {
 } from '@/constants/socket';
 import { useEffect, useState } from 'react';
 import io from 'socket.io-client';
-import 'dotenv/config';
 import QuestionRangeSlider from '../../components/slider/QuestionRangeSlider';
 
 const socket = io(process.env.FRONTEND_SERVICE, {
