@@ -1,7 +1,7 @@
 import axios from 'axios';
 import 'dotenv/config';
 
-const apiURL = `${process.env.NEXT_PUBLIC_HOST}:${process.env.NEXT_PUBLIC_USER_SERVICE_PORT}/profiles`;
+const apiURL = `${process.env.USER_SERVICE}/profiles`;
 
 export const getProfile = async (id: string) => {
   const params = {

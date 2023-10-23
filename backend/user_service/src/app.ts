@@ -1,7 +1,7 @@
-import { PostgrestError, createClient } from "@supabase/supabase-js";
-import express from "express";
-import * as bodyParser from "body-parser";
-import * as dotenv from "dotenv";
+import { createClient, PostgrestError } from '@supabase/supabase-js';
+import * as bodyParser from 'body-parser';
+import * as dotenv from 'dotenv';
+import express from 'express';
 
 const app = express();
 dotenv.config();
@@ -115,6 +115,6 @@ app.delete('/profiles', async (req, res) => {
   }
 });
 
-app.listen(5000, () => {
-  console.log(`> Ready on http://localhost:5000`);	
+app.listen(process.env.USER_SERVICE_PORT, () => {
+  console.log(`> Ready on http://localhost:${process.env.USER_SERVICE_PORT}`);
 });

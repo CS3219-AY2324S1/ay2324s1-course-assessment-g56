@@ -1,9 +1,9 @@
 import supabase from '@/utils/supabaseClient';
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 
-export async function POST(req: NextRequest) {
+export async function POST() {
   const cookieStore = cookies();
   const supabaseUserClient = createRouteHandlerClient({
     cookies: () => cookieStore,
@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
 
   if (session === undefined || session === null) {
     console.error('No user ID provided');
-    return NextResponse.redirect(new URL('/', req.url));
+    return NextResponse.redirect(new URL('/', process.env.FRONTEND_SERVICE));
   }
 
   const { data, error } = await adminAuthClient.deleteUser(session.user.id);
@@ -31,5 +31,5 @@ export async function POST(req: NextRequest) {
     console.log('error:', error);
   }
 
-  return NextResponse.redirect(new URL('/', req.url));
+  return NextResponse.redirect(new URL('/', process.env.FRONTEND_SERVICE));
 }

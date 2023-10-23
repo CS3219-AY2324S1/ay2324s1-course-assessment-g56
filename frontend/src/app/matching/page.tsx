@@ -25,7 +25,8 @@ import io from 'socket.io-client';
 import 'dotenv/config';
 import QuestionRangeSlider from '../../components/slider/QuestionRangeSlider';
 
-const socket = io(process.env.MATCHING_PORT || 'http://localhost:6006', {
+const socket = io(process.env.FRONTEND_SERVICE, {
+  path: process.env.MATCHING_PATH,
   autoConnect: false,
 });
 
@@ -49,12 +50,13 @@ function Page() {
 
   useEffect(() => {
     // Listen for 'message' event from the server
+
     const onConnect = () => {
       setIsConnected(true);
     };
 
     socket.on('connect', onConnect);
-
+    console.log('betweeen');
     socket.connect();
 
     return (): void => {

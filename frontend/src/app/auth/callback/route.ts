@@ -14,5 +14,7 @@ export async function GET(req: NextRequest) {
     await supabase.auth.exchangeCodeForSession(code);
   }
 
-  return NextResponse.redirect(new URL(returnUrl, req.url));
+  return NextResponse.redirect(
+    new URL(returnUrl, process.env.FRONTEND_SERVICE),
+  );
 }

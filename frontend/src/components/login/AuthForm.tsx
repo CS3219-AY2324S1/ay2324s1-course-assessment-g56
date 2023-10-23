@@ -18,7 +18,8 @@ export default function AuthForm({ returnUrl }: { returnUrl: string }) {
 
   useEffect(() => {
     setRedirectUrl(
-      `${window.location.origin}/auth/callback?return_to=${returnUrl}`,
+      `${process.env.FRONTEND_SERVICE}/auth/callback?return_to=${returnUrl}
+    `,
     );
   }, []);
 
