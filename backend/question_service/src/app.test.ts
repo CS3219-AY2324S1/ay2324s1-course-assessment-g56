@@ -44,7 +44,6 @@ describe('Integration Tests', () => {
   // ADDITION TESTING
   it('POST /questions should add a question with title "Test Question 1"', async () => {
     const response = await request(app).post('/questions').send(questionData); // Send the question data in the request
-    console.log(response.body, 'RESPOSNE BODY');
     expect(response.status).toBe(200);
     expect(response.type).toBe('application/json');
     expect(response.body).toHaveProperty('uuid');
@@ -65,12 +64,10 @@ describe('Integration Tests', () => {
     const response = await request(app)
       .post('/questions')
       .send(secondQuestionData);
-    console.log(response.body, 'RESPOSNE BODY');
     expect(response.status).toBe(200);
     expect(response.type).toBe('application/json');
     expect(response.body).toHaveProperty('uuid');
     secondQuestionData.uuid = response.body.uuid;
-    console.log('SECOND QUESTION DAT  AFTER ADD', secondQuestionData);
   });
 
   // UPDATE TESTING
