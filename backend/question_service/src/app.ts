@@ -75,6 +75,8 @@ app.get('/questions/getById/:uuid', async (req, res) => {
   }
 });
 
-app.listen(process.env.QUESTION_SERVICE_PORT, () => {
-  console.log(`> Ready on port:${process.env.QUESTION_SERVICE_PORT}`);	
+const server = app.listen(process.env.QUESTION_SERVICE_PORT, () => {
+  console.log(`> Ready on port:${process.env.QUESTION_SERVICE_PORT}`);
 });
+
+export { app, server };
