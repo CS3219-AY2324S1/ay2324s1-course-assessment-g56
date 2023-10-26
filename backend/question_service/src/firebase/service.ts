@@ -25,12 +25,20 @@ const firebaseConfig = {
   measurementId: process.env.measurementId,
 };
 
+let collectionName;
+
+if (process.env.NODE_ENV === 'test') {
+  collectionName = 'test_questions';
+} else {
+  collectionName = 'questions';
+}
+
 const app = initializeApp(firebaseConfig);
 export const firebaseDB = getFirestore(app);
 
 // Get all questions from DB
 export async function getAllQuestions() {
-  const questionsCol = collection(firebaseDB, 'questions');
+  const questionsCol = collection(firebaseDB, collectionName);
   const questionSnapshot = await getDocs(questionsCol);
   const questionList = questionSnapshot.docs.map((doc) => ({
     uuid: doc.id,
@@ -41,7 +49,7 @@ export async function getAllQuestions() {
 }
 
 export async function addQuestion(questionData: QuestionData) {
-  const questionsCol = collection(firebaseDB, 'questions');
+  const questionsCol = collection(firebaseDB, collectionName);
 
   const questionList: QuestionData[] = await getAllQuestions();
   const questionTitles = questionList.map((qn) => qn.title);
@@ -58,7 +66,7 @@ export async function updateQuestionById(
   uuid: UUID,
   updatedData: QuestionData,
 ) {
-  const questionDoc = doc(firebaseDB, 'questions', uuid);
+  const questionDoc = doc(firebaseDB, collectionName, uuid);
 
   const questionList: QuestionData[] = await getAllQuestions();
   const duplicateQuestions = questionList.filter(
@@ -72,12 +80,12 @@ export async function updateQuestionById(
 }
 
 export async function deleteQuestionById(uuid: UUID) {
-  const questionDoc = doc(firebaseDB, 'questions', uuid);
+  const questionDoc = doc(firebaseDB, collectionName, uuid);
   await deleteDoc(questionDoc);
 }
 
 export async function getQuestionById(uuid: UUID) {
-  const questionDoc = doc(firebaseDB, 'questions', uuid);
+  const questionDoc = doc(firebaseDB, collectionName, uuid);
   const docSnapshot = await getDoc(questionDoc);
   if (docSnapshot.exists()) {
     return docSnapshot.data();

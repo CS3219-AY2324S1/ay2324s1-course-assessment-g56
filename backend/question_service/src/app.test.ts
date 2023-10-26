@@ -5,7 +5,7 @@ import {
 import request from 'supertest';
 
 import { QuestionData } from './firebase/interface';
-import { app, server } from './app'; // Import your Express app (app.ts or app.js)
+import { app, server } from './app';
 
 const questionData: QuestionData = {
   title: 'Test Question 1',
@@ -94,7 +94,6 @@ describe('Integration Tests', () => {
 
   it('PUT /questions should update a question as long as no other question with the same title exists', async () => {
     // Now, send a PUT request to update the first question to follow the second question. Except only title is different
-
     const updatedFirstQuestionData: QuestionData = {
       ...secondQuestionData,
       uuid: questionData.uuid,
@@ -130,7 +129,7 @@ describe('Integration Tests', () => {
     });
   });
 
-  it('DELETE /questions should delete questionData', async () => {
+  it('DELETE /questions should delete secondQuestionData', async () => {
     // Now, send a DELETE request to delete secondQuestionData
     const deleteQuestionResponse = await request(app)
       .delete('/questions')
