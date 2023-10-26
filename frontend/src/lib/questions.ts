@@ -3,15 +3,19 @@ import {
   Question,
   QuestionComplexity,
   QuestionComplexityToNumberMap,
+  QuestionRowData,
 } from '@/types/question';
-import axios from 'axios';
+import initialiseClient from './axios';
 
-const apiURL = `${process.env.QUESTION_SERVICE}/questions`;
+const apiUrl = '/questions';
+const adminApiUrl = '/admin/questions';
 
-export const getQuestions = async () => {
+export const getQuestions = async (
+  access_token: string,
+): Promise<DatabaseQuestion[]> => {
+  const client = initialiseClient(access_token);
   try {
-    console.log('apiURL: ', apiURL);
-    const response = await axios.get(apiURL);
+    const response = await client.get(apiUrl);
     return response.data;
   } catch (error) {
     console.error('Error fetching questions:', error);
@@ -19,71 +23,75 @@ export const getQuestions = async () => {
   }
 };
 
-function convertQuestionToDatabaseQuestion(question: Question) {
-  return {
-    uuid: question.uuid,
-    title: question.title,
-    description: question.description,
-    category: question.category,
-    complexity: QuestionComplexityToNumberMap[question.complexity],
-    link: question.link,
-  };
-}
+const convertQuestionToDatabaseQuestion = (question: Question) => ({
+  ...question,
+  complexity: QuestionComplexityToNumberMap[question.complexity],
+});
 
-export const createQuestion = (question: Question) => {
+export const createQuestion = (
+  question: Question,
+  access_token: string,
+): Promise<DatabaseQuestion> => {
   const questionForDb: DatabaseQuestion =
     convertQuestionToDatabaseQuestion(question);
 
-  return axios
-    .post(apiURL, questionForDb)
+  const client = initialiseClient(access_token);
+
+  return client
+    .post(adminApiUrl, questionForDb)
     .then((response) => {
       console.log('POST request successful:', response.data);
-      questionForDb.uuid = response.data.uuid;
-      return questionForDb;
+      return response.data;
     })
     .catch((error) => {
       throw new Error(error.response.data.error);
     });
 };
 
-// One-indexed id
-export const getQuestionById = async (uuid: string) => {
-  const newApiURL = `${apiURL}/getById/${uuid}`;
+export const getQuestionBySlug = async (
+  slug: string,
+  access_token: string,
+): Promise<DatabaseQuestion> => {
+  const newApiURL = `${apiUrl}/${slug}`;
+  const client = initialiseClient(access_token);
   try {
-    const response = await axios.get(newApiURL);
+    const response = await client.get(newApiURL);
     return response.data;
   } catch (error) {
-    console.error('Error fetching questions:', error);
+    console.error('Error fetching question:', error);
     throw error;
   }
 };
 
-// One-indexed id
-export const deleteQuestionById = async (uuid: string) => {
-  const body = {
-    uuid,
-  };
+export const deleteQuestionById = async (
+  uuid: string,
+  access_token: string,
+) => {
+  const newApiURL = `${adminApiUrl}/${uuid}`;
+  const client = initialiseClient(access_token);
 
   try {
-    await axios.delete(apiURL, { data: body });
+    await client.delete(newApiURL);
     console.log('DELETE request successful');
   } catch (error) {
     console.error('DELETE request error:', error);
   }
 };
 
-export const updateQuestionById = (question: Question) => {
+export const updateQuestionById = (
+  question: QuestionRowData,
+  access_token: string,
+): Promise<DatabaseQuestion> => {
+  const newApiURL = `${adminApiUrl}/${question!.uuid}`;
   const questionForDb = convertQuestionToDatabaseQuestion(question);
-  const questionForDbWithUuid = {
-    ...questionForDb,
-    uuid: question.uuid,
-  };
 
-  return axios
-    .put(apiURL, questionForDbWithUuid)
-    .then(() => {
+  const client = initialiseClient(access_token);
+
+  return client
+    .put(newApiURL, questionForDb)
+    .then((response) => {
       console.log('PUT request successful');
-      return question;
+      return response.data;
     })
     .catch((error) => {
       throw new Error(error.response.data.error);
@@ -119,15 +127,15 @@ export const testing = () => {
     link: 'example.com/101',
   };
 
-  createQuestion(sampleQuestion);
-
-  getQuestions()
-    .then((questions: Question[]) => {
-      if (questions.length !== 1 || questions[0] !== sampleQuestion) {
-        throw new Error('Create question failed');
-      }
-    })
-    .catch((error) => {
-      throw error;
-    });
+  createQuestion(sampleQuestion, '').then((question) => {
+    getQuestions('')
+      .then((questions: DatabaseQuestion[]) => {
+        if (questions.length !== 1 || questions[0] !== question) {
+          throw new Error('Create question failed');
+        }
+      })
+      .catch((error) => {
+        throw error;
+      });
+  });
 };
