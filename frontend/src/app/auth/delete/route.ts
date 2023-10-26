@@ -1,5 +1,5 @@
+import initialiseClient from '@/lib/axios';
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
-import axios from 'axios';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 
@@ -19,15 +19,11 @@ export async function POST() {
     return NextResponse.redirect(new URL('/', process.env.FRONTEND_SERVICE));
   }
 
-  try {
-    await axios.delete(`${process.env.USER_SERVICE}/user`, {
-      headers: {
-        Authorization: `Bearer ${session.access_token}`,
-      },
-    });
-  } catch (error) {
+  const client = initialiseClient(session.access_token);
+
+  await client.delete(`${process.env.USER_SERVICE}/user`).catch((error) => {
     console.error('Error deleting user:', error);
-  }
+  });
 
   return NextResponse.redirect(new URL('/', process.env.FRONTEND_SERVICE), {
     status: 301,
