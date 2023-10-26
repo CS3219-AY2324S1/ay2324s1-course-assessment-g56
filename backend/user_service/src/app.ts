@@ -1,14 +1,24 @@
 import { createClient } from '@supabase/supabase-js';
 import * as bodyParser from 'body-parser';
+import cors from 'cors';
 import express from 'express';
 import jwt, { JwtPayload } from 'jsonwebtoken';
+import morgan from 'morgan';
 
 import 'dotenv/config';
 
 const app = express();
 
+app.use(morgan('dev'));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(
+  cors({
+    origin: process.env.FRONTEND_SERVICE,
+    optionsSuccessStatus: 200,
+    credentials: true,
+  }),
+);
 
 const supabase = createClient(
   process.env.SUPABASE_URL || '',
