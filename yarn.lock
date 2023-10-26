@@ -8679,6 +8679,7 @@ __metadata:
   dependencies:
     "@supabase/supabase-js": ^2.33.1
     "@types/express": ^4.17.1
+    "@types/jsonwebtoken": ^9
     "@types/morgan": ^1.9.5
     "@types/node": ^20.5.9
     body-parser: ^1.20.2
@@ -8686,6 +8687,7 @@ __metadata:
     dotenv: ^16.3.1
     express: ^4.17.1
     firebase: ^10.3.1
+    jsonwebtoken: ^9.0.2
     morgan: ^1.10.0
     nodemon: ^3.0.1
     ts-node-dev: ^2.0.0
