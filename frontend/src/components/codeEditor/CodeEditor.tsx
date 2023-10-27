@@ -72,7 +72,14 @@ export default function CodeEditor({
     }
 
     const ydoc = new Doc();
-    const provider = new WebrtcProvider(roomSlug, ydoc);
+    // Best to launch our own signaling server
+    const provider = new WebrtcProvider(roomSlug, ydoc, {
+      signaling: [
+        'wss://signaling.yjs.dev',
+        'wss://y-webrtc-signaling-eu.herokuapp.com',
+        'wss://y-webrtc-signaling-us.herokuapp.com',
+      ],
+    });
     const yText = ydoc.getText(roomSlug);
 
     provider.awareness.setLocalStateField('user', {
@@ -108,13 +115,20 @@ export default function CodeEditor({
     });
     setView(view);
 
+    provider.on('synced', (synced) => {
+      // NOTE: This is only called when a different browser connects to this client
+      // Windows of the same browser communicate directly with each other
+      // Although this behavior might be subject to change.
+      // It is better not to expect a synced event when using y-webrtc
+      console.log('synced!', synced);
+    });
+
     return (): void => {
       view?.destroy();
       provider.disconnect();
       ydoc.destroy();
     };
-    // }, [element, isDark, username, roomSlug, socket]);
-  }, [element, isDark, username, roomSlug]);
+  }, [element, username, roomSlug]);
 
   useEffect(() => {
     if (view && language && selectedLanguage) {
