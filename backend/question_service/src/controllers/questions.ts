@@ -59,9 +59,8 @@ export const addQuestion: RequestHandler = async (req, res, next) => {
       res.status(400).json({ error: 'Question already exists' });
       return;
     }
-    addDoc(questionsCol, questionData).then((docRef) => {
-      res.status(200).json({ ...questionData, uuid: docRef.id });
-    });
+    const docRef = await addDoc(questionsCol, questionData);
+    res.status(200).json({ ...questionData, uuid: docRef.id });
   } catch (error) {
     next(error);
   }
