@@ -57,8 +57,12 @@ export async function protectAdmin(
         .single();
       if (profileData?.role === 'Maintainer') {
         next();
+      } else {
+        res.status(401).json({
+          errors: [{ msg: 'Not admin authorized, access token failed' }],
+        });
       }
-    } finally {
+    } catch {
       res.status(401).json({
         errors: [{ msg: 'Not admin authorized, access token failed' }],
       });
