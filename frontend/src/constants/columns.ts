@@ -6,8 +6,8 @@ import {
 } from '@tanstack/react-table';
 import {
   QuestionComplexity,
-  QuestionRowData,
   QuestionComplexityToNumberMap,
+  QuestionRowData,
 } from '@/types/question';
 import EditCell from '@/components/table/EditCell';
 
@@ -30,9 +30,14 @@ const ComplexitySortingFn: SortingFn<QuestionRowData> = (
 };
 
 const defaultColumns = [
-  columnHelper.accessor('questionId', {
-    cell: (id) => id.getValue(),
+  columnHelper.display({
+    cell: (props) =>
+      props.table
+        .getSortedRowModel()
+        .flatRows.map((row) => row.id)
+        .indexOf(props.row.id) + 1,
     header: 'ID',
+    id: 'questionId',
     meta: {
       type: 'number',
     },

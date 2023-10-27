@@ -11,6 +11,7 @@ import {
 } from '@chakra-ui/react';
 import { FiMenu, FiMoon, FiSun } from 'react-icons/fi';
 import NextLink from 'next/link';
+import { useUserData } from '@/hooks/useUserData';
 import NavButton from './NavButton';
 import UserPopover from './UserPopover';
 
@@ -22,6 +23,7 @@ function TopBar({ onOpen, ...rest }: MobileProps) {
   const { toggleColorMode } = useColorMode();
   const text = useColorModeValue('dark', 'light');
   const SwitchIcon = useColorModeValue(FiMoon, FiSun);
+  const { data: profileData, isLoading: loading } = useUserData();
   return (
     <Flex
       ml={{ base: 0, md: 60 }}
@@ -59,7 +61,7 @@ function TopBar({ onOpen, ...rest }: MobileProps) {
           label={`Switch to ${text} mode`}
           onClick={toggleColorMode}
         />
-        <UserPopover />
+        {!loading && <UserPopover profileData={profileData!} />}
       </HStack>
     </Flex>
   );

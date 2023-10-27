@@ -1,27 +1,26 @@
 import { useQuery } from '@tanstack/react-query';
-import { getQuestions } from '@/lib/questions';
+import { getQuestionBySlug } from '@/lib/questions';
 import {
-  Question,
   QuestionRowData,
   NumberToQuestionComplexityMap,
 } from '@/types/question';
-import { QUESTION_LIST_KEY } from '@/types/queryKey';
+import { QUESTION_LIST_KEY } from '@/constants/queryKey';
 
-export function useQuestionData() {
-  return useQuery<QuestionRowData[] | undefined>(
-    [QUESTION_LIST_KEY],
+export function useQuestionData(slug: string, access_token: string) {
+  return useQuery<QuestionRowData | undefined>(
+    [QUESTION_LIST_KEY, slug],
     async () => {
-      const questions = await getQuestions();
-      const questionList = questions.map((question: Question, idx: number) => {
-        const questionId: number = idx + 1;
-        return {
-          questionId,
-          ...question,
-          complexity:
-            NumberToQuestionComplexityMap[parseInt(question.complexity, 10)],
-        };
-      });
-      return questionList;
+      const question = await getQuestionBySlug(slug, access_token);
+      return {
+        ...question,
+        uuid: question.uuid!,
+        slug: question.slug!,
+        complexity: NumberToQuestionComplexityMap[question.complexity],
+      };
+    },
+    {
+      cacheTime: 1000 * 60 * 15, // 15 minutes
+      enabled: access_token !== '',
     },
   );
 }

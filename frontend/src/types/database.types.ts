@@ -53,6 +53,7 @@ export interface Database {
 
 export interface DatabaseQuestion {
   uuid?: string;
+  slug?: string;
   title: string;
   description: string;
   category: string;

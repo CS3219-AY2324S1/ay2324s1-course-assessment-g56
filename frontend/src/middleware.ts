@@ -15,7 +15,7 @@ export default async function authMiddleware(req: NextRequest) {
   // If the user is signed in and they are on the '/' route, redirect them to '/home'.
   if (user && req.nextUrl.pathname === '/') {
     url.pathname = '/home';
-    return NextResponse.rewrite(url);
+    return NextResponse.redirect(url);
   }
 
   // If the user is not signed in and they are on any route other than '/', redirect them to the custom page.
