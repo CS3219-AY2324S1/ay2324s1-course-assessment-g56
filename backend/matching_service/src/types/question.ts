@@ -3,7 +3,6 @@ export enum QuestionComplexity {
   MEDIUM = 'Medium',
   HARD = 'Hard',
 }
-
 export const QuestionComplexityToNumberMap: Record<QuestionComplexity, number> =
   Object.freeze({
     [QuestionComplexity.EASY]: 1,

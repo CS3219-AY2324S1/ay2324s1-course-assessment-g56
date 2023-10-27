@@ -3,13 +3,7 @@
     "baseUrl": "src",
     "module": "commonjs",
     "outDir": "build",
-    "paths": {
-      "constants/*": ["./constants/*"],
-      "socket/*": ["./socket/*"],
-      "structs/*": ["./structs/*"],
-      "types/*": ["./types/*"]
-    },
-    "rootDir": "src",
+    "rootDir": "./src",
 
     "allowSyntheticDefaultImports": true,
     "allowUnreachableCode": false,
@@ -35,5 +29,5 @@
     "target": "es6",
     "lib": ["es6"]
   },
-  "include": ["src"]
+  "include": ["src/**/*"]
 }

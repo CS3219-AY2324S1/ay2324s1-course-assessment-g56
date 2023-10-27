@@ -1,4 +1,4 @@
-import supabase from '@/utils/supabaseClient';
+import initialiseClient from '@/lib/axios';
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
@@ -14,22 +14,18 @@ export async function POST() {
     data: { session },
   } = await supabaseUserClient.auth.getSession();
 
-  const supabaseAuthClient = supabase;
-
-  const adminAuthClient = supabaseAuthClient.auth.admin;
-
-  if (session === undefined || session === null) {
+  if (!session) {
     console.error('No user ID provided');
     return NextResponse.redirect(new URL('/', process.env.FRONTEND_SERVICE));
   }
 
-  const { data, error } = await adminAuthClient.deleteUser(session.user.id);
+  const client = initialiseClient(session.access_token);
 
-  console.log('data: ', data);
+  await client.delete(`${process.env.USER_SERVICE}/user`).catch((error) => {
+    console.error('Error deleting user:', error);
+  });
 
-  if (error) {
-    console.log('error:', error);
-  }
-
-  return NextResponse.redirect(new URL('/', process.env.FRONTEND_SERVICE));
+  return NextResponse.redirect(new URL('/', process.env.FRONTEND_SERVICE), {
+    status: 301,
+  });
 }

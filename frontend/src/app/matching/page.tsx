@@ -49,13 +49,13 @@ function Page() {
 
   useEffect(() => {
     // Listen for 'message' event from the server
-    
+
     const onConnect = () => {
       setIsConnected(true);
     };
 
     socket.on('connect', onConnect);
-    console.log("betweeen");
+    console.log('betweeen');
     socket.connect();
 
     return (): void => {
