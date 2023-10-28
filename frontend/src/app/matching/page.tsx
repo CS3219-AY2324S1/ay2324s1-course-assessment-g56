@@ -24,10 +24,20 @@ import { useEffect, useState } from 'react';
 import io from 'socket.io-client';
 import QuestionRangeSlider from '../../components/slider/QuestionRangeSlider';
 
-const socket = io(process.env.FRONTEND_SERVICE, {
-  path: process.env.MATCHING_PATH,
-  autoConnect: false,
-});
+import 'dotenv/config';
+
+let socket;
+
+if (process.env.NODE_ENV !== 'production') {
+  socket = io(process.env.NEXT_PUBLIC_MATCHING_SERVICE, {
+    autoConnect: false,
+  });
+} else {
+  socket = io(process.env.FRONTEND_SERVICE, {
+    path: process.env.MATCHING_PATH,
+    autoConnect: false,
+  });
+}
 
 function Page() {
   const [lowerBoundDifficulty, setLowerBoundDifficulty] =
