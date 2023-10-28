@@ -5,7 +5,13 @@ import type { NextRequest } from 'next/server';
 
 export default async function authMiddleware(req: NextRequest) {
   const res = NextResponse.next();
-  const supabase = createMiddlewareClient({ req, res });
+  const supabase = createMiddlewareClient(
+    { req, res },
+    {
+      supabaseUrl: process.env.SUPABASE_URL,
+      supabaseKey: process.env.SUPABASE_ANON_KEY,
+    },
+  );
   const url = req.nextUrl.clone();
 
   const {

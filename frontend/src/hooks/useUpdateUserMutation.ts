@@ -6,7 +6,10 @@ import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 export const useUpdateUserMutation = (userId: string) => {
-  const supabase = createClientComponentClient<Database>();
+  const supabase = createClientComponentClient<Database>({
+    supabaseUrl: process.env.SUPABASE_URL,
+    supabaseKey: process.env.SUPABASE_ANON_KEY,
+  });
   const toast = useToast();
   const queryClient = useQueryClient();
   return useMutation({
