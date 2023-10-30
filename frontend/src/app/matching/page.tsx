@@ -19,15 +19,20 @@ import {
   REQ_FIND_PAIR,
   RES_CANNOT_FIND_PAIR,
   RES_FOUND_PAIR,
+  ERROR_FIND_PAIR,
+  REQ_STOP_FINDING_PAIR,
+  RES_STOP_FINDING_PAIR,
+  RES_FIND_PAIR,
 } from '@/constants/socket';
-import { useEffect, useState } from 'react';
-import io from 'socket.io-client';
-import QuestionRangeSlider from '../../components/slider/QuestionRangeSlider';
+import { useState } from 'react';
+import { useSession } from '@/contexts/SupabaseProvider';
 
-const socket = io(process.env.FRONTEND_SERVICE, {
-  path: process.env.MATCHING_PATH,
-  autoConnect: false,
-});
+import 'dotenv/config';
+import { BasicProfileData } from '@/types/profile';
+import QuestionRangeSlider from '@/components/slider/QuestionRangeSlider';
+import useTimer from '@/hooks/useTimer';
+import useSocket from '@/hooks/useSocket';
+import MatchFoundModal from '@/components/modal/MatchFoundModal';
 
 function Page() {
   const [lowerBoundDifficulty, setLowerBoundDifficulty] =
@@ -37,82 +42,123 @@ function Page() {
     useState<QuestionComplexity>(QuestionComplexity.HARD);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isConnected, setIsConnected] = useState(false);
+  const [isCancelling, setIsCancelling] = useState(false);
+  const [matchedUser, setMatchedUser] = useState<BasicProfileData | null>(null);
+  const [roomId, setRoomId] = useState('');
+  const [difficulty, setDifficulty] = useState<QuestionComplexity | null>(null);
 
   const {
-    isOpen: isVisible,
-    onClose,
-    onOpen,
+    isOpen: isDisconnectVisible,
+    onClose: onDisconnectClose,
+    onOpen: onDisconnectOpen,
   } = useDisclosure({ defaultIsOpen: true });
 
+  const { isOpen: isMatchVisible, onOpen: onMatchOpen } = useDisclosure({
+    defaultIsOpen: false,
+  });
+
   const toast = useToast();
+  const session = useSession();
 
-  useEffect(() => {
-    // Listen for 'message' event from the server
+  const { socket, isConnected } = useSocket(session);
 
-    const onConnect = () => {
-      setIsConnected(true);
-    };
+  const { timer, startTimer, resetTimer } = useTimer();
 
-    socket.on('connect', onConnect);
-    console.log('betweeen');
-    socket.connect();
+  const doneMatching = () => {
+    setIsSubmitting(false);
+    setIsCancelling(false);
+    resetTimer();
+  };
 
-    return (): void => {
-      socket.off('connect', onConnect);
-    };
-  }, []);
-
-  const sendMessage = () => {
+  const requestMatch = () => {
     setIsSubmitting(true);
     socket.emit(REQ_FIND_PAIR, lowerBoundDifficulty, upperBoundDifficulty);
 
     socket.on(DISCONNECT, () => {
-      setIsSubmitting(false);
-      setIsConnected(false);
-      onOpen();
+      onDisconnectOpen();
+      doneMatching();
+    });
+
+    socket.on(RES_FIND_PAIR, () => {
+      startTimer();
     });
 
     socket.on(RES_CANNOT_FIND_PAIR, () => {
-      setIsSubmitting(false);
-      if (!toast.isActive('cannot-find-pair')) {
+      doneMatching();
+      if (!toast.isActive(RES_CANNOT_FIND_PAIR)) {
         toast({
-          id: 'cannot-find-pair',
-          title: 'Cannot find a match for you.',
-          description: 'Please try again later.',
+          id: RES_CANNOT_FIND_PAIR,
+          title: 'No match found!',
+          description:
+            'Please try again later or loosen matching requirements.',
           status: 'error',
         });
       }
     });
 
-    socket.on(RES_FOUND_PAIR, () => {
-      setIsSubmitting(false);
-      if (!toast.isActive('found-pair')) {
+    socket.on(ERROR_FIND_PAIR, (msg: string) => {
+      doneMatching();
+      if (!toast.isActive(ERROR_FIND_PAIR)) {
         toast({
-          id: 'found-pair',
-          title: 'Found a match for you!',
-          description: 'Please wait while we redirect you to the room.',
-          status: 'success',
+          id: ERROR_FIND_PAIR,
+          title: `${msg}`,
+          status: 'error',
         });
       }
+    });
+
+    socket.on(
+      RES_FOUND_PAIR,
+      ({
+        matchedUser: user,
+        roomId: newRoomId,
+        difficulty: newDifficulty,
+      }: {
+        matchedUser: BasicProfileData;
+        roomId: string;
+        difficulty: QuestionComplexity;
+      }) => {
+        doneMatching();
+        setMatchedUser(user);
+        setRoomId(newRoomId);
+        setDifficulty(newDifficulty);
+        onMatchOpen();
+      },
+    );
+  };
+
+  const cancelMatchRequest = () => {
+    setIsCancelling(true);
+    socket.emit(REQ_STOP_FINDING_PAIR);
+    socket.on(DISCONNECT, () => {
+      doneMatching();
+      onDisconnectOpen();
+    });
+
+    socket.on(RES_STOP_FINDING_PAIR, () => {
+      doneMatching();
     });
   };
 
   return (
     <Center>
       <Box
-        bg={useColorModeValue('white', 'gray.800')}
+        bg={useColorModeValue('white', 'gray.900')}
         p={10}
         width={600}
         borderRadius="md"
         boxShadow="lg"
       >
         <VStack spacing={8} align="center">
-          {isVisible && !isConnected && (
+          {isDisconnectVisible && !isConnected && (
             <Alert status="error">
               <AlertIcon />
               Disconnected from server.
-              <CloseButton position="absolute" right={2} onClick={onClose} />
+              <CloseButton
+                position="absolute"
+                right={2}
+                onClick={onDisconnectClose}
+              />
             </Alert>
           )}
           <Text textAlign="center" fontSize="xl" fontWeight="bold">
@@ -123,17 +169,34 @@ function Page() {
             setUpperBoundDifficulty={setUpperBoundDifficulty}
           />
           <Button
-            onClick={sendMessage}
+            onClick={requestMatch}
             colorScheme="green"
             size="md"
             isLoading={isSubmitting}
             isDisabled={!isConnected}
             mt="40px"
-            loadingText="Finding a match..."
+            loadingText={`Finding a match... (${timer}s)`}
           >
             Find match
           </Button>
+          {isSubmitting && (
+            <Button
+              onClick={cancelMatchRequest}
+              size="md"
+              isLoading={isCancelling}
+              isDisabled={!isConnected || !isSubmitting}
+              loadingText="Cancelling..."
+            >
+              Cancel
+            </Button>
+          )}
         </VStack>
+        <MatchFoundModal
+          isOpen={isMatchVisible}
+          roomId={roomId}
+          matchedUser={matchedUser}
+          difficulty={difficulty}
+        />
       </Box>
     </Center>
   );

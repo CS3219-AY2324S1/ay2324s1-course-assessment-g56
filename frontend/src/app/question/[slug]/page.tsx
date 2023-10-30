@@ -10,6 +10,7 @@ import {
   Input,
   Select,
   Skeleton,
+  useColorModeValue,
   VStack,
 } from '@chakra-ui/react';
 import { FiArrowLeft } from 'react-icons/fi';
@@ -58,7 +59,12 @@ function Page({ params }: { params: { slug: string } }) {
   };
 
   return (
-    <VStack bg="white" spacing={4} py="10" pb="10">
+    <VStack
+      bg={useColorModeValue('white', 'gray.900')}
+      spacing={4}
+      py="10"
+      pb="10"
+    >
       <IconButton
         aria-label="Back"
         icon={<FiArrowLeft />}

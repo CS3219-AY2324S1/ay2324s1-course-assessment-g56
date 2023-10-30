@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const initialiseClient = (jwt: string) =>
   axios.create({
-    baseURL: process.env.QUESTION_SERVICE,
+    baseURL: process.env.FRONTEND_SERVICE,
     headers: {
       Authorization: `Bearer ${jwt}`,
     },

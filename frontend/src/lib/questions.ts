@@ -7,8 +7,8 @@ import {
 } from '@/types/question';
 import initialiseClient from './axios';
 
-const apiUrl = '/questions';
-const adminApiUrl = '/admin/questions';
+const apiUrl = `${process.env.QUESTION_PATH}/questions`;
+const adminApiUrl = `${process.env.QUESTION_PATH}/admin/questions`;
 
 export const getQuestions = async (
   access_token: string,

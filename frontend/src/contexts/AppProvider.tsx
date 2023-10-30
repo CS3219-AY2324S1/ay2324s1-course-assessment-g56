@@ -29,7 +29,10 @@ export default function AppProvider({
   const [queryClient] = React.useState(() => new QueryClient());
   type MaybeSession = Session | null;
   const [session, setSession] = useState<MaybeSession>(null);
-  const supabase = createClientComponentClient<Database>();
+  const supabase = createClientComponentClient<Database>({
+    supabaseUrl: process.env.SUPABASE_URL,
+    supabaseKey: process.env.SUPABASE_ANON_KEY,
+  });
   const [sessionFetched, setSessionFetched] = useState(false);
 
   const fetchSession = async () => {
