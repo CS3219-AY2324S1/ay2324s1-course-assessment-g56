@@ -1,41 +1,67 @@
-import {
-  QuestionComplexity,
-  QuestionComplexityToNumberMap,
-} from 'frontend/src/types/question';
+import * as bodyParser from 'body-parser';
+import dotenv from 'dotenv';
+import express, { Express } from 'express';
 import request from 'supertest';
 
-import { QuestionData } from './firebase/interface';
-import { app, server } from './app';
+import {
+  addQuestion,
+  deleteQuestionById,
+  getAllQuestions,
+  updateQuestionById,
+} from '../src/controllers/questions'; // Import your Express route and Firebase app here
+import { QuestionDataFromFrontend } from '../src/types/questionData.interface';
 
-const questionData: QuestionData = {
+dotenv.config({
+  path: '../src/.env',
+});
+
+const easyValue = 1;
+const mediumValue = 2;
+const hardValue = 3;
+const questionData: QuestionDataFromFrontend = {
   title: 'Test Question 1',
   description: 'This is a test question',
   category: 'Testing',
-  complexity: QuestionComplexityToNumberMap[QuestionComplexity.MEDIUM],
+  complexity: mediumValue,
   link: 'www.example.com',
 };
 
-const secondQuestionData: QuestionData = {
+let app: Express;
+
+const secondQuestionData: QuestionDataFromFrontend = {
   title: 'Test Question 2',
   description: 'This is the second test question',
   category: 'Testing',
-  complexity: QuestionComplexityToNumberMap[QuestionComplexity.HARD],
+  complexity: hardValue,
   link: 'www.example.com',
 };
 
-const questionDataWithSameTitle: QuestionData = {
+const questionDataWithSameTitle: QuestionDataFromFrontend = {
   title: 'Test Question 1',
   description: 'This is a test question with only the same title',
   category: 'Insert, Testing',
-  complexity: QuestionComplexityToNumberMap[QuestionComplexity.EASY],
+  complexity: easyValue,
   link: 'www.example.com/extra',
 };
 
 describe('Integration Tests', () => {
+  beforeAll(() => {
+    app = express();
+    app.use(bodyParser.urlencoded({ extended: true }));
+    app.use(bodyParser.json());
+
+    // Add the route to the app
+    app.get('/questions', getAllQuestions);
+    app.post('/questions', addQuestion);
+    app.put('/questions/:uuid', updateQuestionById);
+    app.delete('/questions/:uuid', deleteQuestionById);
+  });
+
   // GET TESTING
   it('GET /questions should return a list of questions', async () => {
     const response = await request(app).get('/questions');
 
+    // Expect a successful response
     expect(response.status).toBe(200);
     expect(response.type).toBe('application/json');
     expect(Array.isArray(response.body)).toBe(true);
@@ -43,7 +69,8 @@ describe('Integration Tests', () => {
 
   // ADDITION TESTING
   it('POST /questions should add a question with title "Test Question 1"', async () => {
-    const response = await request(app).post('/questions').send(questionData); // Send the question data in the request
+    // Assuming with Authorization headers
+    const response = await request(app).post('/questions').send(questionData);
     expect(response.status).toBe(200);
     expect(response.type).toBe('application/json');
     expect(response.body).toHaveProperty('uuid');
@@ -55,7 +82,7 @@ describe('Integration Tests', () => {
       .post('/questions')
       .send(questionDataWithSameTitle);
 
-    expect(response.status).toBe(400); // Expect a 400 status code for the error
+    expect(response.status).toBe(400);
     expect(response.type).toBe('application/json');
     expect(response.body).toHaveProperty('error');
   });
@@ -70,15 +97,16 @@ describe('Integration Tests', () => {
     secondQuestionData.uuid = response.body.uuid;
   });
 
-  // UPDATE TESTING
+  // // UPDATE TESTING
   it('PUT /questions should fail to update a question into one where the title already exists', async () => {
-    // Now, send a PUT request to update the first question into the second question
-    const updatedFirstQuestionData: QuestionData = {
+    // Now, send a PUT request to update the first question into the second question title
+    const updatedFirstQuestionData: QuestionDataFromFrontend = {
       ...questionData,
       title: 'Test Question 2',
     };
+
     const updateQuestionResponse = await request(app)
-      .put('/questions')
+      .put(`/questions/${updatedFirstQuestionData.uuid}`)
       .send({
         uuid: updatedFirstQuestionData.uuid,
         ...updatedFirstQuestionData,
@@ -93,15 +121,15 @@ describe('Integration Tests', () => {
   });
 
   it('PUT /questions should update a question as long as no other question with the same title exists', async () => {
-    // Now, send a PUT request to update the first question to follow the second question. Except only title is different
-    const updatedFirstQuestionData: QuestionData = {
+    // Now, send a PUT request to update the first question to follow the second question
+    const updatedFirstQuestionData: QuestionDataFromFrontend = {
       ...secondQuestionData,
       uuid: questionData.uuid,
       title: questionData.title,
     };
 
     const updateQuestionResponse = await request(app)
-      .put('/questions')
+      .put(`/questions/${updatedFirstQuestionData.uuid}`)
       .send({
         uuid: updatedFirstQuestionData.uuid,
         ...updatedFirstQuestionData,
@@ -110,7 +138,8 @@ describe('Integration Tests', () => {
     expect(updateQuestionResponse.status).toBe(200);
     expect(updateQuestionResponse.type).toBe('application/json');
     expect(updateQuestionResponse.body).toEqual({
-      message: 'Question updated successfully',
+      ...updatedFirstQuestionData,
+      slug: updateQuestionResponse.body.slug,
     });
     Object.assign(questionData, updatedFirstQuestionData);
   });
@@ -119,30 +148,18 @@ describe('Integration Tests', () => {
   it('DELETE /questions should delete questionData', async () => {
     // Now, send a DELETE request to delete questionData
     const deleteQuestionResponse = await request(app)
-      .delete('/questions')
-      .send({ uuid: questionData.uuid });
+      .delete(`/questions/${questionData.uuid}`)
+      .send();
 
-    expect(deleteQuestionResponse.status).toBe(200);
-    expect(deleteQuestionResponse.type).toBe('application/json');
-    expect(deleteQuestionResponse.body).toEqual({
-      message: 'Question deleted successfully',
-    });
+    expect(deleteQuestionResponse.status).toBe(204);
   });
 
   it('DELETE /questions should delete secondQuestionData', async () => {
     // Now, send a DELETE request to delete secondQuestionData
     const deleteQuestionResponse = await request(app)
-      .delete('/questions')
-      .send({ uuid: secondQuestionData.uuid });
+      .delete(`/questions/${secondQuestionData.uuid}`)
+      .send();
 
-    expect(deleteQuestionResponse.status).toBe(200);
-    expect(deleteQuestionResponse.type).toBe('application/json');
-    expect(deleteQuestionResponse.body).toEqual({
-      message: 'Question deleted successfully',
-    });
+    expect(deleteQuestionResponse.status).toBe(204);
   });
-});
-
-afterAll((done) => {
-  server.close(done);
 });

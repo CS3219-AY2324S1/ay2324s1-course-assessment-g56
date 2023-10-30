@@ -1,6 +1,7 @@
 import { Server, Socket } from 'socket.io';
 
 import {
+  DISCONNECT,
   ERROR_FIND_PAIR,
   RES_CANNOT_FIND_PAIR,
   RES_FIND_PAIR,
@@ -67,7 +68,7 @@ const handleFindPair =
     if (result == null) {
       console.log('No current match found, setting timeout.');
       const timeout = setTimeout(() => {
-        console.log('Could not find pair in time', newUser.sid);
+        console.log(`Could not find pair in time ${newUser.sid}`);
         // Leave the queue
         MatchingQueue.remove(newUser);
         UidToCallbackMap.remove(newUser.sid);
@@ -77,9 +78,11 @@ const handleFindPair =
       return;
     }
 
+    socket.on(DISCONNECT, () => {});
+
     // We found a match!
     const [user1, user2] = result;
-    console.log('Match found:', user1.sid, user2.sid);
+    console.log(`Match found: ${user1.sid}, ${user2.sid}`);
 
     io.to(user1.sid).emit(RES_FOUND_PAIR, {
       roomId: 'test',
