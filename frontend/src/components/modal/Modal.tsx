@@ -20,6 +20,7 @@ interface ModalProps {
   onClose: () => void;
   initialRef?: MutableRefObject<null>;
   finalRef?: MutableRefObject<null>;
+  isClosable?: boolean;
 }
 
 function Modal({
@@ -30,6 +31,7 @@ function Modal({
   actions,
   initialRef,
   finalRef,
+  isClosable = true,
 }: ModalProps) {
   if (!initialRef) {
     initialRef = useRef(null);
@@ -49,7 +51,7 @@ function Modal({
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>{title}</ModalHeader>
-        <ModalCloseButton />
+        {isClosable && <ModalCloseButton />}
         <ModalBody pb={6}>{children}</ModalBody>
 
         <ModalFooter>
