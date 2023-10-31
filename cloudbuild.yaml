@@ -9,12 +9,12 @@ steps:
         # Add any additional steps to modify or process the .env file as needed.
   - name: 'node:18'
     entrypoint: 'npm'
-    args: ['install --prefix .']
+    args: ['install -prefix .']
     dir: './backend/question_service' # Replace with the actual directory path where you want to run npm install.
 
   - name: 'node:18'
     entrypoint: 'npm'
-    args: ['test --prefix .']
+    args: ['test -prefix .']
     dir: './backend/question_service'  # Replace with the actual directory path where you want to run npm test.
 
 
