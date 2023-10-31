@@ -25,7 +25,7 @@ steps:
       - |
         rm backend/question_service/src/.env
   # Step 4: Run tests
-  name: 'gcr.io/$PROJECT_ID/question_service'
+  - name: 'gcr.io/$PROJECT_ID/question_service'
   entrypoint: 'bash'
   args:
     - '-c'
