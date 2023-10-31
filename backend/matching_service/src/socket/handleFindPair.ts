@@ -1,4 +1,8 @@
+import { createClient } from '@supabase/supabase-js';
 import { Server, Socket } from 'socket.io';
+import MatchingQueue from 'structs/MatchingQueue';
+import SidToUidMap from 'structs/SidToUidMap';
+import UidToCallbackMap from 'structs/UidToCallbackMap';
 
 import {
   DISCONNECT,
@@ -6,11 +10,9 @@ import {
   RES_CANNOT_FIND_PAIR,
   RES_FIND_PAIR,
   RES_FOUND_PAIR,
-} from '../constants/socket';
-import MatchingQueue from '../structs/MatchingQueue';
-import UidToCallbackMap from '../structs/UidToCallbackMap';
-import { QuestionComplexity } from '../types/question';
-import { User } from '../types/user';
+} from 'constants/socket';
+import { QuestionComplexity } from 'types/question';
+import { User } from 'types/user';
 
 type FindPairFunction = (
   lowerBoundDifficulty: QuestionComplexity,
@@ -18,30 +20,34 @@ type FindPairFunction = (
 ) => Promise<void>;
 const TIMEOUT_DURATION = 30000;
 
+const supabase = createClient(
+  process.env.SUPABASE_URL || '',
+  process.env.SUPABASE_SERVICE_KEY || '',
+);
+
 const handleFindPair =
   (socket: Socket, io: Server): FindPairFunction =>
   async (
     lowerBoundDifficulty: QuestionComplexity,
     upperBoundDifficulty: QuestionComplexity,
   ): Promise<void> => {
-    const newUser: User = {
-      sid: socket.id,
-      lowerBoundDifficulty,
-      upperBoundDifficulty,
-    };
-
     console.log(
       'Socket',
-      newUser.sid,
+      socket.id,
       'finding pair for',
       lowerBoundDifficulty,
       'to',
       upperBoundDifficulty,
     );
 
-    socket.join(newUser.sid);
+    const uid = SidToUidMap.retrieveUid(socket.id);
+    if (uid == null) {
+      console.log('Unauthorized, cannot find uid.');
+      socket.emit(ERROR_FIND_PAIR, 'Unauthorized. Please log in.');
+      return;
+    }
 
-    if (MatchingQueue.isInQueue(newUser.sid)) {
+    if (MatchingQueue.isInQueue(uid)) {
       console.log('User already in queue.');
       socket.emit(
         ERROR_FIND_PAIR,
@@ -49,6 +55,22 @@ const handleFindPair =
       );
       return;
     }
+
+    const { data } = await supabase
+      .from('profiles')
+      .select('username, avatar_url')
+      .eq('id', uid)
+      .single();
+
+    const newUser: User = {
+      uid,
+      sid: socket.id,
+      username: data?.username,
+      avatarUrl: data?.avatar_url,
+      lowerBoundDifficulty,
+      upperBoundDifficulty,
+    };
+    SidToUidMap.insertUser(socket.id, newUser);
 
     let result;
     try {
@@ -68,33 +90,49 @@ const handleFindPair =
     if (result == null) {
       console.log('No current match found, setting timeout.');
       const timeout = setTimeout(() => {
-        console.log(`Could not find pair in time ${newUser.sid}`);
+        console.log('Could not find pair in time', uid);
         // Leave the queue
         MatchingQueue.remove(newUser);
-        UidToCallbackMap.remove(newUser.sid);
+        UidToCallbackMap.remove(uid);
         socket.emit(RES_CANNOT_FIND_PAIR);
       }, TIMEOUT_DURATION);
-      UidToCallbackMap.insert(newUser.sid, timeout);
+      UidToCallbackMap.insert(uid, timeout);
       return;
     }
 
     socket.on(DISCONNECT, () => {});
 
     // We found a match!
-    const [user1, user2] = result;
-    console.log(`Match found: ${user1.sid}, ${user2.sid}`);
-
-    io.to(user1.sid).emit(RES_FOUND_PAIR, {
-      roomId: 'test',
-    });
-    io.to(user2.sid).emit(RES_FOUND_PAIR, {
-      roomId: 'test',
-    });
+    const [difficulty, user1, user2] = result;
+    console.log(
+      'Match found at',
+      difficulty,
+      'difficulty:',
+      user1.uid,
+      user2.uid,
+    );
 
     MatchingQueue.remove(user1);
     MatchingQueue.remove(user2);
-    UidToCallbackMap.stopAndRemove(user1.sid);
-    UidToCallbackMap.stopAndRemove(user2.sid);
+    UidToCallbackMap.stopAndRemove(user1.uid);
+    UidToCallbackMap.stopAndRemove(user2.uid);
+
+    io.to(user1.uid).emit(RES_FOUND_PAIR, {
+      roomId: 'test',
+      matchedUser: {
+        username: user2.username,
+        avatarUrl: user2.avatarUrl,
+      },
+      difficulty,
+    });
+    io.to(user2.uid).emit(RES_FOUND_PAIR, {
+      roomId: 'test',
+      matchedUser: {
+        username: user1.username,
+        avatarUrl: user1.avatarUrl,
+      },
+      difficulty,
+    });
     console.log('Match found, timeouts cleared, room created.');
   };
 export default handleFindPair;

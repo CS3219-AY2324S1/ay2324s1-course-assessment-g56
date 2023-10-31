@@ -19,7 +19,7 @@ function Navbar(props: NavBarProps) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { children } = props;
   return (
-    <Box minH="100vh" bg={useColorModeValue('gray.100', 'gray.900')}>
+    <Box minH="100vh" bg={useColorModeValue('gray.100', 'gray.800')}>
       <SideBar onClose={onClose} display={{ base: 'none', md: 'block' }} />
       <Drawer
         isOpen={isOpen}

@@ -5,7 +5,10 @@ import { USER_QUERY_KEY } from '@/constants/queryKey';
 import { useSession } from '@/contexts/SupabaseProvider';
 import { ProfileData } from '@/types/profile';
 
-const supabase = createClientComponentClient<Database>();
+const supabase = createClientComponentClient<Database>({
+  supabaseUrl: process.env.SUPABASE_URL,
+  supabaseKey: process.env.SUPABASE_ANON_KEY,
+});
 
 const getUserData = async () => {
   const { data } = await supabase.from('profiles').select('*').single();

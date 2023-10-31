@@ -9,6 +9,7 @@ import {
   Tbody,
   Td,
   Text,
+  useColorModeValue,
 } from '@chakra-ui/react';
 import {
   useReactTable,
@@ -68,7 +69,7 @@ function Table<T extends object>({
   });
 
   return (
-    <Card variant="outline">
+    <Card variant="outline" bg={useColorModeValue('white', 'gray.900')}>
       <ChakraTable size="sm">
         <TableHeader
           headerGroups={table.getHeaderGroups()}
