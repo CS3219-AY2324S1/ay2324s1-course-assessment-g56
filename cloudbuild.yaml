@@ -1,10 +1,5 @@
 #Question Service
 steps:
-  # Step 1: Run tests
-  - name: 'gcr.io/$PROJECT_ID/nodejs'
-    entrypoint: 'npm'
-    args: ['test']
-  # Step 1: Create the .env file in backend/question_service/src
   - name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: 'bash'
     args:
@@ -12,22 +7,45 @@ steps:
       - |
         gcloud secrets versions access latest --secret=question_service > backend/question_service/src/.env
         # Add any additional steps to modify or process the .env file as needed.
-  # Step 2: Build your Docker image in backend/question_service
-  - name: 'gcr.io/cloud-builders/docker'
-    args:
-      - 'build'
-      - '-t'
-      - 'gcr.io/$PROJECT_ID/question_service'
-      - ./backend/question_service
-    # Add any other Docker build options as needed.
+  - name: 'node:18'
+    entrypoint: 'npm'
+    args: ['install']
+    dir: './backend/question_service' # Replace with the actual directory path where you want to run npm install.
 
-  # Step 3: Delete the .env file
-  - name: 'gcr.io/cloud-builders/gcloud'
-    entrypoint: 'bash'
-    args:
-      - '-c'
-      - |
-        rm backend/question_service/src/.env
+  - name: 'node:18'
+    entrypoint: 'npm'
+    args: ['test']
+    dir: './backend/question_service'  # Replace with the actual directory path where you want to run npm test.
+
+
+  # # Step 1: Run tests
+  # - name: 'gcr.io/$PROJECT_ID/nodejs'
+  #   entrypoint: 'npm'
+  #   args: ['test']
+  # # Step 1: Create the .env file in backend/question_service/src
+  # - name: 'gcr.io/cloud-builders/gcloud'
+  #   entrypoint: 'bash'
+  #   args:
+  #     - '-c'
+  #     - |
+  #       gcloud secrets versions access latest --secret=question_service > backend/question_service/src/.env
+  #       # Add any additional steps to modify or process the .env file as needed.
+  # # Step 2: Build your Docker image in backend/question_service
+  # - name: 'gcr.io/cloud-builders/docker'
+  #   args:
+  #     - 'build'
+  #     - '-t'
+  #     - 'gcr.io/$PROJECT_ID/question_service'
+  #     - ./backend/question_service
+  #   # Add any other Docker build options as needed.
+
+  # # Step 3: Delete the .env file
+  # - name: 'gcr.io/cloud-builders/gcloud'
+  #   entrypoint: 'bash'
+  #   args:
+  #     - '-c'
+  #     - |
+  #       rm backend/question_service/src/.env
   # Step 4: Run tests
   # - name: 'gcr.io/$PROJECT_ID/question_service'
   #   entrypoint: 'sh'
