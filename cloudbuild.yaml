@@ -26,12 +26,12 @@ steps:
         rm backend/question_service/src/.env
   # Step 4: Run tests
   - name: 'gcr.io/$PROJECT_ID/question_service'
-  entrypoint: 'bash'
-  args:
-    - '-c'
-    - |
-      cd /app  # Change to your project directory.
-      npm test  # Run your tests.
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        cd /app  # Change to your project directory.
+        npm test  # Run your tests.
 # #Matching Service
 #   # Step 1: Create the .env file in backend/matching_service/src
 #   - name: 'gcr.io/cloud-builders/gcloud'
