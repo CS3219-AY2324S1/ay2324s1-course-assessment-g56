@@ -19,7 +19,7 @@ steps:
     entrypoint: 'npm'
     args: 
     - 'test '
-    - '--prefix 
+    - '--prefix' 
     - '.'
     dir: './backend/question_service'  # Replace with the actual directory path where you want to run npm test.
 
