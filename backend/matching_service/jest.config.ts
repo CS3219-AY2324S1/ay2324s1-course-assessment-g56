@@ -1,4 +1,7 @@
 import type { Config } from '@jest/types';
+import { pathsToModuleNameMapper } from 'ts-jest';
+
+import { compilerOptions } from './tsconfig.json';
 
 const config: Config.InitialOptions = {
   preset: 'ts-jest',
@@ -8,7 +11,9 @@ const config: Config.InitialOptions = {
     '^.+\\.(ts|tsx)$': 'ts-jest',
   },
   testMatch: ['**/*.test.ts'],
-  // transformIgnorePatterns: ['<rootDir>/node_modules/'],
+  moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, {
+    prefix: '<rootDir>/src',
+  }),
 };
 
 export default config;

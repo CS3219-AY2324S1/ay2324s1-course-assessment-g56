@@ -10,7 +10,7 @@ type StopFindingPairFunction = () => Promise<void>;
 const handleStopFindingPair =
   (socket: Socket, _io: Server): StopFindingPairFunction =>
   async (): Promise<void> => {
-    console.log('Socket', socket.id, 'wants to stop finding pair.');
+    console.log(`Socket ${socket.id} wants to stop finding pair.`);
     const user = SidToUidMap.retrieveUser(socket.id);
     const uid = SidToUidMap.retrieveUid(socket.id);
     if (uid) {
@@ -21,7 +21,7 @@ const handleStopFindingPair =
       return;
     }
     MatchingQueue.remove(user);
-    console.log('User', user.uid, 'removed from queue.');
+    console.log(`User ${user.uid} removed from queue.`);
     socket.emit(RES_STOP_FINDING_PAIR);
   };
 

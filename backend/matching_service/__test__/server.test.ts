@@ -1,21 +1,28 @@
-import dotenv from 'dotenv';
 import io, { Socket } from 'socket.io-client';
+import { setTimeout } from 'timers/promises';
 
-// import { REQ_FIND_PAIR, RES_FOUND_PAIR, RES_CANNOT_FIND_PAIR, DISCONNECT, CONNECT, ERROR_FIND_PAIR } from '../src/constants/socket';
-import { REQ_FIND_PAIR, RES_CANNOT_FIND_PAIR } from '../src/constants/socket';
+import 'dotenv/config';
+
+import {
+  CONNECT,
+  DISCONNECT,
+  ERROR_FIND_PAIR,
+  REQ_FIND_PAIR,
+  REQ_STOP_FINDING_PAIR,
+  RES_CANNOT_FIND_PAIR,
+  RES_FOUND_PAIR,
+  RES_STOP_FINDING_PAIR,
+} from '../src/constants/socket';
 import { ApiServer } from '../src/server';
 import { QuestionComplexity } from '../src/types/question';
 
-dotenv.config({
-  path: '../.env',
-});
-const serverUrl = 'http://localhost:6006';
+const serverUrl = `http://localhost:${process.env.MATCHING_SERVICE_PORT}`;
 
 describe('Integration Tests', () => {
   let apiServer: ApiServer;
   let socket1: Socket;
   let socket2: Socket;
-  // let lastConsoleLog: null;
+  let lastConsoleLog: null;
 
   beforeAll(async () => {
     apiServer = new ApiServer();
@@ -31,7 +38,7 @@ describe('Integration Tests', () => {
       socket2.disconnect();
       socket2.close();
     }
-    // lastConsoleLog = null;
+    lastConsoleLog = null;
   });
 
   beforeEach(async () => {
@@ -39,156 +46,216 @@ describe('Integration Tests', () => {
       forceNew: true,
     });
 
-    // console.log = (message) => {
-    //   lastConsoleLog = message;
-    // };
+    console.log = (message) => {
+      lastConsoleLog = message;
+    };
   });
 
-  // it('Queue 2 users that match difficulty. Second user joins after 29 seconds. Expect the message "Match found, timeouts cleared, room created." ', async () => {
-  //   socket2 = io(serverUrl, {
-  //     forceNew: true,
-  //   });
+  it('Queue 2 users that match difficulty. Second user joins after 29 seconds. Expect the message "Match found, timeouts cleared, room created." ', async () => {
+    socket2 = io(serverUrl, {
+      forceNew: true,
+    });
 
-  //   const promise1 = new Promise<string>((resolve) => {
-  //     socket1.on(RES_FOUND_PAIR, (response) => {
-  //       resolve(response);
-  //     });
-  //   });
+    const socket1FoundPair = new Promise<string>((resolve) => {
+      socket1.on(RES_FOUND_PAIR, (response) => {
+        resolve(response);
+      });
+    });
 
-  //   const promise2 = new Promise<string>((resolve) => {
-  //     socket2.on(RES_FOUND_PAIR, (response) => {
-  //       resolve(response);
-  //     });
-  //   });
+    const socket2FoundPair = new Promise<string>((resolve) => {
+      socket2.on(RES_FOUND_PAIR, (response) => {
+        resolve(response);
+      });
+    });
 
-  //   socket1.emit(REQ_FIND_PAIR, QuestionComplexity.EASY, QuestionComplexity.MEDIUM);
+    socket1.emit(
+      REQ_FIND_PAIR,
+      QuestionComplexity.EASY,
+      QuestionComplexity.MEDIUM,
+    );
 
-  //   // Add a 29-second delay before the second emit
-  //   await new Promise((resolve) => setTimeout(resolve, 29000));
+    // Add a 29-second delay before the second emit
+    await setTimeout(29000);
+    socket2.emit(
+      REQ_FIND_PAIR,
+      QuestionComplexity.MEDIUM,
+      QuestionComplexity.HARD,
+    );
 
-  //   socket2.emit(REQ_FIND_PAIR, QuestionComplexity.MEDIUM, QuestionComplexity.HARD);
+    await Promise.all([socket1FoundPair, socket2FoundPair]);
 
-  //   await Promise.all([promise1, promise2]);
+    // Check if the last console log message is as expected
+    expect(lastConsoleLog).toBe('Match found, timeouts cleared, room created.');
+  }, 35000);
 
-  //   // Check if the last console log message is as expected
-  //   expect(lastConsoleLog).toBe("Match found, timeouts cleared, room created.");
+  it('Queue 1 user and timeout before 32 seconds[Extra time for messages to appear after dequeueing]', async () => {
+    const socket1CannotFindPair = new Promise<string>((resolve) => {
+      socket1.on(RES_CANNOT_FIND_PAIR, (response) => {
+        resolve(response);
+      });
+    });
 
-  // }, 35000);
+    const expectedDequeueDifficulty = QuestionComplexity.EASY;
+    socket1.emit(
+      REQ_FIND_PAIR,
+      expectedDequeueDifficulty,
+      QuestionComplexity.HARD,
+    );
 
-  // it('Queue 1 user and timeout before 32 seconds[Extra time for messages to appear after dequeueing]', async () => {
+    await socket1CannotFindPair;
 
-  //   const promise1 = new Promise<string>((resolve) => {
-  //     socket1.on(RES_CANNOT_FIND_PAIR, (response) => {
-  //       resolve(response);
-  //     });
-  //   });
+    // For to wait for dequeuing message
+    await setTimeout(1000);
+    // Check if the last console log message is as expected
+    expect(lastConsoleLog).toBe(
+      `Removing user from ${expectedDequeueDifficulty} queue`,
+    );
+  }, 32000);
 
-  //   const expectedDequeueDifficulty = QuestionComplexity.EASY
-  //   socket1.emit(REQ_FIND_PAIR, expectedDequeueDifficulty, QuestionComplexity.HARD);
+  it('Queue 2 users but different difficulty. Expect "Removing User" message', async () => {
+    socket2 = io(serverUrl, {
+      forceNew: true,
+    });
 
-  //   await promise1;
+    const socket1CannotFindPair = new Promise<string>((resolve) => {
+      socket1.on(RES_CANNOT_FIND_PAIR, (response) => {
+        resolve(response);
+      });
+    });
 
-  //   // For to wait for dequeuing message
-  //   await new Promise((resolve) => setTimeout(resolve, 1000));
+    const socket2CannotFindPair = new Promise<string>((resolve) => {
+      socket2.on(RES_CANNOT_FIND_PAIR, (response) => {
+        resolve(response);
+      });
+    });
 
-  //   // Check if the last console log message is as expected
-  //   expect(lastConsoleLog).toBe(`Removing user from ${expectedDequeueDifficulty} queue`);
+    const expectedDequeueDifficulty1 = QuestionComplexity.EASY;
+    const expectedDequeueDifficulty2 = QuestionComplexity.MEDIUM;
 
-  // }, 32000);
+    socket1.emit(
+      REQ_FIND_PAIR,
+      expectedDequeueDifficulty1,
+      expectedDequeueDifficulty1,
+    );
+    socket2.emit(
+      REQ_FIND_PAIR,
+      expectedDequeueDifficulty2,
+      expectedDequeueDifficulty2,
+    );
 
-  // it('Queue 2 users but different difficulty. Expect "Removing User" message', async () => {
-  //   socket2 = io(serverUrl, {
-  //     forceNew: true,
-  //   });
+    const expectedMessage1 = `Removing user from ${expectedDequeueDifficulty1} queue`;
+    const expectedMessage2 = `Removing user from ${expectedDequeueDifficulty2} queue`;
 
-  //   const promise1 = new Promise<string>((resolve) => {
-  //     socket1.on(RES_CANNOT_FIND_PAIR, (response) => {
-  //       resolve(response);
-  //     });
-  //   });
+    await Promise.all([socket1CannotFindPair, socket2CannotFindPair]);
+    await await setTimeout(1000);
+    // Check if the last console log message is as expected
+    expect(
+      lastConsoleLog === expectedMessage1 ||
+        lastConsoleLog === expectedMessage2,
+    ).toBe(true);
+  }, 35000);
 
-  //   const promise2 = new Promise<string>((resolve) => {
-  //     socket2.on(RES_CANNOT_FIND_PAIR, (response) => {
-  //       resolve(response);
-  //     });
-  //   });
+  it('Queue user but DISCONNECT after 10 seconds. Expect "Socket socketId has disconnected." ', async () => {
+    let socketId = '';
 
-  //   const expectedDequeueDifficulty = QuestionComplexity.MEDIUM
+    socket1.on(CONNECT, () => {
+      socketId = socket1.id;
+    });
 
-  //   socket1.emit(REQ_FIND_PAIR, QuestionComplexity.EASY, QuestionComplexity.EASY);
-  //   socket2.emit(REQ_FIND_PAIR, expectedDequeueDifficulty, QuestionComplexity.HARD);
+    const socket1Disconnect = new Promise<string>((resolve) => {
+      socket1.on(DISCONNECT, async (response) => {
+        await setTimeout(1000);
+        resolve(response);
+      });
+    });
 
-  //   await Promise.all([promise1, promise2]);
+    socket1.emit(
+      REQ_FIND_PAIR,
+      QuestionComplexity.EASY,
+      QuestionComplexity.EASY,
+    );
 
-  //   // Check if the last console log message is as expected
-  //   expect(lastConsoleLog).toBe(`Removing user from ${expectedDequeueDifficulty} queue`);
+    // Wait for 10 seconds and then disconnect the socket
+    await setTimeout(10000);
+    socket1.disconnect();
 
-  // }, 35000);
+    await socket1Disconnect;
 
-  // it('Queue user but DISCONNECT after 10 seconds. Expect "Socket socketId has disconnected." ', async () => {
-  //   let socketId;
+    await setTimeout(1000);
+    // Check if the last console log message is as expected
+    expect(lastConsoleLog).toBe(`Socket ${socketId} has disconnected.`);
+  }, 15000);
 
-  //   socket1.on(CONNECT, () => {
-  //     socketId = socket1.id
-  //   })
+  it('Queue user but REQ_STOP_FINDING_PAIR after 10 seconds. Expect "Socket socketId has disconnected." ', async () => {
+    let socketId = '';
 
-  //   const promise1 = new Promise<string>((resolve) => {
-  //     socket1.on(DISCONNECT, (response) => {
-  //       setTimeout(() => {
-  //         resolve(response);
-  //       }, 1000)
+    socket1.on(CONNECT, () => {
+      socketId = socket1.id;
+    });
 
-  //     });
-  //   });
+    const socket1StopFindingPair = new Promise<string>((resolve) => {
+      socket1.on(RES_STOP_FINDING_PAIR, async (response) => {
+        await setTimeout(2000);
+        resolve(response);
+      });
+    });
 
-  //   socket1.emit(REQ_FIND_PAIR, QuestionComplexity.EASY, QuestionComplexity.EASY);
+    socket1.emit(
+      REQ_FIND_PAIR,
+      QuestionComplexity.EASY,
+      QuestionComplexity.EASY,
+    );
 
-  //   // Wait for 10 seconds and then disconnect the socket
-  //   setTimeout(() => {
-  //     socket1.disconnect();
-  //   }, 10000)
+    // Wait for 29 seconds and then disconnect the socket
+    await setTimeout(29000);
+    socket1.emit(REQ_STOP_FINDING_PAIR);
 
-  //   await promise1
+    await socket1StopFindingPair;
 
-  //   // Check if the last console log message is as expected
-  //   expect(lastConsoleLog).toBe(`Socket ${socketId} has disconnected.`);
-  // }, 60000);
+    await setTimeout(2000);
+    // Check if the last console log message is as expected
+    expect(lastConsoleLog).toBe(`User ${socketId} removed from queue.`);
+  }, 35000);
 
-  // it('Queue the same user twice within 10 seconds after initial queue. Expect "User already in queue."', async () => {
-  //   const promise1 = new Promise<string>((resolve) => {
-  //     socket1.on(ERROR_FIND_PAIR, (response) => {
-  //       setTimeout(() => {
-  //         resolve(response);
-  //       }, 5000)
+  it('Queue the same user twice within 10 seconds after initial queue. Expect "User already in queue."', async () => {
+    const socket1ErrorFindPair = new Promise<string>((resolve) => {
+      socket1.on(ERROR_FIND_PAIR, async (response) => {
+        await setTimeout(1000);
+        resolve(response);
+      });
+    });
 
-  //     });
-  //   });
+    socket1.emit(
+      REQ_FIND_PAIR,
+      QuestionComplexity.EASY,
+      QuestionComplexity.EASY,
+    );
 
-  //   socket1.emit(REQ_FIND_PAIR, QuestionComplexity.EASY, QuestionComplexity.EASY);
+    // Wait for 10 seconds and then request find pair again
+    await setTimeout(10000);
+    socket1.emit(
+      REQ_FIND_PAIR,
+      QuestionComplexity.MEDIUM,
+      QuestionComplexity.MEDIUM,
+    );
 
-  //   // Wait for 10 seconds and then request find pair again
-  //   setTimeout(() => {
-  //     socket1.emit(REQ_FIND_PAIR, QuestionComplexity.MEDIUM, QuestionComplexity.MEDIUM);
-  //   }, 10000)
+    await socket1ErrorFindPair;
 
-  //   await promise1
+    // Check if the last console log message is as expected
+    expect(lastConsoleLog).toBe(`User already in queue.`);
+  }, 26000);
 
-  //   // Check if the last console log message is as expected
-  //   expect(lastConsoleLog).toBe(`User already in queue.`);
-  // }, 26000);
-
-  it('Queue the same user twice. Time to requeue is after the timeout time of 30 seconds. Expect "Removing user from difficulty queue"', (done) => {
+  it('Queue the same user twice. Time to requeue is after the timeout time of 30 seconds. Expect "Removing user from difficulty queue"', async () => {
     const expectedDequeueDifficulty = QuestionComplexity.EASY;
     let failCounter = 0;
-    socket1.on(RES_CANNOT_FIND_PAIR, () => {
+    socket1.on(RES_CANNOT_FIND_PAIR, async () => {
       failCounter += 1;
       if (failCounter === 2) {
-        setTimeout(() => {}, 1000);
+        await setTimeout(1000);
         // Check if the last console log message is as expected
-        // expect(lastConsoleLog).toBe(`Removing user from ${expectedDequeueDifficulty} queue`);
-        done();
-      } else {
-        fail('Something Went Wrong');
+        expect(lastConsoleLog).toBe(
+          `Removing user from ${expectedDequeueDifficulty} queue`,
+        );
       }
     });
 
@@ -199,30 +266,23 @@ describe('Integration Tests', () => {
     );
 
     // Wait for slightly more than 30 seconds and then request find pair again
-    setTimeout(() => {
-      socket1.emit(
-        REQ_FIND_PAIR,
-        expectedDequeueDifficulty,
-        QuestionComplexity.MEDIUM,
-      );
-    }, 30500);
-  }, 65000);
+    await setTimeout(31000);
+    socket1.emit(
+      REQ_FIND_PAIR,
+      expectedDequeueDifficulty,
+      QuestionComplexity.MEDIUM,
+    );
+  }, 63000);
 
   afterAll(async () => {
     if (socket1) {
       socket1.disconnect();
       socket1.close();
-      await new Promise((resolve) => {
-        setTimeout(resolve, 2000);
-      });
     }
     if (socket2) {
       socket2.disconnect();
       socket2.close();
-      await new Promise((resolve) => {
-        setTimeout(resolve, 2000);
-      });
     }
     await apiServer.close();
-  }, 15000);
+  }, 10000);
 });

@@ -1,13 +1,13 @@
 import request from 'supertest';
-import { server } from '../src/app'
+
+import { server } from '../src/app';
 
 describe('CORS Configuration', () => {
-
   it('should allow CORS with the correct origin', async () => {
     const allowedOrigin = process.env.FRONTEND_SERVICE;
-    
+
     if (!allowedOrigin) {
-      fail("Environment Variable FRONTEND_SERVICE not set up properly")
+      fail('Environment Variable FRONTEND_SERVICE not set up properly');
     }
 
     const response = await request(server)
@@ -20,7 +20,7 @@ describe('CORS Configuration', () => {
   });
 
   it('should not allow CORS with an incorrect origin', async () => {
-    const wrongOrigin = 'http://localhost:8000'; 
+    const wrongOrigin = 'http://localhost:8000';
 
     const response = await request(server)
       .get('/user')
@@ -32,6 +32,5 @@ describe('CORS Configuration', () => {
 
   afterAll(() => {
     server.close();
-  })
+  });
 });
-
