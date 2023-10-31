@@ -31,7 +31,10 @@ export default function SupabaseProvider({
   children: ReactNode;
   session: MaybeSession;
 }) {
-  const supabase = createClientComponentClient<Database>();
+  const supabase = createClientComponentClient<Database>({
+    supabaseUrl: process.env.SUPABASE_URL,
+    supabaseKey: process.env.SUPABASE_ANON_KEY,
+  });
   const router = useRouter();
 
   useEffect(() => {

@@ -18,8 +18,7 @@ export class ApiServer {
 
   public io: SocketServer | null = null;
 
-  async initialize(port = process.env.MATCHING_PORT): Promise<void> {
-    console.log(process.env.SUPABASE_URL);
+  async initialize(port = process.env.MATCHING_SERVICE_PORT): Promise<void> {
     const app = express();
     app.use(express.json({ limit: '20mb' }) as RequestHandler);
     app.use(
@@ -45,7 +44,7 @@ export class ApiServer {
     });
 
     httpServer.listen(port, () => {
-      console.log(`Server is listening on http://localhost:${port}`);
+      console.log(`Server is listening on port:${port}`);
     });
     setUpIo(io);
 

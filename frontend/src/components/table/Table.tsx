@@ -5,11 +5,11 @@ import {
   Table as ChakraTable,
   LinkBox,
   LinkOverlay,
-  Spinner,
   Skeleton,
   Tbody,
   Td,
   Text,
+  useColorModeValue,
 } from '@chakra-ui/react';
 import {
   useReactTable,
@@ -19,17 +19,15 @@ import {
   ColumnDef,
   RowData,
 } from '@tanstack/react-table';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import NextLink from 'next/link';
-import { ProfileData } from '@/types/profile';
-import { useQueryClient } from '@tanstack/react-query';
-import { USER_QUERY_KEY } from '@/types/queryKey';
+import { QuestionRowData } from '@/types/question';
 import { Tr, flexRender } from './TableUtils';
 import TableHeader from './TableHeader';
 
 interface TableProps<T extends object> {
   tableData: T[];
-  removeRow: (id: number) => void;
+  removeRow: (uuid: string) => void;
   columns: ColumnDef<T, any>[];
   isLoading?: boolean;
   isSortable?: boolean;
@@ -38,11 +36,11 @@ interface TableProps<T extends object> {
 declare module '@tanstack/table-core' {
   // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
   interface TableMeta<TData extends RowData> {
-    removeRow: (id: number) => void;
+    removeRow: (uuid: string) => void;
   }
 }
 
-const skeletonRows = Array.from({ length: 10 });
+const skeletonRows = Array.from({ length: 10 }, (_, i) => i);
 
 function Table<T extends object>({
   tableData,
@@ -52,15 +50,12 @@ function Table<T extends object>({
   isSortable = true,
 }: TableProps<T>) {
   const [sortBy, setSortBy] = useState<SortingState>([]);
-  const queryClient = useQueryClient();
-  const [profileData, setProfileData] = useState<ProfileData | null>(null);
-  const [loading, setLoading] = useState(true);
   const table = useReactTable<T>({
     data: tableData,
     columns,
     meta: {
-      removeRow: (id: number) => {
-        removeRow(id + 1);
+      removeRow: (uuid: string) => {
+        removeRow(uuid);
       },
     },
     state: {
@@ -73,21 +68,8 @@ function Table<T extends object>({
     }),
   });
 
-  useEffect(() => {
-    const data: ProfileData | undefined = queryClient.getQueryData([
-      USER_QUERY_KEY,
-    ]);
-    if (data !== undefined) {
-      setProfileData(data);
-      setLoading(false);
-    }
-  }, []);
-
-  if (loading) {
-    return <Spinner size="sm" color="blue.500" />;
-  }
   return (
-    <Card variant="outline">
+    <Card variant="outline" bg={useColorModeValue('white', 'gray.900')}>
       <ChakraTable size="sm">
         <TableHeader
           headerGroups={table.getHeaderGroups()}
@@ -95,8 +77,8 @@ function Table<T extends object>({
         />
         <Tbody>
           {isLoading
-            ? skeletonRows.map(() => (
-                <Tr>
+            ? skeletonRows.map((i) => (
+                <Tr key={`skeleton-${i}`}>
                   <Td
                     textAlign="center"
                     colSpan={table.getAllColumns().length}
@@ -120,13 +102,13 @@ function Table<T extends object>({
           {table.getRowModel().rows.map((row) => (
             <Tr key={row.id}>
               {row.getVisibleCells().map((cell) =>
-                cell.column.id === 'title' &&
-                profileData !== null &&
-                profileData.role === 'Maintainer' ? (
+                cell.column.id === 'title' ? (
                   <LinkBox as={Td} key={cell.id}>
                     <LinkOverlay
                       as={NextLink}
-                      href={`/question/${parseInt(row.id, 10) + 1}`}
+                      href={`/question/${
+                        (row.original as QuestionRowData).slug
+                      }`}
                     >
                       {flexRender(
                         cell.column.columnDef.cell,

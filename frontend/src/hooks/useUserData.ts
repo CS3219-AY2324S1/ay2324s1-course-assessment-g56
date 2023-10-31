@@ -1,22 +1,17 @@
 import { useQuery } from '@tanstack/react-query';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { Database } from '@/types/database.types';
-import { USER_QUERY_KEY } from '@/types/queryKey';
+import { USER_QUERY_KEY } from '@/constants/queryKey';
 import { useSession } from '@/contexts/SupabaseProvider';
 import { ProfileData } from '@/types/profile';
 
-const supabase = createClientComponentClient<Database>();
+const supabase = createClientComponentClient<Database>({
+  supabaseUrl: process.env.SUPABASE_URL,
+  supabaseKey: process.env.SUPABASE_ANON_KEY,
+});
 
 const getUserData = async () => {
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  const { data } = await supabase
-    .from('profiles')
-    .select(`full_name, username, website, avatar_url, role`)
-    .eq('id', user!.id)
-    .single();
+  const { data } = await supabase.from('profiles').select('*').single();
 
   if (data) {
     const profileData: ProfileData = {
@@ -25,6 +20,7 @@ const getUserData = async () => {
       website: data.website,
       avatarUrl: data.avatar_url,
       role: data.role,
+      updatedAt: new Date(data.updated_at),
     };
     return profileData;
   }
@@ -36,5 +32,8 @@ export function useUserData() {
 
   return useQuery<ProfileData | undefined>([USER_QUERY_KEY], getUserData, {
     enabled: session !== null,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    cacheTime: 1000 * 60 * 60, // 1 hour,
   });
 }

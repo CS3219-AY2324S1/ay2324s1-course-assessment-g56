@@ -33,6 +33,12 @@ module.exports = {
   },
   overrides: [
     {
+      files: ['*.ts', '*.tsx'],
+      rules: {
+        'no-undef': 'off',
+      },
+    },
+    {
       files: ['backend/**/*.ts', 'backend/**/*.js'],
       rules: {
         '@typescript-eslint/no-explicit-any': 'off',

@@ -4,4 +4,10 @@ export interface ProfileData {
   website: string | null;
   avatarUrl: string | null;
   role: string | 'User';
+  updatedAt: Date | null;
+}
+
+export interface BasicProfileData {
+  username: string | null;
+  avatarUrl: string | null;
 }

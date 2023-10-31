@@ -1,17 +1,10 @@
 'use client';
 
-import { createQuestion } from '@/lib/questions';
-import { Button, useToast } from '@chakra-ui/react';
+import { Button } from '@chakra-ui/react';
 import { useRef, useState } from 'react';
-import {
-  NumberToQuestionComplexityMap,
-  Question,
-  QuestionComplexity,
-  QuestionRowData,
-} from '@/types/question';
-import { useQueryClient, useMutation } from '@tanstack/react-query';
-import { QUESTION_LIST_KEY } from '@/types/queryKey';
-
+import { Question, QuestionComplexity } from '@/types/question';
+import { useCreateQuestionMutation } from '@/hooks/useCreateQuestionMutation';
+import { useSession } from '@/contexts/SupabaseProvider';
 import Modal from './Modal';
 import QuestionForm from '../form/QuestionForm';
 
@@ -24,7 +17,6 @@ function QuestionFormModal({
 }) {
   const modalTitle = 'Add Question';
   const initialRef = useRef(null);
-  const finalRef = useRef(null);
   const [title, setTitle] = useState('');
   const [desc, setDesc] = useState('');
   const [cat, setCat] = useState('');
@@ -32,55 +24,12 @@ function QuestionFormModal({
     QuestionComplexity.EASY,
   );
   const [link, setLink] = useState('');
+  const session = useSession();
 
-  const toast = useToast();
-  const queryClient = useQueryClient();
-  const mutateQuestion = useMutation({
-    mutationFn: createQuestion,
-    onSuccess: (data) => {
-      const questionList: QuestionRowData[] | undefined =
-        queryClient.getQueryData([QUESTION_LIST_KEY]);
-      if (questionList !== undefined) {
-        const newQuestionId = questionList.length + 1;
-        const dataWithQuestionId = {
-          ...data,
-          questionId: newQuestionId,
-          complexity: NumberToQuestionComplexityMap[data.complexity],
-        };
-
-        const newQuestionList = [...questionList, dataWithQuestionId];
-        queryClient.setQueryData([QUESTION_LIST_KEY], newQuestionList);
-      }
-
-      toast({
-        title: 'Question added.',
-        description: "We've added your question.",
-        status: 'success',
-        duration: 5000,
-        isClosable: true,
-        position: 'top',
-        containerStyle: {
-          marginTop: '20px',
-        },
-      });
-    },
-    onError: (error: Error) => {
-      toast({
-        title: 'An error has occurred.',
-        description: error.message,
-        status: 'error',
-        duration: 5000,
-        isClosable: true,
-        position: 'top',
-        containerStyle: {
-          marginTop: '20px',
-        },
-      });
-    },
-    onSettled: () => {
-      onClose();
-    },
-  });
+  const createQuestionMutation = useCreateQuestionMutation(
+    onClose,
+    session?.access_token ?? '',
+  );
 
   const handleSubmit = () => {
     const question: Question = {
@@ -91,7 +40,7 @@ function QuestionFormModal({
       link,
     };
 
-    mutateQuestion.mutate({
+    createQuestionMutation.mutate({
       ...question,
     });
   };
@@ -102,13 +51,19 @@ function QuestionFormModal({
       onClose={onClose}
       title={modalTitle}
       initialRef={initialRef}
-      finalRef={finalRef}
       actions={
         <>
-          <Button colorScheme="blue" mr={3} onClick={handleSubmit}>
+          <Button
+            colorScheme="blue"
+            mr={3}
+            onClick={handleSubmit}
+            isDisabled={createQuestionMutation.isLoading}
+          >
             Save
           </Button>
-          <Button onClick={onClose}>Cancel</Button>
+          <Button onClick={onClose}>
+            {createQuestionMutation.isLoading ? 'Minimise' : 'Cancel'}
+          </Button>
         </>
       }
     >

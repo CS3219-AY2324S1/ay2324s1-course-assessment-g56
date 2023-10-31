@@ -4,7 +4,6 @@ import { Box, Flex, Text, useToast } from '@chakra-ui/react';
 import React, { Suspense, useEffect } from 'react';
 import AuthForm from '@/components/login/AuthForm';
 import { useSearchParams } from 'next/navigation';
-import 'dotenv/config';
 
 export default function Page() {
   const searchParams = useSearchParams();
