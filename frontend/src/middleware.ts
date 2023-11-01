@@ -14,18 +14,27 @@ export default async function authMiddleware(req: NextRequest) {
   );
   const url = req.nextUrl.clone();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { data } = await supabase
+    .from('profiles')
+    .select('updated_at')
+    .single();
+
+  const hasOnboarded = !!data?.updated_at;
+
+  if (data && !hasOnboarded) {
+    return NextResponse.redirect(
+      new URL('/onboarding', process.env.FRONTEND_SERVICE),
+    );
+  }
 
   // If the user is signed in and they are on the '/' route, redirect them to '/home'.
-  if (user && req.nextUrl.pathname === '/') {
+  if (data && req.nextUrl.pathname === '/') {
     url.pathname = '/home';
     return NextResponse.redirect(url);
   }
 
   // If the user is not signed in and they are on any route other than '/', redirect them to the custom page.
-  if (!user && req.nextUrl.pathname !== '/') {
+  if (!data && req.nextUrl.pathname !== '/') {
     url.pathname = '/';
     url.searchParams.set('return_to', encodeURIComponent(req.nextUrl.pathname));
     return NextResponse.redirect(url);
