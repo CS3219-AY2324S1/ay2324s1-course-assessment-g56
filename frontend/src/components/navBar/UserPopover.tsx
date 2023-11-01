@@ -59,7 +59,6 @@ function UserPopover(props: Props) {
           </HStack>
         </MenuButton>
         <MenuList>
-          <MenuItem>Profile</MenuItem>
           <Link href="/account">
             <MenuItem>Settings</MenuItem>
           </Link>
