@@ -27,7 +27,7 @@ steps:
 #       # Add any additional steps to modify or process the .env file as needed.
 
 #       source backend/question_service/.env
-  dir: 'backend/question_service'
+  # dir: 'backend/question_service'
 - name: 'node:18'
   entrypoint: 'npm'
   args:
