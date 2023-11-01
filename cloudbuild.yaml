@@ -11,7 +11,7 @@ steps:
   args:
     - '-c'
     - |
-      gcloud secrets versions access latest --secret=question_service > backend/question_service/src/.env
+      gcloud secrets versions access latest --secret=question_service > backend/question_service/.env
       # Add any additional steps to modify or process the .env file as needed.
 - name: 'gcr.io/cloud-builders/gcloud'
   entrypoint: 'bash'
@@ -26,7 +26,7 @@ steps:
     - |
       # Add any additional steps to modify or process the .env file as needed.
 
-      source backend/question_service/src/.env
+      source backend/question_service/.env
   dir: 'backend/question_service'
 - name: 'node:18'
   entrypoint: 'npm'
