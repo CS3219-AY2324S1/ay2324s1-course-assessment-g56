@@ -5,12 +5,28 @@ steps:
   args:
     - '-c'
     - |
+      ls -laR
+- name: 'gcr.io/cloud-builders/gcloud'
+  entrypoint: 'bash'
+  args:
+    - '-c'
+    - |
       gcloud secrets versions access latest --secret=question_service > backend/question_service/src/.env
       # Add any additional steps to modify or process the .env file as needed.
-      
-      # Load environment variables from .env file
-      source backend/question_service/src/.env
+- name: 'gcr.io/cloud-builders/gcloud'
+  entrypoint: 'bash'
+  args:
+    - '-c'
+    - |
+      ls -laR ./backend/question_service
+- name: 'gcr.io/cloud-builders/gcloud'
+  entrypoint: 'bash'
+  args:
+    - '-c'
+    - |
+      # Add any additional steps to modify or process the .env file as needed.
 
+      source backend/question_service/src/.env
   dir: 'backend/question_service'
 - name: 'node:18'
   entrypoint: 'npm'
