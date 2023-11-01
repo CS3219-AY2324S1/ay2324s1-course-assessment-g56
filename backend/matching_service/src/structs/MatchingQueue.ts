@@ -96,7 +96,7 @@ class MatchingQueue {
     }
 
     userNodes?.forEach(([difficulty, userNode]) => {
-      console.log('Removing user from', difficulty, 'queue');
+      console.log(`Removing user from ${difficulty} queue`);
       const queue = this.queues.get(difficulty)!;
       queue.deleteNode(userNode);
     });
