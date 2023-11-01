@@ -5,7 +5,7 @@ steps:
     args:
       - '-c'
       - |
-        gcloud secrets versions access latest --secret=question_service > backend/question_service/src/.env
+        gcloud secrets versions access latest --secret=question_service > ./backend/question_service/src/.env
         # Add any additional steps to modify or process the .env file as needed.
   - name: 'node:18'
     entrypoint: 'npm'
@@ -15,11 +15,17 @@ steps:
       - '.'
     dir: './backend/question_service' # Replace with the actual directory path where you want to run npm install.
 
-  - name: 'node:18'
-    entrypoint: 'npm'
-    args: 
-    - 'test'
-    dir: './backend/question_service'  # Replace with the actual directory path where you want to run npm test.
+  - name: 'gcr.io/cloud-builders/bash'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        # Load environment variables from .env file
+        source backend/question_service/src/.env
+
+        # Now you can access these environment variables in your test script
+        npm test
+    dir: 'backend/question_service'  # Replace with the actual directory path where you want to run npm test.
 
 
   # # Step 1: Run tests
