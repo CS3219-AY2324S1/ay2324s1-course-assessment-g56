@@ -20,6 +20,18 @@ export async function GET(req: NextRequest) {
     await supabase.auth.exchangeCodeForSession(code);
   }
 
+  const { data } = await supabase
+    .from('profiles')
+    .select('updated_at')
+    .single();
+
+  const hasOnboarded = !!data?.updated_at;
+
+  if (!hasOnboarded) {
+    return NextResponse.redirect(
+      new URL('/onboarding', process.env.FRONTEND_SERVICE),
+    );
+  }
   return NextResponse.redirect(
     new URL(returnUrl, process.env.FRONTEND_SERVICE),
   );

@@ -35,5 +35,12 @@ export default async function authMiddleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/', '/home', '/question/:id*', '/matching', '/account'],
+  matcher: [
+    '/',
+    '/home',
+    '/question/:id*',
+    '/matching',
+    '/account',
+    '/room/:id*',
+  ],
 };

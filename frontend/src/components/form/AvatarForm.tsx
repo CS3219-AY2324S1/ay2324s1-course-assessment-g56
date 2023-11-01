@@ -24,7 +24,7 @@ import dayjs from 'dayjs';
 import { ProfileData } from '@/types/profile';
 import { useUpdateUserMutation } from '@/hooks/useUpdateUserMutation';
 
-export default function Avatar({
+export default function AvatarForm({
   uid,
   profile,
   isLoading,

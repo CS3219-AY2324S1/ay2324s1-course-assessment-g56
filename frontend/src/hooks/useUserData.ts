@@ -19,8 +19,9 @@ const getUserData = async () => {
       username: data.username,
       website: data.website,
       avatarUrl: data.avatar_url,
+      preferredInterviewLanguage: data.preferred_interview_language,
       role: data.role,
-      updatedAt: new Date(data.updated_at),
+      updatedAt: data.updated_at ? new Date(data.updated_at) : null,
     };
     return profileData;
   }

@@ -21,6 +21,7 @@ export const useUpdateUserMutation = (userId: string) => {
         username: profileData.username,
         website: profileData.website,
         avatar_url: profileData.avatarUrl,
+        preferred_interview_language: profileData.preferredInterviewLanguage,
         updated_at: currDate.toISOString(),
         role: profileData.role,
       });

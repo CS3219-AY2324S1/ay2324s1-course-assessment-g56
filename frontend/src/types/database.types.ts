@@ -1,3 +1,5 @@
+import { Language } from './language';
+
 export type Json =
   | string
   | number
@@ -16,6 +18,7 @@ export interface Database {
           username: string | null;
           full_name: string | null;
           avatar_url: string | null;
+          preferred_interview_language: Language | null;
           website: string | null;
           role: string;
         };
@@ -25,6 +28,7 @@ export interface Database {
           username?: string | null;
           full_name?: string | null;
           avatar_url?: string | null;
+          preferred_interview_language: Language | null;
           website?: string | null;
           role: string;
         };
@@ -34,6 +38,7 @@ export interface Database {
           username?: string | null;
           full_name?: string | null;
           avatar_url?: string | null;
+          preferred_interview_language: Language | null;
           website?: string | null;
           role: string;
         };

@@ -8,6 +8,7 @@ import {
   FormControl,
   FormLabel,
   Input,
+  Select,
   Skeleton,
   Text,
   VStack,
@@ -18,8 +19,9 @@ import { Session } from '@supabase/auth-helpers-nextjs';
 import { useUserData } from '@/hooks/useUserData';
 import { ProfileData } from '@/types/profile';
 import AccountDeletionModal from '@/components/modal/AccountDeletionModal';
+import { Language } from '@/types/language';
 import { useUpdateUserMutation } from '../../hooks/useUpdateUserMutation';
-import Avatar from './avatar';
+import AvatarForm from '../../components/form/AvatarForm';
 
 export default function AccountForm({ session }: { session: Session | null }) {
   const toast = useToast();
@@ -29,6 +31,7 @@ export default function AccountForm({ session }: { session: Session | null }) {
     username: null,
     website: null,
     avatarUrl: null,
+    preferredInterviewLanguage: null,
     role: 'User',
     updatedAt: null,
   });
@@ -56,6 +59,17 @@ export default function AccountForm({ session }: { session: Session | null }) {
   const updateUserMutation = useUpdateUserMutation(user?.id ?? '');
 
   const updateProfile = async () => {
+    if (
+      !profileData.fullName ||
+      !profileData.username ||
+      !profileData.preferredInterviewLanguage
+    ) {
+      toast({
+        title: 'Please fill out all required fields.',
+        status: 'error',
+      });
+      return;
+    }
     updateUserMutation.mutate(profileData);
   };
 
@@ -67,11 +81,19 @@ export default function AccountForm({ session }: { session: Session | null }) {
     }));
   };
 
+  const changeLanguage = (e: ChangeEvent<HTMLSelectElement>) => {
+    const { value } = e.target;
+    setProfileData((prevData) => ({
+      ...prevData,
+      preferredInterviewLanguage: value as Language,
+    }));
+  };
+
   return (
     <VStack spacing={4} minW="100%">
       <Flex gap={16} w="100%">
         <VStack spacing={4} className="form-widget" w="60%" align="flex-start">
-          <FormControl>
+          <FormControl isRequired>
             <FormLabel htmlFor="email">Email</FormLabel>
             <Input
               id="email"
@@ -81,7 +103,7 @@ export default function AccountForm({ session }: { session: Session | null }) {
             />
           </FormControl>
 
-          <FormControl>
+          <FormControl isRequired>
             <FormLabel htmlFor="fullName">Full Name</FormLabel>
             <Skeleton
               isLoaded={!isLoading}
@@ -96,7 +118,7 @@ export default function AccountForm({ session }: { session: Session | null }) {
             </Skeleton>
           </FormControl>
 
-          <FormControl>
+          <FormControl isRequired>
             <FormLabel htmlFor="username">Username</FormLabel>
             <Skeleton
               isLoaded={!isLoading}
@@ -108,6 +130,29 @@ export default function AccountForm({ session }: { session: Session | null }) {
                 value={profileData.username || ''}
                 onChange={handleInputChange}
               />
+            </Skeleton>
+          </FormControl>
+
+          <FormControl isRequired>
+            <FormLabel id="preferredInterviewLanguage">
+              Preferred Interview Language
+            </FormLabel>
+            <Skeleton
+              isLoaded={!isLoading}
+              style={{ borderRadius: '0.375rem' }}
+            >
+              <Select
+                onChange={changeLanguage}
+                value={profileData.preferredInterviewLanguage || ''}
+                required
+              >
+                <option value="" disabled hidden>
+                  Choose Language
+                </option>
+                <option value={Language.JAVA}>Java</option>
+                <option value={Language.JAVASCRIPT}>Javascript</option>
+                <option value={Language.PYTHON}>Python 3</option>
+              </Select>
             </Skeleton>
           </FormControl>
 
@@ -135,7 +180,7 @@ export default function AccountForm({ session }: { session: Session | null }) {
           <Text fontSize="md" fontWeight="medium">
             Profile Picture
           </Text>
-          <Avatar
+          <AvatarForm
             uid={user?.id ?? ''}
             profile={profileData}
             isLoading={isLoading}
