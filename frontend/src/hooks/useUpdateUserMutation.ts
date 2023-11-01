@@ -27,15 +27,23 @@ export const useUpdateUserMutation = (userId: string) => {
       if (error) throw new Error(error.message);
       return profileData;
     },
-    onSuccess: (data) => {
-      queryClient.setQueryData([USER_QUERY_KEY], data);
+    onMutate: async (profileData: ProfileData) => {
+      await queryClient.cancelQueries([USER_QUERY_KEY]);
+      const previousProfileData: ProfileData = queryClient.getQueryData([
+        USER_QUERY_KEY,
+      ]);
+      queryClient.setQueryData([USER_QUERY_KEY], profileData);
+      return { previousProfileData };
+    },
+    onSuccess: () => {
       toast({
         title: 'Profile updated!',
         description: "We've updated your profile.",
         status: 'success',
       });
     },
-    onError: (error: Error) => {
+    onError: (error: Error, _newData, context) => {
+      queryClient.setQueryData([USER_QUERY_KEY], context?.previousProfileData);
       toast({
         title: 'Something went wrong!',
         description: `We've failed to update your profile. ${error.message}`,

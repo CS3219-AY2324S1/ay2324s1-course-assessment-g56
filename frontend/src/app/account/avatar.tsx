@@ -1,63 +1,66 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Database } from '@/types/database.types';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
-import Image from 'next/image';
-
-type Profiles = Database['public']['Tables']['profiles']['Row'];
+import { FiEdit, FiUpload } from 'react-icons/fi';
+import {
+  Button,
+  Avatar as ChakraAvatar,
+  Divider,
+  InputGroup,
+  Popover,
+  PopoverArrow,
+  PopoverBody,
+  PopoverContent,
+  PopoverTrigger,
+  Text,
+  VStack,
+  useColorModeValue,
+  useDisclosure,
+  useToast,
+} from '@chakra-ui/react';
+import dayjs from 'dayjs';
+import { ProfileData } from '@/types/profile';
+import { useUpdateUserMutation } from '@/hooks/useUpdateUserMutation';
 
 export default function Avatar({
   uid,
-  url,
+  profile,
   size,
-  onUpload,
+  isLoading,
 }: {
   uid: string;
-  url: Profiles['avatar_url'];
+  profile: ProfileData;
   size: number;
-  onUpload: (url: string) => void;
+  isLoading: boolean;
 }) {
   const supabase = createClientComponentClient<Database>({
     supabaseUrl: process.env.SUPABASE_URL,
     supabaseKey: process.env.SUPABASE_ANON_KEY,
   });
-  const [avatarUrl, setAvatarUrl] = useState<Profiles['avatar_url']>(url);
-  const [uploading, setUploading] = useState(false);
+  const toast = useToast();
+  const { avatarUrl, username } = profile;
+  const updateUserMutation = useUpdateUserMutation(uid ?? '');
+  const [avatarStatus, setAvatarStatus] = useState('');
 
-  useEffect(() => {
-    async function downloadImage(path: string) {
-      try {
-        const { data, error } = await supabase.storage
-          .from('avatars')
-          .download(path);
-        if (error) {
-          throw error;
-        }
-
-        const imageUrl = URL.createObjectURL(data);
-        setAvatarUrl(imageUrl);
-      } catch (error) {
-        console.log('Error downloading image: ', error);
-      }
-    }
-
-    if (url) downloadImage(url);
-  }, [url, supabase]);
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const { isOpen, onToggle, onClose } = useDisclosure();
 
   const uploadAvatar: React.ChangeEventHandler<HTMLInputElement> = async (
     event,
   ) => {
+    onClose();
+    if (!event.target.files || event.target.files.length === 0) {
+      return;
+    }
     try {
-      setUploading(true);
-
-      if (!event.target.files || event.target.files.length === 0) {
-        throw new Error('You must select an image to upload.');
-      }
-
+      setAvatarStatus('Uploading...');
       const file = event.target.files[0];
       const fileExt = file.name.split('.').pop();
-      const filePath = `${uid}-${Math.random()}.${fileExt}`;
+      const filePath = `${uid}-${dayjs().format(
+        'YYYYMMDD',
+      )}-${crypto.randomUUID()}.${fileExt}`;
 
       const { error: uploadError } = await supabase.storage
         .from('avatars')
@@ -66,48 +69,107 @@ export default function Avatar({
       if (uploadError) {
         throw uploadError;
       }
-
-      onUpload(filePath);
+      updateUserMutation
+        .mutateAsync({
+          ...profile,
+          avatarUrl: `${process.env.SUPABASE_URL}/storage/v1/object/public/avatars/${filePath}`,
+        })
+        .then(() => {
+          setAvatarStatus('');
+        });
     } catch (error) {
-      alert('Error uploading avatar!');
-    } finally {
-      setUploading(false);
+      toast({
+        title: 'Error uploading avatar!',
+        description: error.message,
+        status: 'error',
+      });
     }
+    event.target.value = null;
+  };
+
+  const handleClick = () => {
+    inputRef.current?.click();
+  };
+
+  const handleDeleteAvatar = async () => {
+    onClose();
+    setAvatarStatus('Deleting...');
+    updateUserMutation
+      .mutateAsync({
+        ...profile,
+        avatarUrl: null,
+      })
+      .then(() => {
+        setAvatarStatus('');
+      });
   };
 
   return (
-    <div>
-      {avatarUrl ? (
-        <Image
-          width={size}
-          height={size}
-          src={avatarUrl}
-          alt="Avatar"
-          className="avatar image"
-          style={{ height: size, width: size }}
-        />
-      ) : (
-        <div
-          className="avatar no-image"
-          style={{ height: size, width: size }}
-        />
-      )}
-      <div style={{ width: size }}>
-        <label className="button primary block" htmlFor="single">
-          {uploading ? 'Uploading ...' : 'Upload'}
-        </label>
-        <input
-          style={{
-            visibility: 'hidden',
-            position: 'absolute',
-          }}
-          type="file"
-          id="single"
-          accept="image/*"
-          onChange={uploadAvatar}
-          disabled={uploading}
-        />
-      </div>
-    </div>
+    <VStack align="flex-start">
+      <ChakraAvatar
+        key={`${username}-${avatarUrl}`}
+        width={size}
+        height={size}
+        src={avatarUrl}
+        name={username || ''}
+      />
+      <Popover isOpen={isOpen} onClose={onClose}>
+        <PopoverTrigger>
+          <Button
+            leftIcon={avatarUrl ? <FiEdit /> : <FiUpload />}
+            mt={-16}
+            colorScheme="blue"
+            isDisabled={isLoading}
+            _disabled={{ opacity: 1, cursor: 'not-allowed' }}
+            isLoading={avatarStatus !== '' || updateUserMutation.isLoading}
+            loadingText={avatarStatus}
+            onClick={onToggle}
+          >
+            {avatarUrl ? 'Edit' : 'Upload'}
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent w={160}>
+          <PopoverArrow />
+          <PopoverBody p="5px 0 5px 0">
+            <InputGroup onClick={handleClick} cursor="pointer" h="28px">
+              <input
+                type="file"
+                multiple={false}
+                accept="image/*"
+                id="single"
+                onChange={uploadAvatar}
+                disabled={updateUserMutation.isLoading || isLoading}
+                ref={inputRef}
+                hidden
+              />
+              <Text
+                pl="7px"
+                pr="7px"
+                w={160}
+                _hover={{ bg: useColorModeValue('blue.300', 'blue.600') }}
+              >
+                Upload a photo...
+              </Text>
+            </InputGroup>
+            {avatarUrl && (
+              <>
+                <Divider />
+                <Text
+                  p="2px 7px 0 7px"
+                  color="red"
+                  h="28px"
+                  fontWeight="semibold"
+                  _hover={{ bg: useColorModeValue('blue.300', 'blue.600') }}
+                  cursor="pointer"
+                  onClick={handleDeleteAvatar}
+                >
+                  Delete
+                </Text>
+              </>
+            )}
+          </PopoverBody>
+        </PopoverContent>
+      </Popover>
+    </VStack>
   );
 }

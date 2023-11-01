@@ -4,6 +4,7 @@ import { ChangeEvent, useEffect, useState } from 'react';
 import {
   Box,
   Button,
+  Flex,
   FormControl,
   FormLabel,
   Input,
@@ -18,6 +19,7 @@ import { useUserData } from '@/hooks/useUserData';
 import { ProfileData } from '@/types/profile';
 import AccountDeletionModal from '@/components/modal/AccountDeletionModal';
 import { useUpdateUserMutation } from '../../hooks/useUpdateUserMutation';
+import Avatar from './avatar';
 
 export default function AccountForm({ session }: { session: Session | null }) {
   const toast = useToast();
@@ -66,54 +68,81 @@ export default function AccountForm({ session }: { session: Session | null }) {
   };
 
   return (
-    <VStack spacing={4} className="form-widget">
-      <FormControl>
-        <FormLabel htmlFor="email">Email</FormLabel>
-        <Input id="email" type="text" value={session?.user.email} isDisabled />
-      </FormControl>
+    <VStack spacing={4} minW="100%">
+      <Flex gap={16} w="100%">
+        <VStack spacing={4} className="form-widget" w="60%" align="flex-start">
+          <FormControl>
+            <FormLabel htmlFor="email">Email</FormLabel>
+            <Input
+              id="email"
+              type="text"
+              value={session?.user.email}
+              isDisabled
+            />
+          </FormControl>
 
-      <FormControl>
-        <FormLabel htmlFor="fullName">Full Name</FormLabel>
-        <Skeleton isLoaded={!isLoading} style={{ borderRadius: '0.375rem' }}>
-          <Input
-            id="fullName"
-            type="text"
-            value={profileData.fullName || ''}
-            onChange={handleInputChange}
+          <FormControl>
+            <FormLabel htmlFor="fullName">Full Name</FormLabel>
+            <Skeleton
+              isLoaded={!isLoading}
+              style={{ borderRadius: '0.375rem' }}
+            >
+              <Input
+                id="fullName"
+                type="text"
+                value={profileData.fullName || ''}
+                onChange={handleInputChange}
+              />
+            </Skeleton>
+          </FormControl>
+
+          <FormControl>
+            <FormLabel htmlFor="username">Username</FormLabel>
+            <Skeleton
+              isLoaded={!isLoading}
+              style={{ borderRadius: '0.375rem' }}
+            >
+              <Input
+                id="username"
+                type="text"
+                value={profileData.username || ''}
+                onChange={handleInputChange}
+              />
+            </Skeleton>
+          </FormControl>
+
+          <FormControl>
+            <FormLabel htmlFor="website">Website</FormLabel>
+            <Skeleton
+              isLoaded={!isLoading}
+              style={{ borderRadius: '0.375rem' }}
+            >
+              <Input
+                id="website"
+                type="url"
+                value={profileData.website || ''}
+                onChange={handleInputChange}
+              />
+            </Skeleton>
+          </FormControl>
+          {profileData.updatedAt && (
+            <Text fontSize="sm" color="gray.500">
+              Updated at: {profileData.updatedAt.toString()}
+            </Text>
+          )}
+        </VStack>
+        <VStack align="flex-start">
+          <Text fontSize="md" fontWeight="medium">
+            Profile Picture
+          </Text>
+          <Avatar
+            uid={user?.id ?? ''}
+            profile={profileData}
+            size={200}
+            isLoading={isLoading}
           />
-        </Skeleton>
-      </FormControl>
-
-      <FormControl>
-        <FormLabel htmlFor="username">Username</FormLabel>
-        <Skeleton isLoaded={!isLoading} style={{ borderRadius: '0.375rem' }}>
-          <Input
-            id="username"
-            type="text"
-            value={profileData.username || ''}
-            onChange={handleInputChange}
-          />
-        </Skeleton>
-      </FormControl>
-
-      <FormControl>
-        <FormLabel htmlFor="website">Website</FormLabel>
-        <Skeleton isLoaded={!isLoading} style={{ borderRadius: '0.375rem' }}>
-          <Input
-            id="website"
-            type="url"
-            value={profileData.website || ''}
-            onChange={handleInputChange}
-          />
-        </Skeleton>
-      </FormControl>
-
-      {profileData.updatedAt && (
-        <Text fontSize="sm" color="gray.500">
-          Updated at: {profileData.updatedAt.toString()}
-        </Text>
-      )}
-
+        </VStack>
+      </Flex>
       <Button
         colorScheme="blue"
         onClick={updateProfile}
@@ -122,7 +151,6 @@ export default function AccountForm({ session }: { session: Session | null }) {
       >
         Update
       </Button>
-
       <Box>
         <form action="/auth/signout" method="post">
           <Button type="submit" isDisabled={isLoading}>
@@ -130,7 +158,6 @@ export default function AccountForm({ session }: { session: Session | null }) {
           </Button>
         </form>
       </Box>
-
       <Box>
         <Button
           type="submit"

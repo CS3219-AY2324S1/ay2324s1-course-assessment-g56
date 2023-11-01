@@ -3935,6 +3935,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"dayjs@npm:^1.11.10":
+  version: 1.11.10
+  resolution: "dayjs@npm:1.11.10"
+  checksum: a6b5a3813b8884f5cd557e2e6b7fa569f4c5d0c97aca9558e38534af4f2d60daafd3ff8c2000fed3435cfcec9e805bcebd99f90130c6d1c5ef524084ced588c4
+  languageName: node
+  linkType: hard
+
 "debug@npm:2.6.9, debug@npm:^2.2.0":
   version: 2.6.9
   resolution: "debug@npm:2.6.9"
@@ -5073,6 +5080,7 @@ __metadata:
     "@types/react-dom": ^18
     axios: ^1.5.1
     chakra-react-select: ^4.7.2
+    dayjs: ^1.11.10
     dotenv: ^16.3.1
     framer-motion: ^10.16.4
     next: 13.5.4
