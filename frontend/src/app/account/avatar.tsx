@@ -41,6 +41,7 @@ export default function Avatar({
   const { avatarUrl, username } = profile;
   const updateUserMutation = useUpdateUserMutation(uid ?? '');
   const [avatarStatus, setAvatarStatus] = useState('');
+  const buttonHoverColor = useColorModeValue('blue.300', 'blue.600');
 
   const inputRef = useRef<HTMLInputElement | null>(null);
   const { isOpen, onToggle, onClose } = useDisclosure();
@@ -67,14 +68,11 @@ export default function Avatar({
       if (uploadError) {
         throw uploadError;
       }
-      updateUserMutation
-        .mutateAsync({
-          ...profile,
-          avatarUrl: `${process.env.SUPABASE_URL}/storage/v1/object/public/avatars/${filePath}`,
-        })
-        .then(() => {
-          setAvatarStatus('');
-        });
+      await updateUserMutation.mutateAsync({
+        ...profile,
+        avatarUrl: `${process.env.SUPABASE_URL}/storage/v1/object/public/avatars/${filePath}`,
+      });
+      setAvatarStatus('');
     } catch (error) {
       toast({
         title: 'Error uploading avatar!',
@@ -92,14 +90,11 @@ export default function Avatar({
   const handleDeleteAvatar = async () => {
     onClose();
     setAvatarStatus('Deleting...');
-    updateUserMutation
-      .mutateAsync({
-        ...profile,
-        avatarUrl: null,
-      })
-      .then(() => {
-        setAvatarStatus('');
-      });
+    await updateUserMutation.mutateAsync({
+      ...profile,
+      avatarUrl: null,
+    });
+    setAvatarStatus('');
   };
 
   return (
@@ -140,12 +135,7 @@ export default function Avatar({
                 ref={inputRef}
                 hidden
               />
-              <Text
-                pl="7px"
-                pr="7px"
-                w={160}
-                _hover={{ bg: useColorModeValue('blue.300', 'blue.600') }}
-              >
+              <Text pl="7px" pr="7px" w={160} _hover={{ bg: buttonHoverColor }}>
                 Upload a photo...
               </Text>
             </InputGroup>
@@ -157,7 +147,7 @@ export default function Avatar({
                   color="red"
                   h="28px"
                   fontWeight="semibold"
-                  _hover={{ bg: useColorModeValue('blue.300', 'blue.600') }}
+                  _hover={{ bg: buttonHoverColor }}
                   cursor="pointer"
                   onClick={handleDeleteAvatar}
                 >
