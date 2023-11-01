@@ -16,6 +16,7 @@ import {
 import { FiChevronDown } from 'react-icons/fi';
 import Link from 'next/link';
 import { ProfileData } from '@/types/profile';
+import { useMemo } from 'react';
 
 type Props = {
   profileData: ProfileData;
@@ -23,23 +24,24 @@ type Props = {
 
 function UserPopover(props: Props) {
   const { profileData } = props;
+  const avatar = useMemo(
+    () => (
+      <Avatar
+        key={`${profileData.username}-${profileData.avatarUrl}`}
+        name={profileData.username !== null ? profileData.username : undefined}
+        size="sm"
+        src={profileData.avatarUrl !== null ? profileData.avatarUrl : undefined}
+      />
+    ),
+    [profileData.avatarUrl],
+  );
 
   return (
     <Flex alignItems="center">
       <Menu>
         <MenuButton py={2} transition="all 0.3s" _focus={{ boxShadow: 'none' }}>
           <HStack>
-            <Avatar
-              name={
-                profileData.username !== null ? profileData.username : undefined
-              }
-              size="sm"
-              src={
-                profileData.avatarUrl !== null
-                  ? profileData.avatarUrl
-                  : undefined // 'https://images.unsplash.com/photo-1619946794135-5bc917a27793?ixlib=rb-0.3.5&q=80&fm=jpg&crop=faces&fit=crop&h=200&w=200&s=b616b2c5b373a80ffc9636ba24f7a4a9'
-              }
-            />
+            {avatar}
             <VStack
               display={{ base: 'none', md: 'flex' }}
               alignItems="flex-start"
