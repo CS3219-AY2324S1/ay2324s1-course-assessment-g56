@@ -43,15 +43,14 @@ steps:
       - '-t'
       - 'gcr.io/$PROJECT_ID/question_service'
       - ./backend/question_service
-    # Add any other Docker build options as needed.
-  # Step 3: Run tests
-  - name: 'gcr.io/$PROJECT_ID/question_service'
-    entrypoint: 'sh'
+  # Step 3: Run tests [No need for npm install as it was handled during building of docker image]
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
     args:
       - '-c'
       - |
-        cd /app  # Change to your project directory.
-        npm test  # Run your tests.
+        # Run your tests.
+        npm test  
   # Step 4: Delete the .env file
   - name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: 'bash'
