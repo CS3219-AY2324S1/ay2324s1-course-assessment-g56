@@ -15,6 +15,8 @@ dotenv.config({
   path: '../src/.env',
 });
 
+console.log(process.env, 'ENVIRONMENT');
+
 const easyValue = 1;
 const mediumValue = 2;
 const hardValue = 3;
