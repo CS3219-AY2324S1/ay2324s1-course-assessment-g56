@@ -16,6 +16,7 @@ dotenv.config({
 });
 
 console.log(process.env, 'ENVIRONMENT');
+console.log(process.env.apiKey, 'API KEY');
 
 const easyValue = 1;
 const mediumValue = 2;
