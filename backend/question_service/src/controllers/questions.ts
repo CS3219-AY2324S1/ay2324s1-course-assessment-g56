@@ -25,13 +25,20 @@ const firebaseConfig = {
   measurementId: process.env.measurementId,
 };
 
-const app = initializeApp(firebaseConfig);
-export const firebaseDB = getFirestore(app);
+export const firebaseApp = initializeApp(firebaseConfig);
+export const firebaseDB = getFirestore(firebaseApp);
+
+let collectionName: string;
+if (process.env.NODE_ENV === 'test') {
+  collectionName = 'test_questions';
+} else {
+  collectionName = 'questions';
+}
 
 // Get all questions from DB
 export const getAllQuestions: RequestHandler = async (_req, res, next) => {
   try {
-    const questionsCol = collection(firebaseDB, 'questions');
+    const questionsCol = collection(firebaseDB, collectionName);
     const questionSnapshot = await getDocs(questionsCol);
     const questionList = questionSnapshot.docs.map((doc) => ({
       uuid: doc.id,
@@ -46,12 +53,13 @@ export const getAllQuestions: RequestHandler = async (_req, res, next) => {
 
 export const addQuestion: RequestHandler = async (req, res, next) => {
   const questionData = req.body;
+  console.log(questionData, 'QUESTION DATA');
   questionData.slug = slugify(questionData.title, {
     lower: true,
     strict: true,
   });
   try {
-    const questionsCol = collection(firebaseDB, 'questions');
+    const questionsCol = collection(firebaseDB, collectionName);
 
     const q = query(questionsCol, where('slug', '==', questionData.slug));
     const hasQueryResults = !(await getDocs(q)).empty;
@@ -70,13 +78,13 @@ export const updateQuestionById: RequestHandler = async (req, res, next) => {
   const { uuid } = req.params as { uuid: string };
   const updatedData = req.body;
   try {
-    const questionDoc = doc(firebaseDB, 'questions', uuid);
+    const questionDoc = doc(firebaseDB, collectionName, uuid);
     updatedData.slug = slugify(updatedData.title, {
       lower: true,
       strict: true,
     });
     const q = query(
-      collection(firebaseDB, 'questions'),
+      collection(firebaseDB, collectionName),
       where('slug', '==', updatedData.slug),
     );
     const queryResults = await getDocs(q);
@@ -97,7 +105,7 @@ export const updateQuestionById: RequestHandler = async (req, res, next) => {
 export const deleteQuestionById: RequestHandler = async (req, res, next) => {
   const { uuid } = req.params as { uuid: string };
   try {
-    const questionDoc = doc(firebaseDB, 'questions', uuid);
+    const questionDoc = doc(firebaseDB, collectionName, uuid);
     await deleteDoc(questionDoc);
     res.sendStatus(204);
   } catch (error) {
@@ -109,7 +117,7 @@ export const getQuestionBySlug: RequestHandler = async (req, res, next) => {
   const { slug } = req.params as { slug: string };
   try {
     const q = query(
-      collection(firebaseDB, 'questions'),
+      collection(firebaseDB, collectionName),
       where('slug', '==', slug),
     );
     const queryQuestions = (await getDocs(q)).docs;

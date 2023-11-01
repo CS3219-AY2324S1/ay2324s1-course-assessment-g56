@@ -1,3 +1,4 @@
+import mockMiddleWare from 'mockComponents/mockAuthMiddleware';
 import { Server } from 'socket.io';
 
 import {
@@ -13,7 +14,12 @@ import handleFindPair from './handleFindPair';
 import handleStopFindingPair from './handleStopFindingPair';
 
 const setUpIo = (io: Server): void => {
-  io.use(authMiddleware);
+  if (process.env.NODE_ENV !== 'test') {
+    io.use(authMiddleware);
+  } else {
+    io.use(mockMiddleWare);
+  }
+
   io.on(CONNECT, (socket) => {
     console.log(socket.id, ' IO connected');
     socket.on(REQ_FIND_PAIR, handleFindPair(socket, io));

@@ -5,6 +5,7 @@ import SidToUidMap from 'structs/SidToUidMap';
 import UidToCallbackMap from 'structs/UidToCallbackMap';
 
 import {
+  DISCONNECT,
   ERROR_FIND_PAIR,
   RES_CANNOT_FIND_PAIR,
   RES_FIND_PAIR,
@@ -31,12 +32,7 @@ const handleFindPair =
     upperBoundDifficulty: QuestionComplexity,
   ): Promise<void> => {
     console.log(
-      'Socket',
-      socket.id,
-      'finding pair for',
-      lowerBoundDifficulty,
-      'to',
-      upperBoundDifficulty,
+      `Socket ${socket.id} finding pair for ${lowerBoundDifficulty} to ${upperBoundDifficulty}`,
     );
 
     const uid = SidToUidMap.retrieveUid(socket.id);
@@ -89,7 +85,7 @@ const handleFindPair =
     if (result == null) {
       console.log('No current match found, setting timeout.');
       const timeout = setTimeout(() => {
-        console.log('Could not find pair in time', uid);
+        console.log(`Could not find pair in time ${uid}`);
         // Leave the queue
         MatchingQueue.remove(newUser);
         UidToCallbackMap.remove(uid);
@@ -98,6 +94,8 @@ const handleFindPair =
       UidToCallbackMap.insert(uid, timeout);
       return;
     }
+
+    socket.on(DISCONNECT, () => {});
 
     // We found a match!
     const [difficulty, user1, user2] = result;
