@@ -15,7 +15,7 @@ steps:
       - '.'
     dir: './backend/question_service' # Replace with the actual directory path where you want to run npm install.
 
-  - name: 'gcr.io/cloud-builders/bash'
+  - name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: 'bash'
     args:
       - '-c'
