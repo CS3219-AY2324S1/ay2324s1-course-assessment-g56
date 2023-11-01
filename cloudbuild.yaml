@@ -1,26 +1,26 @@
 #Question Service
 steps:
-# Step 1: Create the .env file in backend/question_service
-- name: 'gcr.io/cloud-builders/gcloud'
-  entrypoint: 'bash'
-  args:
-    - '-c'
-    - |
-      gcloud secrets versions access latest --secret=question_service > backend/question_service/.env
-# Step 2: Install dependencies
-- name: 'node:18'
-  entrypoint: 'npm'
-  args:
-    - 'install'
-    - '--prefix'
-    - '.'
-  dir: 'backend/question_service'
-# Step 3: Run tests
-- name: 'node:18'
-  entrypoint: 'npm'
-  args:
-    - 'test'
-  dir: 'backend/question_service' 
+  # Step 1: Create the .env file in backend/question_service
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        gcloud secrets versions access latest --secret=question_service > backend/question_service/.env
+  # Step 2: Install dependencies
+  - name: 'node:18'
+    entrypoint: 'npm'
+    args:
+      - 'install'
+      - '--prefix'
+      - '.'
+    dir: 'backend/question_service'
+  # Step 3: Run tests
+  - name: 'node:18'
+    entrypoint: 'npm'
+    args:
+      - 'test'
+    dir: 'backend/question_service' 
 # Step 4: Build your Docker image in backend/question_service
   - name: 'gcr.io/cloud-builders/docker'
     args:
