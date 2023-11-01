@@ -21,7 +21,7 @@ steps:
       - '-c'
       - |
         # Load environment variables from .env file
-        source backend/question_service/src/.env
+        source ./backend/question_service/src/.env
 
         # Now you can access these environment variables in your test script
         npm test
