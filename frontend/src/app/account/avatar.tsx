@@ -27,12 +27,10 @@ import { useUpdateUserMutation } from '@/hooks/useUpdateUserMutation';
 export default function Avatar({
   uid,
   profile,
-  size,
   isLoading,
 }: {
   uid: string;
   profile: ProfileData;
-  size: number;
   isLoading: boolean;
 }) {
   const supabase = createClientComponentClient<Database>({
@@ -108,8 +106,8 @@ export default function Avatar({
     <VStack align="flex-start">
       <ChakraAvatar
         key={`${username}-${avatarUrl}`}
-        width={size}
-        height={size}
+        height={{ base: 100, md: 150, lg: 200 }}
+        width={{ base: 100, md: 150, lg: 200 }}
         src={avatarUrl}
         name={username || ''}
       />
@@ -117,7 +115,7 @@ export default function Avatar({
         <PopoverTrigger>
           <Button
             leftIcon={avatarUrl ? <FiEdit /> : <FiUpload />}
-            mt={-16}
+            mt={{ base: 0, md: -8, lg: -16 }}
             colorScheme="blue"
             isDisabled={isLoading}
             _disabled={{ opacity: 1, cursor: 'not-allowed' }}

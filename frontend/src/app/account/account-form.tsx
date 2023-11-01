@@ -138,7 +138,6 @@ export default function AccountForm({ session }: { session: Session | null }) {
           <Avatar
             uid={user?.id ?? ''}
             profile={profileData}
-            size={200}
             isLoading={isLoading}
           />
         </VStack>
