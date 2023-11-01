@@ -19,9 +19,7 @@ export default async function authMiddleware(req: NextRequest) {
     .select('updated_at')
     .single();
 
-  const hasOnboarded = !!data?.updated_at;
-
-  if (data && !hasOnboarded) {
+  if (data && !data.updated_at && req.nextUrl.pathname !== '/onboarding') {
     return NextResponse.redirect(
       new URL('/onboarding', process.env.FRONTEND_SERVICE),
     );
