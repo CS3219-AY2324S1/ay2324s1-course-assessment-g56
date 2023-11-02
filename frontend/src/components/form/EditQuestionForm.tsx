@@ -81,10 +81,7 @@ function EditQuestionForm({ slug, accessToken }: EditQuestionFormProps) {
           <FormLabel pl="4" flex="0 0 120px">
             Title:{' '}
           </FormLabel>
-          <Skeleton
-            isLoaded={question !== null}
-            style={{ borderRadius: '0.375rem' }}
-          >
+          <Skeleton isLoaded={question !== null} borderRadius="0.375rem">
             <Input
               type="text"
               name="title"
@@ -101,10 +98,7 @@ function EditQuestionForm({ slug, accessToken }: EditQuestionFormProps) {
           <FormLabel pl="4" flex="0 0 120px">
             Category:{' '}
           </FormLabel>
-          <Skeleton
-            isLoaded={question !== null}
-            style={{ borderRadius: '0.375rem' }}
-          >
+          <Skeleton isLoaded={question !== null} borderRadius="0.375rem">
             <Input
               type="text"
               name="category"
@@ -120,10 +114,7 @@ function EditQuestionForm({ slug, accessToken }: EditQuestionFormProps) {
           <FormLabel pl="4" flex="0 0 120px">
             Description:{' '}
           </FormLabel>
-          <Skeleton
-            isLoaded={question !== null}
-            style={{ borderRadius: '0.375rem' }}
-          >
+          <Skeleton isLoaded={question !== null} borderRadius="0.375rem">
             <Input
               type="text"
               name="description"
@@ -139,10 +130,7 @@ function EditQuestionForm({ slug, accessToken }: EditQuestionFormProps) {
           <FormLabel pl="4" flex="0 0 120px">
             Difficulty:{' '}
           </FormLabel>
-          <Skeleton
-            isLoaded={question !== null}
-            style={{ borderRadius: '0.375rem' }}
-          >
+          <Skeleton isLoaded={question !== null} borderRadius="0.375rem">
             <Select
               name="difficulty"
               value={
@@ -163,10 +151,7 @@ function EditQuestionForm({ slug, accessToken }: EditQuestionFormProps) {
           <FormLabel pl="4" flex="0 0 120px">
             Link:{' '}
           </FormLabel>
-          <Skeleton
-            isLoaded={question !== null}
-            style={{ borderRadius: '0.375rem' }}
-          >
+          <Skeleton isLoaded={question !== null} borderRadius="0.375rem">
             <Input
               type="text"
               name="link"

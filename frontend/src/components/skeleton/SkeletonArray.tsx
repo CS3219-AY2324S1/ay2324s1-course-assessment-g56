@@ -6,7 +6,7 @@ function SkeletonArray() {
   return (
     <VStack spacing={6} align="stretch">
       {skeletonArray.map(() => (
-        <Skeleton h={10} style={{ borderRadius: '0.375rem' }} />
+        <Skeleton h={10} borderRadius="0.375rem" />
       ))}
     </VStack>
   );

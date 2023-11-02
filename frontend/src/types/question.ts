@@ -26,6 +26,13 @@ export const NumberToQuestionDifficultyMap: Record<number, QuestionDifficulty> =
     3: QuestionDifficulty.HARD,
   });
 
+export const QuestionDifficultyToColourMap: Record<QuestionDifficulty, string> =
+  Object.freeze({
+    [QuestionDifficulty.EASY]: 'green',
+    [QuestionDifficulty.MEDIUM]: 'orange',
+    [QuestionDifficulty.HARD]: 'red',
+  });
+
 export interface QuestionRowData {
   uuid: string;
   slug: string;

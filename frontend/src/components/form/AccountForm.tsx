@@ -105,10 +105,7 @@ export default function AccountForm({ session }: { session: Session | null }) {
 
           <FormControl isRequired>
             <FormLabel htmlFor="fullName">Full Name</FormLabel>
-            <Skeleton
-              isLoaded={!isLoading}
-              style={{ borderRadius: '0.375rem' }}
-            >
+            <Skeleton isLoaded={!isLoading} borderRadius="0.375rem">
               <Input
                 id="fullName"
                 type="text"
@@ -120,10 +117,7 @@ export default function AccountForm({ session }: { session: Session | null }) {
 
           <FormControl isRequired>
             <FormLabel htmlFor="username">Username</FormLabel>
-            <Skeleton
-              isLoaded={!isLoading}
-              style={{ borderRadius: '0.375rem' }}
-            >
+            <Skeleton isLoaded={!isLoading} borderRadius="0.375rem">
               <Input
                 id="username"
                 type="text"
@@ -137,10 +131,7 @@ export default function AccountForm({ session }: { session: Session | null }) {
             <FormLabel id="preferredInterviewLanguage">
               Preferred Interview Language
             </FormLabel>
-            <Skeleton
-              isLoaded={!isLoading}
-              style={{ borderRadius: '0.375rem' }}
-            >
+            <Skeleton isLoaded={!isLoading} borderRadius="0.375rem">
               <Select
                 onChange={changeLanguage}
                 value={profileData.preferredInterviewLanguage || ''}
@@ -158,10 +149,7 @@ export default function AccountForm({ session }: { session: Session | null }) {
 
           <FormControl>
             <FormLabel htmlFor="website">Website</FormLabel>
-            <Skeleton
-              isLoaded={!isLoading}
-              style={{ borderRadius: '0.375rem' }}
-            >
+            <Skeleton isLoaded={!isLoading} borderRadius="0.375rem">
               <Input
                 id="website"
                 type="url"

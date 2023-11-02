@@ -1,6 +1,7 @@
 'use client';
 
 import { useQuestionData } from '@/hooks/useQuestionData';
+import { QuestionDifficultyToColourMap } from '@/types/question';
 import {
   VStack,
   useColorModeValue,
@@ -8,9 +9,16 @@ import {
   Skeleton,
   Text,
   Link,
+  Card,
+  CardBody,
+  Flex,
+  HStack,
+  Heading,
+  Tag,
+  Icon,
 } from '@chakra-ui/react';
 import { useRouter } from 'next/navigation';
-import { FiArrowLeft } from 'react-icons/fi';
+import { FiArrowLeft, FiExternalLink } from 'react-icons/fi';
 
 interface QuestionCardProps {
   slug: string;
@@ -23,6 +31,8 @@ function QuestionCard({ slug, accessToken }: QuestionCardProps) {
     slug,
     accessToken ?? '',
   );
+  const difficultyColour =
+    QuestionDifficultyToColourMap[fetchedQuestion?.difficulty];
   return (
     <VStack
       bg={useColorModeValue('white', 'gray.900')}
@@ -30,66 +40,56 @@ function QuestionCard({ slug, accessToken }: QuestionCardProps) {
       py="10"
       pb="10"
     >
-      <IconButton
-        aria-label="Back"
-        icon={<FiArrowLeft />}
-        onClick={() => router.push('/home')}
-        height={54}
-        width={54}
-        fontSize={30}
-        colorScheme="teal"
-      />
-      <Skeleton
-        isLoaded={!questionLoading}
-        alignSelf="flex-start"
-        ml={10}
-        style={{ borderRadius: '0.375rem' }}
-      >
-        <Text fontSize="xl" fontWeight="bold">
-          Title: {fetchedQuestion?.title}
-        </Text>
+      <Flex w="100%" h={54}>
+        <IconButton
+          aria-label="Back"
+          icon={<FiArrowLeft />}
+          onClick={() => router.push('/home')}
+          height={54}
+          width={54}
+          fontSize={30}
+          ml={10}
+          pos="absolute"
+          colorScheme="teal"
+        />
+        <Skeleton
+          isLoaded={!questionLoading}
+          ml="50%"
+          mt="7px"
+          transform="translateX(-50%)"
+          borderRadius="0.375rem"
+        >
+          <Heading fontSize="3xl" fontWeight="bold">
+            {fetchedQuestion?.title}
+          </Heading>
+        </Skeleton>
+      </Flex>
+      <Skeleton isLoaded={!questionLoading} borderRadius="0.375rem">
+        <HStack spacing={2}>
+          <Tag key="difficulty" colorScheme={difficultyColour}>
+            {fetchedQuestion?.difficulty}
+          </Tag>
+          {fetchedQuestion?.category.split(', ').map((category: string) => (
+            <Tag key={category} colorScheme="blue">
+              {category}
+            </Tag>
+          ))}
+        </HStack>
       </Skeleton>
-      <Skeleton
-        isLoaded={!questionLoading}
-        alignSelf="flex-start"
-        ml={10}
-        style={{ borderRadius: '0.375rem' }}
-      >
-        <Text fontSize="md" fontWeight="bold">
-          Description: {fetchedQuestion?.description}
-        </Text>
-      </Skeleton>
-      <Skeleton
-        isLoaded={!questionLoading}
-        alignSelf="flex-start"
-        ml={10}
-        style={{ borderRadius: '0.375rem' }}
-      >
-        <Text fontSize="md" fontWeight="bold">
-          {fetchedQuestion?.category}
-        </Text>
-      </Skeleton>
-      <Skeleton
-        isLoaded={!questionLoading}
-        alignSelf="flex-start"
-        ml={10}
-        style={{ borderRadius: '0.375rem' }}
-      >
-        <Text fontSize="md" fontWeight="bold">
-          Difficulty: {fetchedQuestion?.difficulty}
-        </Text>
-      </Skeleton>
-      <Skeleton
-        isLoaded={!questionLoading}
-        alignSelf="flex-start"
-        ml={10}
-        style={{ borderRadius: '0.375rem' }}
-      >
-        <Text fontSize="md" fontWeight="bold">
-          Link:{' '}
-          <Link href={fetchedQuestion?.link}>{fetchedQuestion?.link}</Link>
-        </Text>
-      </Skeleton>
+      <Card w="90%">
+        <CardBody>
+          <Skeleton isLoaded={!questionLoading} borderRadius="0.375rem">
+            <Text fontSize="md" fontWeight="bold">
+              <Link isExternal href={`//${fetchedQuestion?.link}`}>
+                {fetchedQuestion?.link} <Icon as={FiExternalLink} mx="2px" />
+              </Link>
+            </Text>
+          </Skeleton>
+          <Skeleton isLoaded={!questionLoading} borderRadius="0.375rem">
+            <Text>{fetchedQuestion?.description}</Text>
+          </Skeleton>
+        </CardBody>
+      </Card>
     </VStack>
   );
 }
