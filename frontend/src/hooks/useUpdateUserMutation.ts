@@ -1,15 +1,11 @@
 import { USER_QUERY_KEY } from '@/constants/queryKey';
-import { Database } from '@/types/database.types';
+import { useSupabase } from '@/contexts/SupabaseProvider';
 import { ProfileData } from '@/types/profile';
 import { useToast } from '@chakra-ui/react';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 export const useUpdateUserMutation = (userId: string) => {
-  const supabase = createClientComponentClient<Database>({
-    supabaseUrl: process.env.SUPABASE_URL,
-    supabaseKey: process.env.SUPABASE_ANON_KEY,
-  });
+  const supabase = useSupabase();
   const toast = useToast();
   const queryClient = useQueryClient();
   return useMutation({

@@ -1,8 +1,6 @@
 'use client';
 
 import React, { useRef, useState } from 'react';
-import { Database } from '@/types/database.types';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { FiEdit, FiUpload } from 'react-icons/fi';
 import {
   Button,
@@ -23,6 +21,7 @@ import {
 import dayjs from 'dayjs';
 import { ProfileData } from '@/types/profile';
 import { useUpdateUserMutation } from '@/hooks/useUpdateUserMutation';
+import { useSupabase } from '@/contexts/SupabaseProvider';
 
 export default function AvatarForm({
   uid,
@@ -33,10 +32,7 @@ export default function AvatarForm({
   profile: ProfileData;
   isLoading: boolean;
 }) {
-  const supabase = createClientComponentClient<Database>({
-    supabaseUrl: process.env.SUPABASE_URL,
-    supabaseKey: process.env.SUPABASE_ANON_KEY,
-  });
+  const supabase = useSupabase();
   const toast = useToast();
   const { avatarUrl, username } = profile;
   const updateUserMutation = useUpdateUserMutation(uid ?? '');
