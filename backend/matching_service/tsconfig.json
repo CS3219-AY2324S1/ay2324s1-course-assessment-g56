@@ -7,9 +7,10 @@
       "constants/*": ["./constants/*"],
       "socket/*": ["./socket/*"],
       "structs/*": ["./structs/*"],
-      "types/*": ["./types/*"]
+      "types/*": ["./types/*"],
+      "mockComponents/*": ["./mockComponents/*"]
     },
-    "rootDir": "src",
+    "rootDir": "./src",
 
     "allowSyntheticDefaultImports": true,
     "allowUnreachableCode": false,

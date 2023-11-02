@@ -5,10 +5,11 @@ import {
   Table as ChakraTable,
   LinkBox,
   LinkOverlay,
+  Skeleton,
   Tbody,
   Td,
   Text,
-  Tr,
+  useColorModeValue,
 } from '@chakra-ui/react';
 import {
   useReactTable,
@@ -16,31 +17,36 @@ import {
   getSortedRowModel,
   SortingState,
   ColumnDef,
-  flexRender,
   RowData,
 } from '@tanstack/react-table';
 import { useState } from 'react';
 import NextLink from 'next/link';
+import { QuestionRowData } from '@/types/question';
+import { Tr, flexRender } from './TableUtils';
 import TableHeader from './TableHeader';
 
 interface TableProps<T extends object> {
   tableData: T[];
-  removeRow: (id: number) => void;
+  removeRow: (uuid: string) => void;
   columns: ColumnDef<T, any>[];
+  isLoading?: boolean;
   isSortable?: boolean;
 }
 
 declare module '@tanstack/table-core' {
   // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
   interface TableMeta<TData extends RowData> {
-    removeRow: (id: number) => void;
+    removeRow: (uuid: string) => void;
   }
 }
+
+const skeletonRows = Array.from({ length: 10 }, (_, i) => i);
 
 function Table<T extends object>({
   tableData,
   removeRow,
   columns,
+  isLoading = false,
   isSortable = true,
 }: TableProps<T>) {
   const [sortBy, setSortBy] = useState<SortingState>([]);
@@ -48,8 +54,8 @@ function Table<T extends object>({
     data: tableData,
     columns,
     meta: {
-      removeRow: (id: number) => {
-        removeRow(id);
+      removeRow: (uuid: string) => {
+        removeRow(uuid);
       },
     },
     state: {
@@ -63,21 +69,46 @@ function Table<T extends object>({
   });
 
   return (
-    <Card variant="outline">
+    <Card variant="outline" bg={useColorModeValue('white', 'gray.900')}>
       <ChakraTable size="sm">
         <TableHeader
           headerGroups={table.getHeaderGroups()}
           isSortable={isSortable}
         />
         <Tbody>
+          {isLoading
+            ? skeletonRows.map((i) => (
+                <Tr key={`skeleton-${i}`}>
+                  <Td
+                    textAlign="center"
+                    colSpan={table.getAllColumns().length}
+                    paddingY={3}
+                  >
+                    <Skeleton isLoaded={!isLoading} h="18px" w="100%" />
+                  </Td>
+                </Tr>
+              ))
+            : table.getRowModel().rows.length === 0 && (
+                <Tr>
+                  <Td
+                    textAlign="center"
+                    colSpan={table.getAllColumns().length}
+                    paddingY={8}
+                  >
+                    <Text color="gray.500">No questions found</Text>
+                  </Td>
+                </Tr>
+              )}
           {table.getRowModel().rows.map((row) => (
             <Tr key={row.id}>
               {row.getVisibleCells().map((cell) =>
-                cell.column.id === 'questionTitle' ? (
+                cell.column.id === 'title' ? (
                   <LinkBox as={Td} key={cell.id}>
                     <LinkOverlay
                       as={NextLink}
-                      href={`/question/${parseInt(row.id, 10) + 1}`}
+                      href={`/question/${
+                        (row.original as QuestionRowData).slug
+                      }`}
                     >
                       {flexRender(
                         cell.column.columnDef.cell,
@@ -93,17 +124,6 @@ function Table<T extends object>({
               )}
             </Tr>
           ))}
-          {table.getRowModel().rows.length === 0 && (
-            <Tr>
-              <Td
-                textAlign="center"
-                colSpan={table.getAllColumns().length}
-                paddingY={8}
-              >
-                <Text color="gray.500">No questions found</Text>
-              </Td>
-            </Tr>
-          )}
         </Tbody>
       </ChakraTable>
     </Card>

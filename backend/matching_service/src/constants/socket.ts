@@ -12,6 +12,9 @@ export const RES_CANNOT_FIND_PAIR = 'res_cannot_find_pair';
 // From frontend: We pressing cancel
 export const REQ_STOP_FINDING_PAIR = 'req_stop_finding_pair';
 
+// From us: OK we stopped finding
+export const RES_STOP_FINDING_PAIR = 'res_stopped_finding_pair';
+
 // From us: gg, something went wrong. I sent an error string over
 export const ERROR_FIND_PAIR = 'error_find_pair';
 

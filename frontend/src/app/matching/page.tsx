@@ -7,23 +7,32 @@ import {
   useColorModeValue,
   Center,
   VStack,
+  useToast,
+  Alert,
+  AlertIcon,
+  useDisclosure,
+  CloseButton,
 } from '@chakra-ui/react';
 import { QuestionComplexity } from '@/types/question';
 import {
   DISCONNECT,
   REQ_FIND_PAIR,
   RES_CANNOT_FIND_PAIR,
-  RES_FIND_PAIR,
   RES_FOUND_PAIR,
+  ERROR_FIND_PAIR,
+  REQ_STOP_FINDING_PAIR,
+  RES_STOP_FINDING_PAIR,
+  RES_FIND_PAIR,
 } from '@/constants/socket';
-import { useEffect, useState } from 'react';
-import io from 'socket.io-client';
-import 'dotenv/config';
-import QuestionRangeSlider from '../../components/slider/QuestionRangeSlider';
+import { useState } from 'react';
+import { useSession } from '@/contexts/SupabaseProvider';
 
-const socket = io(process.env.MATCHING_PORT || 'http://localhost:6006', {
-  autoConnect: false,
-});
+import 'dotenv/config';
+import { BasicProfileData } from '@/types/profile';
+import QuestionRangeSlider from '@/components/slider/QuestionRangeSlider';
+import useTimer from '@/hooks/useTimer';
+import useSocket from '@/hooks/useSocket';
+import MatchFoundModal from '@/components/modal/MatchFoundModal';
 
 function Page() {
   const [lowerBoundDifficulty, setLowerBoundDifficulty] =
@@ -33,59 +42,125 @@ function Page() {
     useState<QuestionComplexity>(QuestionComplexity.HARD);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isConnected, setIsConnected] = useState(false);
+  const [isCancelling, setIsCancelling] = useState(false);
+  const [matchedUser, setMatchedUser] = useState<BasicProfileData | null>(null);
+  const [roomId, setRoomId] = useState('');
+  const [difficulty, setDifficulty] = useState<QuestionComplexity | null>(null);
 
-  useEffect(() => {
-    // Listen for 'message' event from the server
-    const onConnect = () => {
-      // console.log('Connected to server.');
-      setIsConnected(true);
-      console.log('Connected to server.');
-    };
+  const {
+    isOpen: isDisconnectVisible,
+    onClose: onDisconnectClose,
+    onOpen: onDisconnectOpen,
+  } = useDisclosure({ defaultIsOpen: true });
 
-    socket.on('connect', onConnect);
+  const { isOpen: isMatchVisible, onOpen: onMatchOpen } = useDisclosure({
+    defaultIsOpen: false,
+  });
 
-    socket.connect();
+  const toast = useToast();
+  const session = useSession();
 
-    return (): void => {
-      socket.off('connect', onConnect);
-    };
-  }, []);
+  const { socket, isConnected } = useSocket(session);
 
-  const sendMessage = () => {
+  const { timer, startTimer, resetTimer } = useTimer();
+
+  const doneMatching = () => {
+    setIsSubmitting(false);
+    setIsCancelling(false);
+    resetTimer();
+  };
+
+  const requestMatch = () => {
     setIsSubmitting(true);
     socket.emit(REQ_FIND_PAIR, lowerBoundDifficulty, upperBoundDifficulty);
 
-    socket.on(RES_FIND_PAIR, () => {
-      // console.log('Working hard to find a match for you...');
+    socket.on(DISCONNECT, () => {
+      onDisconnectOpen();
+      doneMatching();
     });
 
-    socket.on(DISCONNECT, () => {
-      setIsSubmitting(false);
-      // console.log('Disconnected from server.');
+    socket.on(RES_FIND_PAIR, () => {
+      startTimer();
     });
 
     socket.on(RES_CANNOT_FIND_PAIR, () => {
-      setIsSubmitting(false);
-      // console.log('Cannot find a match for you.');
+      doneMatching();
+      if (!toast.isActive(RES_CANNOT_FIND_PAIR)) {
+        toast({
+          id: RES_CANNOT_FIND_PAIR,
+          title: 'No match found!',
+          description:
+            'Please try again later or loosen matching requirements.',
+          status: 'error',
+        });
+      }
     });
 
-    socket.on(RES_FOUND_PAIR, () => {
-      setIsSubmitting(false);
-      // console.log('Found a match for you!');
+    socket.on(ERROR_FIND_PAIR, (msg: string) => {
+      doneMatching();
+      if (!toast.isActive(ERROR_FIND_PAIR)) {
+        toast({
+          id: ERROR_FIND_PAIR,
+          title: `${msg}`,
+          status: 'error',
+        });
+      }
+    });
+
+    socket.on(
+      RES_FOUND_PAIR,
+      ({
+        matchedUser: user,
+        roomId: newRoomId,
+        difficulty: newDifficulty,
+      }: {
+        matchedUser: BasicProfileData;
+        roomId: string;
+        difficulty: QuestionComplexity;
+      }) => {
+        doneMatching();
+        setMatchedUser(user);
+        setRoomId(newRoomId);
+        setDifficulty(newDifficulty);
+        onMatchOpen();
+      },
+    );
+  };
+
+  const cancelMatchRequest = () => {
+    setIsCancelling(true);
+    socket.emit(REQ_STOP_FINDING_PAIR);
+    socket.on(DISCONNECT, () => {
+      doneMatching();
+      onDisconnectOpen();
+    });
+
+    socket.on(RES_STOP_FINDING_PAIR, () => {
+      doneMatching();
     });
   };
 
   return (
     <Center>
       <Box
-        bg={useColorModeValue('white', 'gray.800')}
+        bg={useColorModeValue('white', 'gray.900')}
         p={10}
         width={600}
         borderRadius="md"
         boxShadow="lg"
       >
-        <VStack spacing={4} align="center">
+        <VStack spacing={8} align="center">
+          {isDisconnectVisible && !isConnected && (
+            <Alert status="error">
+              <AlertIcon />
+              Disconnected from server.
+              <CloseButton
+                position="absolute"
+                right={2}
+                onClick={onDisconnectClose}
+              />
+            </Alert>
+          )}
           <Text textAlign="center" fontSize="xl" fontWeight="bold">
             Choose Matching Difficulty
           </Text>
@@ -94,17 +169,34 @@ function Page() {
             setUpperBoundDifficulty={setUpperBoundDifficulty}
           />
           <Button
-            onClick={sendMessage}
+            onClick={requestMatch}
             colorScheme="green"
             size="md"
             isLoading={isSubmitting}
             isDisabled={!isConnected}
             mt="40px"
-            loadingText="Finding a match..."
+            loadingText={`Finding a match... (${timer}s)`}
           >
             Find match
           </Button>
+          {isSubmitting && (
+            <Button
+              onClick={cancelMatchRequest}
+              size="md"
+              isLoading={isCancelling}
+              isDisabled={!isConnected || !isSubmitting}
+              loadingText="Cancelling..."
+            >
+              Cancel
+            </Button>
+          )}
         </VStack>
+        <MatchFoundModal
+          isOpen={isMatchVisible}
+          roomId={roomId}
+          matchedUser={matchedUser}
+          difficulty={difficulty}
+        />
       </Box>
     </Center>
   );

@@ -1,48 +1,108 @@
-import { Question, QuestionComplexity } from '@/types/question';
+import { DatabaseQuestion } from '@/types/database.types';
+import {
+  Question,
+  QuestionComplexity,
+  QuestionComplexityToNumberMap,
+  QuestionRowData,
+} from '@/types/question';
+import initialiseClient from './axios';
 
-export const getQuestions = () => {
-  const questions: Question[] = JSON.parse(
-    localStorage.getItem('questions') || '[]',
-  );
-  return questions;
-};
+const apiUrl = `${process.env.QUESTION_PATH}/questions`;
+const adminApiUrl = `${process.env.QUESTION_PATH}/admin/questions`;
 
-export const createQuestion = (question: Question) => {
-  const questions: Question[] = getQuestions();
-  if (questions.length === 0) {
-    questions.push(question);
-    localStorage.setItem('questions', JSON.stringify(questions));
-    return;
+export const getQuestions = async (
+  access_token: string,
+): Promise<DatabaseQuestion[]> => {
+  const client = initialiseClient(access_token);
+  try {
+    const response = await client.get(apiUrl);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching questions:', error);
+    throw error;
   }
-  // basic error handling to check for duplicates
-  const questionTitles: string[] = questions.map(
-    (qn: Question) => qn.questionTitle,
-  );
-  if (questionTitles.includes(question.questionTitle)) {
-    throw new Error('Question already exists');
+};
+
+const convertQuestionToDatabaseQuestion = (question: Question) => ({
+  ...question,
+  complexity: QuestionComplexityToNumberMap[question.complexity],
+});
+
+export const createQuestion = (
+  question: Question,
+  access_token: string,
+): Promise<DatabaseQuestion> => {
+  const questionForDb: DatabaseQuestion =
+    convertQuestionToDatabaseQuestion(question);
+
+  const client = initialiseClient(access_token);
+
+  return client
+    .post(adminApiUrl, questionForDb)
+    .then((response) => {
+      console.log('POST request successful:', response.data);
+      return response.data;
+    })
+    .catch((error) => {
+      throw new Error(error.response.data.error);
+    });
+};
+
+export const getQuestionBySlug = async (
+  slug: string,
+  access_token: string,
+): Promise<DatabaseQuestion> => {
+  const newApiURL = `${apiUrl}/${slug}`;
+  const client = initialiseClient(access_token);
+  try {
+    const response = await client.get(newApiURL);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching question:', error);
+    throw error;
   }
-  questions.push(question);
-  localStorage.setItem('questions', JSON.stringify(questions));
 };
 
-// One-indexed id
-export const getQuestionById = (id: number) => {
-  const questions: Question[] = getQuestions();
-  return questions[id - 1];
+export const deleteQuestionById = async (
+  uuid: string,
+  access_token: string,
+) => {
+  const newApiURL = `${adminApiUrl}/${uuid}`;
+  const client = initialiseClient(access_token);
+
+  try {
+    await client.delete(newApiURL);
+    console.log('DELETE request successful');
+  } catch (error) {
+    console.error('DELETE request error:', error);
+  }
 };
 
-// One-indexed id
-export const deleteQuestionById = (id: number) => {
-  const questions: Question[] = getQuestions();
-  questions.splice(id - 1, 1);
-  localStorage.setItem('questions', JSON.stringify(questions));
+export const updateQuestionById = (
+  question: QuestionRowData,
+  access_token: string,
+): Promise<DatabaseQuestion> => {
+  const newApiURL = `${adminApiUrl}/${question!.uuid}`;
+  const questionForDb = convertQuestionToDatabaseQuestion(question);
+
+  const client = initialiseClient(access_token);
+
+  return client
+    .put(newApiURL, questionForDb)
+    .then((response) => {
+      console.log('PUT request successful');
+      return response.data;
+    })
+    .catch((error) => {
+      throw new Error(error.response.data.error);
+    });
 };
 
 export const testing = () => {
   localStorage.setItem('questions', JSON.stringify([]));
   const sampleQuestion: Question = {
-    questionTitle: 'Reverse a String',
-    questionDescription: `Write a function that reverses a string. The input string is given as an array 
+    title: 'Reverse a String',
+    description: `Write a function that reverses a string. The input string is given as an array 
       of characters s. 
       
       You must do this by modifying the input array in-place with O(1) extra 
@@ -62,16 +122,20 @@ export const testing = () => {
       
       1 <= s.length <= 105
       s[i] is a printable ascii character`,
-    questionCategories: ['String', 'Algorithms'],
-    questionComplexity: QuestionComplexity.EASY,
+    category: 'String, Algorithms',
+    complexity: QuestionComplexity.EASY,
+    link: 'example.com/101',
   };
 
-  createQuestion(sampleQuestion);
-
-  if (
-    getQuestions().length !== 1 ||
-    JSON.stringify(getQuestions()[0]) !== JSON.stringify(sampleQuestion)
-  ) {
-    throw new Error('Create question failed');
-  }
+  createQuestion(sampleQuestion, '').then((question) => {
+    getQuestions('')
+      .then((questions: DatabaseQuestion[]) => {
+        if (questions.length !== 1 || questions[0] !== question) {
+          throw new Error('Create question failed');
+        }
+      })
+      .catch((error) => {
+        throw error;
+      });
+  });
 };

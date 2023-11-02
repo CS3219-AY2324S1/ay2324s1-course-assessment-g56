@@ -4,7 +4,14 @@ import { Database } from '@/types/database.types';
 import AccountForm from './account-form';
 
 export default async function Account() {
-  const supabase = createServerComponentClient<Database>({ cookies });
+  const cookieStore = cookies();
+  const supabase = createServerComponentClient<Database>(
+    { cookies: () => cookieStore },
+    {
+      supabaseUrl: process.env.SUPABASE_URL,
+      supabaseKey: process.env.SUPABASE_ANON_KEY,
+    },
+  );
 
   const {
     data: { session },

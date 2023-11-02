@@ -1,7 +1,6 @@
 'use client';
 
-import { ChangeEvent, useCallback, useEffect, useState } from 'react';
-import { Database } from '@/types/database.types';
+import { ChangeEvent, useEffect, useState } from 'react';
 import {
   Box,
   Button,
@@ -9,109 +8,60 @@ import {
   FormLabel,
   Input,
   Skeleton,
+  Text,
   VStack,
+  useDisclosure,
+  useToast,
 } from '@chakra-ui/react';
-import {
-  Session,
-  createClientComponentClient,
-} from '@supabase/auth-helpers-nextjs';
-
-interface ProfileData {
-  fullName: string | null;
-  username: string | null;
-  website: string | null;
-  avatarUrl: string | null;
-}
+import { Session } from '@supabase/auth-helpers-nextjs';
+import { useUserData } from '@/hooks/useUserData';
+import { ProfileData } from '@/types/profile';
+import AccountDeletionModal from '@/components/modal/AccountDeletionModal';
+import { useUpdateUserMutation } from '../../hooks/useUpdateUserMutation';
 
 export default function AccountForm({ session }: { session: Session | null }) {
-  const supabase = createClientComponentClient<Database>();
-  const [loading, setLoading] = useState(true);
-  const [updating, setUpdating] = useState(false);
+  const toast = useToast();
+  const { data, isLoading, isError } = useUserData();
   const [profileData, setProfileData] = useState<ProfileData>({
     fullName: null,
     username: null,
     website: null,
     avatarUrl: null,
+    role: 'User',
+    updatedAt: null,
   });
   const user = session?.user;
 
-  const handleDelete = (e) => {
-    if (!user) {
-      alert('You must be logged in to delete your account!');
-      return;
+  useEffect(() => {
+    if (data) {
+      setProfileData(data);
     }
-
-    const userConfirmed = window.confirm(
-      'Are you sure you want to delete your account?',
-    );
-    if (!userConfirmed) {
-      e.preventDefault(); // Prevent the form from submitting
-    }
-  };
-
-  const getProfile = useCallback(async () => {
-    try {
-      setLoading(true);
-
-      const { data, error, status } = await supabase
-        .from('profiles')
-        .select(`full_name, username, website, avatar_url`)
-        .eq('id', user!.id)
-        .single();
-
-      if (error && status !== 406) {
-        throw new Error(error.message);
-      }
-
-      if (!data) {
-        alert('User not found!');
-        return;
-      }
-      if (data) {
-        setProfileData({
-          fullName: data.full_name,
-          username: data.username,
-          website: data.website,
-          avatarUrl: data.avatar_url,
-        });
-      }
-    } catch (error) {
-      alert('Error loading user data!');
-    } finally {
-      setLoading(false);
-    }
-  }, [user, supabase]);
+  }, [data]);
 
   useEffect(() => {
-    getProfile();
-  }, [user, getProfile]);
+    if (isError) {
+      toast({
+        title: 'An error occurred.',
+        description: 'Unable to fetch profile data.',
+        status: 'error',
+        duration: 9000,
+      });
+    }
+  }, [isError]);
+
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const updateUserMutation = useUpdateUserMutation(user?.id ?? '');
 
   const updateProfile = async () => {
-    try {
-      setUpdating(true);
-
-      const { error } = await supabase.from('profiles').upsert({
-        id: user?.id as string,
-        full_name: profileData.fullName,
-        username: profileData.username,
-        website: profileData.website,
-        avatar_url: profileData.avatarUrl,
-        updated_at: new Date().toISOString(),
-      });
-      if (error) throw new Error(error.message);
-      alert('Profile updated!');
-    } catch (error) {
-      alert('Error updating the data!');
-    } finally {
-      setUpdating(false);
-    }
+    updateUserMutation.mutate(profileData);
   };
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+    const { id, value } = e.target;
     setProfileData((prevData) => ({
       ...prevData,
-      [name]: value,
+      [id]: value,
     }));
   };
 
@@ -124,7 +74,7 @@ export default function AccountForm({ session }: { session: Session | null }) {
 
       <FormControl>
         <FormLabel htmlFor="fullName">Full Name</FormLabel>
-        <Skeleton isLoaded={!loading} style={{ borderRadius: '0.375rem' }}>
+        <Skeleton isLoaded={!isLoading} style={{ borderRadius: '0.375rem' }}>
           <Input
             id="fullName"
             type="text"
@@ -136,7 +86,7 @@ export default function AccountForm({ session }: { session: Session | null }) {
 
       <FormControl>
         <FormLabel htmlFor="username">Username</FormLabel>
-        <Skeleton isLoaded={!loading} style={{ borderRadius: '0.375rem' }}>
+        <Skeleton isLoaded={!isLoading} style={{ borderRadius: '0.375rem' }}>
           <Input
             id="username"
             type="text"
@@ -148,7 +98,7 @@ export default function AccountForm({ session }: { session: Session | null }) {
 
       <FormControl>
         <FormLabel htmlFor="website">Website</FormLabel>
-        <Skeleton isLoaded={!loading} style={{ borderRadius: '0.375rem' }}>
+        <Skeleton isLoaded={!isLoading} style={{ borderRadius: '0.375rem' }}>
           <Input
             id="website"
             type="url"
@@ -158,29 +108,39 @@ export default function AccountForm({ session }: { session: Session | null }) {
         </Skeleton>
       </FormControl>
 
+      {profileData.updatedAt && (
+        <Text fontSize="sm" color="gray.500">
+          Updated at: {profileData.updatedAt.toString()}
+        </Text>
+      )}
+
       <Button
         colorScheme="blue"
         onClick={updateProfile}
-        isLoading={updating}
-        isDisabled={loading}
+        isLoading={updateUserMutation.isLoading}
+        isDisabled={isLoading}
       >
         Update
       </Button>
 
       <Box>
         <form action="/auth/signout" method="post">
-          <Button type="submit">Sign out</Button>
+          <Button type="submit" isDisabled={isLoading}>
+            Sign out
+          </Button>
         </form>
       </Box>
 
       <Box>
-        <form action="/auth/delete" method="post">
-          <input type="hidden" name="userId" value={user?.id} />
-
-          <Button type="submit" onClick={handleDelete} colorScheme="red">
-            Delete Account
-          </Button>
-        </form>
+        <Button
+          type="submit"
+          onClick={onOpen}
+          colorScheme="red"
+          isDisabled={isLoading}
+        >
+          Delete Account
+        </Button>
+        <AccountDeletionModal isOpen={isOpen} onClose={onClose} />
       </Box>
     </VStack>
   );

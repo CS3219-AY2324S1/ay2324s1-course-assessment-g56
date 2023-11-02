@@ -18,7 +18,10 @@ export default function Avatar({
   size: number;
   onUpload: (url: string) => void;
 }) {
-  const supabase = createClientComponentClient<Database>();
+  const supabase = createClientComponentClient<Database>({
+    supabaseUrl: process.env.SUPABASE_URL,
+    supabaseKey: process.env.SUPABASE_ANON_KEY,
+  });
   const [avatarUrl, setAvatarUrl] = useState<Profiles['avatar_url']>(url);
   const [uploading, setUploading] = useState(false);
 

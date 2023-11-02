@@ -1,69 +1,48 @@
 'use client';
 
-import { createQuestion } from '@/lib/questions';
-import { Button, useToast } from '@chakra-ui/react';
-import { Dispatch, SetStateAction, useRef, useState } from 'react';
+import { Button } from '@chakra-ui/react';
+import { useRef, useState } from 'react';
 import { Question, QuestionComplexity } from '@/types/question';
-import QuestionForm from '../form/QuestionForm';
+import { useCreateQuestionMutation } from '@/hooks/useCreateQuestionMutation';
+import { useSession } from '@/contexts/SupabaseProvider';
 import Modal from './Modal';
+import QuestionForm from '../form/QuestionForm';
 
 function QuestionFormModal({
   isOpen,
   onClose,
-  setAdded,
 }: {
   isOpen: boolean;
   onClose: () => void;
-  setAdded: Dispatch<SetStateAction<boolean>>;
 }) {
   const modalTitle = 'Add Question';
   const initialRef = useRef(null);
-  const finalRef = useRef(null);
   const [title, setTitle] = useState('');
   const [desc, setDesc] = useState('');
   const [cat, setCat] = useState('');
   const [complexity, setComplexity] = useState<QuestionComplexity>(
     QuestionComplexity.EASY,
   );
+  const [link, setLink] = useState('');
+  const session = useSession();
 
-  const toast = useToast();
+  const createQuestionMutation = useCreateQuestionMutation(
+    onClose,
+    session?.access_token ?? '',
+  );
 
-  const saveQuestion = () => {
+  const handleSubmit = () => {
     const question: Question = {
-      questionTitle: title,
-      questionDescription: desc,
-      questionCategories: cat.split(','),
-      questionComplexity: complexity,
+      title,
+      description: desc,
+      category: cat,
+      complexity,
+      link,
     };
-    try {
-      createQuestion(question);
-      setAdded(true);
-      toast({
-        title: 'Question added.',
-        description: "We've added your question.",
-        status: 'success',
-        duration: 5000,
-        isClosable: true,
-        position: 'top',
-        containerStyle: {
-          marginTop: '20px',
-        },
-      });
-    } catch (error: any) {
-      toast({
-        title: 'An error has occured.',
-        description: error.message,
-        status: 'error',
-        duration: 5000,
-        isClosable: true,
-        position: 'top',
-        containerStyle: {
-          marginTop: '20px',
-        },
-      });
-    } finally {
-      onClose();
-    }
+
+    createQuestionMutation.mutate({
+      ...question,
+    });
   };
 
   return (
@@ -72,13 +51,19 @@ function QuestionFormModal({
       onClose={onClose}
       title={modalTitle}
       initialRef={initialRef}
-      finalRef={finalRef}
       actions={
         <>
-          <Button colorScheme="blue" mr={3} onClick={saveQuestion}>
+          <Button
+            colorScheme="blue"
+            mr={3}
+            onClick={handleSubmit}
+            isDisabled={createQuestionMutation.isLoading}
+          >
             Save
           </Button>
-          <Button onClick={onClose}>Cancel</Button>
+          <Button onClick={onClose}>
+            {createQuestionMutation.isLoading ? 'Minimise' : 'Cancel'}
+          </Button>
         </>
       }
     >
@@ -86,14 +71,11 @@ function QuestionFormModal({
         initialRef={initialRef}
         changeCategories={(e) => setCat(e.target.value)}
         changeComplexity={(e) =>
-          setComplexity(
-            QuestionComplexity[
-              e.target.value as keyof typeof QuestionComplexity
-            ],
-          )
+          setComplexity(e.target.value as QuestionComplexity)
         }
         changeDescription={(e) => setDesc(e.target.value)}
         changeTitle={(e) => setTitle(e.target.value)}
+        changeLink={(e) => setLink(e.target.value)}
       />
     </Modal>
   );

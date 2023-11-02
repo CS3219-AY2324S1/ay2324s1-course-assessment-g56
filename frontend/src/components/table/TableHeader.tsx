@@ -1,8 +1,9 @@
 'use client';
 
-import { Tr, Th, Thead } from '@chakra-ui/react';
-import { HeaderGroup, flexRender } from '@tanstack/react-table';
+import { Th, Thead } from '@chakra-ui/react';
+import { HeaderGroup } from '@tanstack/react-table';
 import SortIcon from './SortIcon';
+import { Tr, flexRender } from './TableUtils';
 
 interface TableHeaderProps<T extends object> {
   headerGroups: HeaderGroup<T>[];

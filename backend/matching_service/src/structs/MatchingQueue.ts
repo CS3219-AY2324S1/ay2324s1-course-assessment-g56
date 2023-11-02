@@ -22,12 +22,12 @@ class MatchingQueue {
     this.alreadyEnqueued = new Map();
   }
 
-  public isInQueue(sid: string): boolean {
-    return this.alreadyEnqueued.has(sid);
+  public isInQueue(uid: string): boolean {
+    return this.alreadyEnqueued.has(uid);
   }
 
-  public enqueue(user: User): [User, User] | undefined {
-    if (this.isInQueue(user.sid)) {
+  public enqueue(user: User): [QuestionComplexity, User, User] | undefined {
+    if (this.isInQueue(user.uid)) {
       console.log('User already in queue, no change');
       throw new Error();
     }
@@ -49,18 +49,18 @@ class MatchingQueue {
     for (const difficulty of matchingOrder) {
       const result = this.matchByQueue(user, difficulty);
       if (result) {
-        return result;
+        return [difficulty, ...result];
       }
     }
 
     matchingOrder.forEach((difficulty) => {
       const queue = this.queues.get(difficulty)!;
       const userNode = queue.insertLast(user);
-      const userNodes = this.alreadyEnqueued.get(user.sid);
+      const userNodes = this.alreadyEnqueued.get(user.uid);
       if (userNodes) {
         userNodes.push([difficulty, userNode]);
       } else {
-        this.alreadyEnqueued.set(user.sid, [[difficulty, userNode]]);
+        this.alreadyEnqueued.set(user.uid, [[difficulty, userNode]]);
       }
     });
   }
@@ -71,8 +71,7 @@ class MatchingQueue {
   ): [User, User] | undefined {
     const queue = this.queues.get(difficulty);
     if (queue == null) {
-      console.log(difficulty, ' queue is null??');
-      throw new Error();
+      throw new Error(`${difficulty} queue does not exist!`);
     }
 
     if (queue.length() > 0) {
@@ -83,12 +82,12 @@ class MatchingQueue {
   }
 
   public remove(user: User): void {
-    if (!this.alreadyEnqueued.has(user.sid)) {
+    if (!this.alreadyEnqueued.has(user.uid)) {
       console.log('User not found in alreadyEnqueued!');
       return;
     }
 
-    const userNodes = this.alreadyEnqueued.get(user.sid);
+    const userNodes = this.alreadyEnqueued.get(user.uid);
     const userFound = userNodes?.length !== 0;
 
     if (!userFound) {
@@ -97,12 +96,12 @@ class MatchingQueue {
     }
 
     userNodes?.forEach(([difficulty, userNode]) => {
-      console.log('Removing user from', difficulty, 'queue');
+      console.log(`Removing user from ${difficulty} queue`);
       const queue = this.queues.get(difficulty)!;
       queue.deleteNode(userNode);
     });
 
-    this.alreadyEnqueued.delete(user.sid);
+    this.alreadyEnqueued.delete(user.uid);
   }
 }
 

@@ -15,6 +15,7 @@ interface QuestionFormProps {
   changeDescription: (e: ChangeEvent<HTMLInputElement>) => void;
   changeCategories: (e: ChangeEvent<HTMLInputElement>) => void;
   changeComplexity: (e: ChangeEvent<HTMLSelectElement>) => void;
+  changeLink: (e: ChangeEvent<HTMLInputElement>) => void;
   initialRef: MutableRefObject<null>;
 }
 
@@ -24,6 +25,7 @@ function QuestionForm({
   changeComplexity,
   changeDescription,
   changeTitle,
+  changeLink,
 }: QuestionFormProps) {
   const placeholder = 'Choose difficulty';
 
@@ -67,6 +69,11 @@ function QuestionForm({
           <option value={QuestionComplexity.MEDIUM}>Medium</option>
           <option value={QuestionComplexity.HARD}>Hard</option>
         </Select>
+      </FormControl>
+
+      <FormControl id="link" isRequired>
+        <FormLabel>Link</FormLabel>
+        <Input type="text" placeholder="Enter link" onChange={changeLink} />
       </FormControl>
     </VStack>
   );

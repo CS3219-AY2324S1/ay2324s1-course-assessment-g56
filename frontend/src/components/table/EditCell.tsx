@@ -8,7 +8,7 @@ import { FiTrash2 } from 'react-icons/fi';
 function EditCell({ row, table }: CellContext<QuestionRowData, any>) {
   return (
     <IconButton
-      onClick={() => table.options.meta!.removeRow(row.index)}
+      onClick={() => table.options.meta!.removeRow(row.original.uuid)}
       variant="solid"
       colorScheme="red"
       aria-label="Delete Row"

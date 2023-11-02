@@ -1,8 +1,9 @@
 export interface Question {
-  questionTitle: string;
-  questionDescription: string;
-  questionCategories: string[];
-  questionComplexity: QuestionComplexity;
+  title: string;
+  description: string;
+  category: string;
+  complexity: QuestionComplexity;
+  link: string;
 }
 
 export enum QuestionComplexity {
@@ -26,9 +27,11 @@ export const NumberToQuestionComplexityMap: Record<number, QuestionComplexity> =
   });
 
 export interface QuestionRowData {
-  questionId: number;
-  questionTitle: string;
-  questionDescription: string;
-  questionCategories: string[];
-  questionComplexity: QuestionComplexity;
+  uuid: string;
+  slug: string;
+  title: string;
+  description: string;
+  category: string;
+  complexity: QuestionComplexity;
+  link: string;
 }

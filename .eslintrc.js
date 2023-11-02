@@ -18,6 +18,7 @@ module.exports = {
     'react/react-in-jsx-scope': 'off',
     'no-param-reassign': 'off',
     'react/require-default-props': 'off',
+    'import/prefer-default-export': 'off',
   },
   settings: {
     'import/parsers': {
@@ -32,6 +33,12 @@ module.exports = {
   },
   overrides: [
     {
+      files: ['*.ts', '*.tsx'],
+      rules: {
+        'no-undef': 'off',
+      },
+    },
+    {
       files: ['backend/**/*.ts', 'backend/**/*.js'],
       rules: {
         '@typescript-eslint/no-explicit-any': 'off',
@@ -44,10 +51,12 @@ module.exports = {
         '@typescript-eslint/no-non-null-assertion': 'off',
         '@typescript-eslint/no-shadow': 'off',
         '@typescript-eslint/no-throw-literal': 'off',
+        '@typescript-eslint/no-unused-vars': 'off',
         'consistent-return': 'off',
         'no-console': 'off',
         'no-undef': 'off',
         'no-underscore-dangle': 'off',
+        'no-unused-vars': 'off',
         'simple-import-sort/imports': [
           'error',
           {

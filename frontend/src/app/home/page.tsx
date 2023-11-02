@@ -1,58 +1,38 @@
 'use client';
 
-import {
-  Button,
-  Flex,
-  Heading,
-  Spacer,
-  useDisclosure,
-  useToast,
-} from '@chakra-ui/react';
+import { Button, Flex, Heading, Spacer, useDisclosure } from '@chakra-ui/react';
 import Table from '@/components/table/Table';
 import defaultColumns from '@/constants/columns';
-import { deleteQuestionById, getQuestions } from '@/lib/questions';
-import { Question, QuestionRowData } from '@/types/question';
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FiPlus } from 'react-icons/fi';
 import QuestionFormModal from '@/components/modal/QuestionFormModal';
-
-const getData = () => {
-  const questions = getQuestions();
-  const questionList = questions.map((question: Question, idx: number) => ({
-    questionId: idx + 1,
-    ...question,
-  }));
-  return questionList;
-};
+import { useUserData } from '@/hooks/useUserData';
+import { useQuestionListData } from '@/hooks/useQuestionListData';
+import { useSession } from '@/contexts/SupabaseProvider';
+import { useDeleteQuestionMutation } from '@/hooks/useDeleteQuestionMutation';
 
 export default function Page() {
   const modalTitle = 'Add Question';
-  const [questionList, setQuestionList] = useState<QuestionRowData[]>([]);
-  const [added, setAdded] = useState(true);
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const toast = useToast();
+  const session = useSession();
+  const { data: questionList, isLoading: questionListLoading } =
+    useQuestionListData(session?.access_token ?? '');
+  const { data: profileData } = useUserData();
 
-  const removeRow = (id: number) => {
-    deleteQuestionById(id);
-    setQuestionList(getData());
-    toast({
-      title: 'Question deleted.',
-      description: "We've deleted your question.",
-      status: 'success',
-      duration: 5000,
-      isClosable: true,
-      position: 'top',
-      containerStyle: {
-        marginTop: '20px',
-      },
-    });
-  };
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [columns, setColumns] = useState(defaultColumns.slice(0, -1));
 
   useEffect(() => {
-    if (!added) return;
-    setQuestionList(getData());
-    setAdded(false);
-  }, [added]);
+    if (profileData === undefined || profileData!.role !== 'Maintainer') {
+      setColumns(defaultColumns.slice(0, -1));
+    } else {
+      setColumns(defaultColumns);
+    }
+  }, [profileData]);
+
+  const deleteQuestionMutation = useDeleteQuestionMutation(
+    session?.access_token ?? '',
+  );
+  const removeRow = async (uuid: string) => deleteQuestionMutation.mutate(uuid);
 
   return (
     <>
@@ -61,26 +41,25 @@ export default function Page() {
           Questions
         </Heading>
         <Spacer />
-        <Button
-          leftIcon={<FiPlus />}
-          variant="solid"
-          colorScheme="blue"
-          onClick={onOpen}
-        >
-          {modalTitle}
-        </Button>
+        {profileData !== undefined && profileData.role === 'Maintainer' && (
+          <>
+            <Button
+              leftIcon={<FiPlus />}
+              variant="solid"
+              colorScheme="blue"
+              onClick={onOpen}
+            >
+              {modalTitle}
+            </Button>
+            <QuestionFormModal isOpen={isOpen} onClose={onClose} />
+          </>
+        )}
       </Flex>
-      {questionList !== undefined && (
-        <Table
-          tableData={questionList}
-          removeRow={removeRow}
-          columns={defaultColumns}
-        />
-      )}
-      <QuestionFormModal
-        isOpen={isOpen}
-        onClose={onClose}
-        setAdded={setAdded}
+      <Table
+        tableData={questionList || []}
+        removeRow={removeRow}
+        columns={columns}
+        isLoading={!session || questionListLoading}
       />
     </>
   );
