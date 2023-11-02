@@ -14,3 +14,6 @@ steps:
   # Update frontend
   - name: 'gcr.io/cloud-builders/kubectl'
     args: ['set', 'image', 'deployment/frontend-deployment', 'frontend=frontend_service:latest']
+options:
+  logging:
+    gcsPath: gs://artifacts.thinking-return-402109.appspot.com
