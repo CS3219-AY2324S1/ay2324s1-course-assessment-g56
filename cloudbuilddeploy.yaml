@@ -6,6 +6,16 @@ steps:
       - '-c'
       - |
         gcloud container clusters get-credentials autopilot-cluster-1 --region us-central1 --project thinking-return-402109
+  # Set environment variables for Kubernetes cluster context
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        # Set environment variables for the Kubernetes cluster
+        export CLOUDSDK_COMPUTE_REGION=us-central1
+        export CLOUDSDK_CONTAINER_CLUSTER=autopilot-cluster-1
+        export KUBECTL_VERSION=1.27
   # Update question-service
   - name: 'gcr.io/cloud-builders/kubectl'
     args: ['set', 'image', 'deployment/question-service-deployment', 'question-service=question_service:latest']
