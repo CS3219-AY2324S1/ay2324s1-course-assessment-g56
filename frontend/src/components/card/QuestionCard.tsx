@@ -22,14 +22,14 @@ import { FiArrowLeft, FiExternalLink } from 'react-icons/fi';
 
 interface QuestionCardProps {
   slug: string;
-  accessToken: string;
+  access_token: string;
 }
 
-function QuestionCard({ slug, accessToken }: QuestionCardProps) {
+function QuestionCard({ slug, access_token }: QuestionCardProps) {
   const router = useRouter();
   const { data: fetchedQuestion, isLoading: questionLoading } = useQuestionData(
     slug,
-    accessToken ?? '',
+    access_token ?? '',
   );
   const difficultyColour =
     QuestionDifficultyToColourMap[fetchedQuestion?.difficulty];

@@ -21,10 +21,10 @@ import { useRouter } from 'next/navigation';
 
 interface EditQuestionFormProps {
   slug: string;
-  accessToken: string;
+  access_token: string;
 }
 
-function EditQuestionForm({ slug, accessToken }: EditQuestionFormProps) {
+function EditQuestionForm({ slug, access_token }: EditQuestionFormProps) {
   const [question, setQuestion] = useState<QuestionRowData | null>(null);
   const validQuestionForm =
     question?.description &&
@@ -35,7 +35,7 @@ function EditQuestionForm({ slug, accessToken }: EditQuestionFormProps) {
 
   const { data: fetchedQuestion, isLoading: questionLoading } = useQuestionData(
     slug,
-    accessToken ?? '',
+    access_token ?? '',
   );
 
   useEffect(() => {
@@ -53,7 +53,7 @@ function EditQuestionForm({ slug, accessToken }: EditQuestionFormProps) {
 
   const updateQuestionMutation = useUpdateQuestionMutation(
     slug,
-    accessToken ?? '',
+    access_token ?? '',
   );
 
   const handleSubmit = () => {

@@ -17,10 +17,15 @@ function Page({ params }: { params: { slug: string } }) {
 
   if (user?.role === 'Maintainer') {
     return (
-      <EditQuestionForm slug={slug} accessToken={session?.access_token ?? ''} />
+      <EditQuestionForm
+        slug={slug}
+        access_token={session?.access_token ?? ''}
+      />
     );
   }
-  return <QuestionCard slug={slug} accessToken={session?.access_token ?? ''} />;
+  return (
+    <QuestionCard slug={slug} access_token={session?.access_token ?? ''} />
+  );
 }
 
 export default Page;
