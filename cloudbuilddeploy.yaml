@@ -5,8 +5,7 @@ steps:
     args:
       - '-c'
       - |
-        gcloud auth activate-service-account thinking-return-402109@appspot.gserviceaccount.com
-        gcloud container clusters get-credentials autopilot-cluster-1 --region us-central1 --project thinking-return-402109
+        gcloud container clusters get-credentials autopilot-cluster-1 --region us-central1 --project thinking-return-402109 --impersonate-service-account=thinking-return-402109@appspot.gserviceaccount.com
 
   # Update question-service
   - name: 'gcr.io/cloud-builders/kubectl'
