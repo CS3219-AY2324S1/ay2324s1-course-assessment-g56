@@ -100,7 +100,7 @@ function Table<T extends object>({
                 </Tr>
               )}
           {table.getRowModel().rows.map((row) => (
-            <Tr key={row.id}>
+            <Tr key={row.id} h="40px">
               {row.getVisibleCells().map((cell) =>
                 cell.column.id === 'title' ? (
                   <LinkBox as={Td} key={cell.id}>
