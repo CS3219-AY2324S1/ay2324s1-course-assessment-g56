@@ -1,34 +1,19 @@
 steps:
-  # Setup - Authenticate with Service Account
+  # Authenticate with Service Account and set Kubernetes context, then update deployment
   - name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: 'bash'
     args:
       - '-c'
       - |
+        # Authenticate and set the cluster context
         gcloud container clusters get-credentials autopilot-cluster-1 --region us-central1 --project thinking-return-402109
-  # Set environment variables for Kubernetes cluster context
-  - name: 'gcr.io/cloud-builders/gcloud'
-    entrypoint: 'bash'
-    args:
-      - '-c'
-      - |
         # Set environment variables for the Kubernetes cluster
         export CLOUDSDK_COMPUTE_REGION=us-central1
         export CLOUDSDK_CONTAINER_CLUSTER=autopilot-cluster-1
         export KUBECTL_VERSION=1.27
-  # Update question-service
-  - name: 'gcr.io/cloud-builders/kubectl'
-    args: ['set', 'image', 'deployment/question-service-deployment', 'question-service=question_service:latest']
-
-  # Update matching-service
-  - name: 'gcr.io/cloud-builders/kubectl'
-    args: ['set', 'image', 'deployment/matching-service-deployment', 'matching-service=matching_service:latest']
-
-  # Update user-service
-  - name: 'gcr.io/cloud-builders/kubectl'
-    args: ['set', 'image', 'deployment/user-service-deployment', 'user-service=user_service:latest']
-
-  # Update frontend
-  - name: 'gcr.io/cloud-builders/kubectl'
-    args: ['set', 'image', 'deployment/frontend-deployment', 'frontend=frontend_service:latest']
+        # Update question-service and other services
+        kubectl set image deployment/question-service-deployment question-service=question_service:latest
+        kubectl set image deployment/matching-service-deployment matching-service=matching_service:latest
+        kubectl set image deployment/user-service-deployment user-service=user_service:latest
+        kubectl set image deployment/frontend-deployment frontend=frontend_service:latest
 
