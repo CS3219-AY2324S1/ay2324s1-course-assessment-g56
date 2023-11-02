@@ -6,15 +6,14 @@ steps:
       - '-c'
       - |
         # Authenticate and set the cluster context
-        gcloud auth configure-docker gcr.io
         gcloud container clusters get-credentials autopilot-cluster-1 --region us-central1 --project thinking-return-402109
         # Set environment variables for the Kubernetes cluster
         export CLOUDSDK_COMPUTE_REGION=us-central1
         export CLOUDSDK_CONTAINER_CLUSTER=autopilot-cluster-1
         export KUBECTL_VERSION=1.27
         # Update question-service and other services
-        kubectl set image deployment/question-service-deployment question-service=gcr.io/thinking-return-402109/question_service:latest
-        kubectl set image deployment/matching-service-deployment matching-service=gcr.io/thinking-return-402109/matching_service:latest
-        kubectl set image deployment/user-service-deployment user-service=gcr.io/thinking-return-402109/user_service:latest
-        kubectl set image deployment/frontend-deployment frontend=gcr.io/thinking-return-402109/frontend_service:latest
+        kubectl set image deployment/question-service-deployment question-service=question_service:latest
+        kubectl set image deployment/matching-service-deployment matching-service=matching_service:latest
+        kubectl set image deployment/user-service-deployment user-service=user_service:latest
+        kubectl set image deployment/frontend-deployment frontend=frontend_service:latest
 
