@@ -1,6 +1,6 @@
 'use client';
 
-import { QuestionComplexity, QuestionRowData } from '@/types/question';
+import { QuestionDifficulty, QuestionRowData } from '@/types/question';
 import {
   Button,
   Flex,
@@ -30,7 +30,7 @@ function EditQuestionForm({ slug, accessToken }: EditQuestionFormProps) {
     question?.description &&
     question?.title &&
     question?.category &&
-    question?.complexity;
+    question?.difficulty;
   const router = useRouter();
 
   const { data: fetchedQuestion, isLoading: questionLoading } = useQuestionData(
@@ -134,7 +134,7 @@ function EditQuestionForm({ slug, accessToken }: EditQuestionFormProps) {
         </Flex>
       </FormControl>
 
-      <FormControl id="complexity" isRequired>
+      <FormControl id="difficulty" isRequired>
         <Flex alignItems="center">
           <FormLabel pl="4" flex="0 0 120px">
             Difficulty:{' '}
@@ -144,15 +144,15 @@ function EditQuestionForm({ slug, accessToken }: EditQuestionFormProps) {
             style={{ borderRadius: '0.375rem' }}
           >
             <Select
-              name="complexity"
+              name="difficulty"
               value={
-                (question && question.complexity) || QuestionComplexity.EASY
+                (question && question.difficulty) || QuestionDifficulty.EASY
               }
               onChange={handleChange}
             >
-              <option value={QuestionComplexity.EASY}>Easy</option>
-              <option value={QuestionComplexity.MEDIUM}>Medium</option>
-              <option value={QuestionComplexity.HARD}>Hard</option>
+              <option value={QuestionDifficulty.EASY}>Easy</option>
+              <option value={QuestionDifficulty.MEDIUM}>Medium</option>
+              <option value={QuestionDifficulty.HARD}>Hard</option>
             </Select>
           </Skeleton>
         </Flex>

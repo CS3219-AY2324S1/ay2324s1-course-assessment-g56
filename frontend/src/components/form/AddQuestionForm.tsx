@@ -7,14 +7,14 @@ import {
   Select,
   VStack,
 } from '@chakra-ui/react';
-import { QuestionComplexity } from '@/types/question';
+import { QuestionDifficulty } from '@/types/question';
 import { ChangeEvent, MutableRefObject } from 'react';
 
 interface AddQuestionFormProps {
   changeTitle: (e: ChangeEvent<HTMLInputElement>) => void;
   changeDescription: (e: ChangeEvent<HTMLInputElement>) => void;
   changeCategories: (e: ChangeEvent<HTMLInputElement>) => void;
-  changeComplexity: (e: ChangeEvent<HTMLSelectElement>) => void;
+  changeDifficulty: (e: ChangeEvent<HTMLSelectElement>) => void;
   changeLink: (e: ChangeEvent<HTMLInputElement>) => void;
   initialRef: MutableRefObject<null>;
 }
@@ -22,7 +22,7 @@ interface AddQuestionFormProps {
 function AddQuestionForm({
   initialRef,
   changeCategories,
-  changeComplexity,
+  changeDifficulty,
   changeDescription,
   changeTitle,
   changeLink,
@@ -59,15 +59,15 @@ function AddQuestionForm({
         />
       </FormControl>
 
-      <FormControl id="complexity" isRequired>
+      <FormControl id="difficulty" isRequired>
         <FormLabel>Difficulty</FormLabel>
-        <Select onChange={changeComplexity} required>
+        <Select onChange={changeDifficulty} required>
           <option value={placeholder} disabled>
             {placeholder}
           </option>
-          <option value={QuestionComplexity.EASY}>Easy</option>
-          <option value={QuestionComplexity.MEDIUM}>Medium</option>
-          <option value={QuestionComplexity.HARD}>Hard</option>
+          <option value={QuestionDifficulty.EASY}>Easy</option>
+          <option value={QuestionDifficulty.MEDIUM}>Medium</option>
+          <option value={QuestionDifficulty.HARD}>Hard</option>
         </Select>
       </FormControl>
 

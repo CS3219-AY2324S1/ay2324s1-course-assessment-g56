@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getQuestions } from '@/lib/questions';
 import {
   QuestionRowData,
-  NumberToQuestionComplexityMap,
+  NumberToQuestionDifficultyMap,
 } from '@/types/question';
 import { QUESTION_LIST_KEY } from '@/constants/queryKey';
 import { DatabaseQuestion } from '@/types/database.types';
@@ -16,7 +16,7 @@ export function useQuestionListData(access_token: string) {
         (question: DatabaseQuestion) =>
           ({
             ...question,
-            complexity: NumberToQuestionComplexityMap[question.complexity],
+            difficulty: NumberToQuestionDifficultyMap[question.difficulty],
           }) as QuestionRowData,
       );
       return questionList;

@@ -62,6 +62,6 @@ export interface DatabaseQuestion {
   title: string;
   description: string;
   category: string;
-  complexity: number;
+  difficulty: number;
   link: string;
 }

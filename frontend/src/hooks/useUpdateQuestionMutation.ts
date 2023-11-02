@@ -1,7 +1,7 @@
 import { QUESTION_LIST_KEY } from '@/constants/queryKey';
 import { updateQuestionById } from '@/lib/questions';
 import {
-  NumberToQuestionComplexityMap,
+  NumberToQuestionDifficultyMap,
   QuestionRowData,
 } from '@/types/question';
 import { useToast } from '@chakra-ui/react';
@@ -28,7 +28,7 @@ export const useUpdateQuestionMutation = (
         ...data,
         uuid: data.uuid!,
         slug: data.slug!,
-        complexity: NumberToQuestionComplexityMap[data.complexity],
+        difficulty: NumberToQuestionDifficultyMap[data.difficulty],
       });
       toast({
         title: 'Question updated.',

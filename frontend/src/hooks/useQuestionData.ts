@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getQuestionBySlug } from '@/lib/questions';
 import {
   QuestionRowData,
-  NumberToQuestionComplexityMap,
+  NumberToQuestionDifficultyMap,
 } from '@/types/question';
 import { QUESTION_LIST_KEY } from '@/constants/queryKey';
 
@@ -15,7 +15,7 @@ export function useQuestionData(slug: string, access_token: string) {
         ...question,
         uuid: question.uuid!,
         slug: question.slug!,
-        complexity: NumberToQuestionComplexityMap[question.complexity],
+        difficulty: NumberToQuestionDifficultyMap[question.difficulty],
       };
     },
     {

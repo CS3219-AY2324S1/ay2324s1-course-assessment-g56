@@ -22,7 +22,7 @@ const questionData: QuestionDataFromFrontend = {
   title: 'Test Question 1',
   description: 'This is a test question',
   category: 'Testing',
-  complexity: mediumValue,
+  difficulty: mediumValue,
   link: 'www.example.com',
 };
 
@@ -32,7 +32,7 @@ const secondQuestionData: QuestionDataFromFrontend = {
   title: 'Test Question 2',
   description: 'This is the second test question',
   category: 'Testing',
-  complexity: hardValue,
+  difficulty: hardValue,
   link: 'www.example.com',
 };
 
@@ -40,7 +40,7 @@ const questionDataWithSameTitle: QuestionDataFromFrontend = {
   title: 'Test Question 1',
   description: 'This is a test question with only the same title',
   category: 'Insert, Testing',
-  complexity: easyValue,
+  difficulty: easyValue,
   link: 'www.example.com/extra',
 };
 

@@ -2,7 +2,7 @@
 
 import { Button } from '@chakra-ui/react';
 import { useRef, useState } from 'react';
-import { Question, QuestionComplexity } from '@/types/question';
+import { Question, QuestionDifficulty } from '@/types/question';
 import { useCreateQuestionMutation } from '@/hooks/useCreateQuestionMutation';
 import { useSession } from '@/contexts/SupabaseProvider';
 import Modal from './Modal';
@@ -20,8 +20,8 @@ function AddQuestionFormModal({
   const [title, setTitle] = useState('');
   const [desc, setDesc] = useState('');
   const [cat, setCat] = useState('');
-  const [complexity, setComplexity] = useState<QuestionComplexity>(
-    QuestionComplexity.EASY,
+  const [difficulty, setDifficulty] = useState<QuestionDifficulty>(
+    QuestionDifficulty.EASY,
   );
   const [link, setLink] = useState('');
   const session = useSession();
@@ -36,7 +36,7 @@ function AddQuestionFormModal({
       title,
       description: desc,
       category: cat,
-      complexity,
+      difficulty,
       link,
     };
 
@@ -70,8 +70,8 @@ function AddQuestionFormModal({
       <AddQuestionForm
         initialRef={initialRef}
         changeCategories={(e) => setCat(e.target.value)}
-        changeComplexity={(e) =>
-          setComplexity(e.target.value as QuestionComplexity)
+        changeDifficulty={(e) =>
+          setDifficulty(e.target.value as QuestionDifficulty)
         }
         changeDescription={(e) => setDesc(e.target.value)}
         changeTitle={(e) => setTitle(e.target.value)}

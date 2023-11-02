@@ -5,28 +5,28 @@ import {
   SortingFn,
 } from '@tanstack/react-table';
 import {
-  QuestionComplexity,
-  QuestionComplexityToNumberMap,
+  QuestionDifficulty,
+  QuestionDifficultyToNumberMap,
   QuestionRowData,
 } from '@/types/question';
 import EditCell from '@/components/table/EditCell';
 
 const columnHelper = createColumnHelper<QuestionRowData>();
 
-const ComplexitySortingFn: SortingFn<QuestionRowData> = (
+const DifficultySortingFn: SortingFn<QuestionRowData> = (
   rowA: Row<QuestionRowData>,
   rowB: Row<QuestionRowData>,
 ): number => {
-  const questionComplexityA: QuestionComplexity = rowA.getValue('complexity');
-  const questionComplexityB: QuestionComplexity = rowB.getValue('complexity');
-  const rowAComplexityLevel: number =
-    QuestionComplexityToNumberMap[questionComplexityA];
-  const rowBComplexityLevel: number =
-    QuestionComplexityToNumberMap[questionComplexityB];
-  if (rowAComplexityLevel > rowBComplexityLevel) {
+  const questionDifficultyA: QuestionDifficulty = rowA.getValue('difficulty');
+  const questionDifficultyB: QuestionDifficulty = rowB.getValue('difficulty');
+  const rowADifficultyLevel: number =
+    QuestionDifficultyToNumberMap[questionDifficultyA];
+  const rowBDifficultyLevel: number =
+    QuestionDifficultyToNumberMap[questionDifficultyB];
+  if (rowADifficultyLevel > rowBDifficultyLevel) {
     return 1;
   }
-  return rowAComplexityLevel < rowBComplexityLevel ? -1 : 0;
+  return rowADifficultyLevel < rowBDifficultyLevel ? -1 : 0;
 };
 
 const defaultColumns = [
@@ -56,10 +56,10 @@ const defaultColumns = [
       type: 'string',
     },
   }),
-  columnHelper.accessor('complexity', {
-    cell: (complexity) => complexity.getValue(),
-    sortingFn: ComplexitySortingFn,
-    header: 'Complexity',
+  columnHelper.accessor('difficulty', {
+    cell: (difficulty) => difficulty.getValue(),
+    sortingFn: DifficultySortingFn,
+    header: 'Difficulty',
     meta: {
       type: 'string',
     },

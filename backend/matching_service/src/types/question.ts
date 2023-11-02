@@ -1,18 +1,18 @@
-export enum QuestionComplexity {
+export enum QuestionDifficulty {
   EASY = 'Easy',
   MEDIUM = 'Medium',
   HARD = 'Hard',
 }
-export const QuestionComplexityToNumberMap: Record<QuestionComplexity, number> =
+export const QuestionDifficultyToNumberMap: Record<QuestionDifficulty, number> =
   Object.freeze({
-    [QuestionComplexity.EASY]: 1,
-    [QuestionComplexity.MEDIUM]: 2,
-    [QuestionComplexity.HARD]: 3,
+    [QuestionDifficulty.EASY]: 1,
+    [QuestionDifficulty.MEDIUM]: 2,
+    [QuestionDifficulty.HARD]: 3,
   });
 
-export const NumberToQuestionComplexityMap: Record<number, QuestionComplexity> =
+export const NumberToQuestionDifficultyMap: Record<number, QuestionDifficulty> =
   Object.freeze({
-    1: QuestionComplexity.EASY,
-    2: QuestionComplexity.MEDIUM,
-    3: QuestionComplexity.HARD,
+    1: QuestionDifficulty.EASY,
+    2: QuestionDifficulty.MEDIUM,
+    3: QuestionDifficulty.HARD,
   });
