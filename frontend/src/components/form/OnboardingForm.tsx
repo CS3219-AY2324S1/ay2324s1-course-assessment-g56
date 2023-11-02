@@ -15,8 +15,8 @@ import {
 import { useEffect, useState } from 'react';
 import { useUserData } from '@/hooks/useUserData';
 import { ProfileData } from '@/types/profile';
-import LanguageForm from './LanguageForm';
-import ProfileForm from './ProfileForm';
+import OnboardingLanguageForm from './OnboardingLanguageForm';
+import OnboardingProfileForm from './OnboardingProfileForm';
 import OnboardingSuccessCard from '../card/OnboardingSuccessCard';
 
 const steps = [
@@ -50,12 +50,12 @@ function OnboardingForm() {
   }, [data]);
 
   const stepContent = [
-    <ProfileForm
+    <OnboardingProfileForm
       profileData={profileData}
       setProfileData={setProfileData}
       goToNext={goToNext}
     />,
-    <LanguageForm
+    <OnboardingLanguageForm
       profileData={profileData}
       setProfileData={setProfileData}
       goToPrevious={goToPrevious}

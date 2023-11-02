@@ -15,19 +15,19 @@ import { ProfileData } from '@/types/profile';
 import { useUpdateUserMutation } from '@/hooks/useUpdateUserMutation';
 import { Language } from '@/types/language';
 
-interface LanguageFormProps {
+interface OnboardingLanguageFormProps {
   profileData: ProfileData;
   setProfileData: Dispatch<SetStateAction<ProfileData>>;
   goToNext: () => void;
   goToPrevious: () => void;
 }
 
-function LanguageForm({
+function OnboardingLanguageForm({
   profileData,
   setProfileData,
   goToNext,
   goToPrevious,
-}: LanguageFormProps) {
+}: OnboardingLanguageFormProps) {
   const session = useSession();
   const toast = useToast();
   const updateUserMutation = useUpdateUserMutation(session?.user.id ?? '');
@@ -90,4 +90,4 @@ function LanguageForm({
   );
 }
 
-export default LanguageForm;
+export default OnboardingLanguageForm;

@@ -6,9 +6,9 @@ import { Question, QuestionComplexity } from '@/types/question';
 import { useCreateQuestionMutation } from '@/hooks/useCreateQuestionMutation';
 import { useSession } from '@/contexts/SupabaseProvider';
 import Modal from './Modal';
-import QuestionForm from '../form/QuestionForm';
+import AddQuestionForm from '../form/AddQuestionForm';
 
-function QuestionFormModal({
+function AddQuestionFormModal({
   isOpen,
   onClose,
 }: {
@@ -67,7 +67,7 @@ function QuestionFormModal({
         </>
       }
     >
-      <QuestionForm
+      <AddQuestionForm
         initialRef={initialRef}
         changeCategories={(e) => setCat(e.target.value)}
         changeComplexity={(e) =>
@@ -81,4 +81,4 @@ function QuestionFormModal({
   );
 }
 
-export default QuestionFormModal;
+export default AddQuestionFormModal;

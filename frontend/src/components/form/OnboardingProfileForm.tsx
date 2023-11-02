@@ -15,17 +15,17 @@ import { ChangeEvent, Dispatch, SetStateAction, useRef } from 'react';
 import { ProfileData } from '@/types/profile';
 import AvatarForm from './AvatarForm';
 
-interface ProfileFormProps {
+interface OnboardingProfileFormProps {
   profileData: ProfileData;
   setProfileData: Dispatch<SetStateAction<ProfileData>>;
   goToNext: () => void;
 }
 
-function ProfileForm({
+function OnboardingProfileForm({
   profileData,
   setProfileData,
   goToNext,
-}: ProfileFormProps) {
+}: OnboardingProfileFormProps) {
   const session = useSession();
   const toast = useToast();
   const initialRef = useRef(null);
@@ -116,4 +116,4 @@ function ProfileForm({
   );
 }
 
-export default ProfileForm;
+export default OnboardingProfileForm;

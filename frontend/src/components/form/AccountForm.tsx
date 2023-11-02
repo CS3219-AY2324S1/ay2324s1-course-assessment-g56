@@ -21,7 +21,7 @@ import { ProfileData } from '@/types/profile';
 import AccountDeletionModal from '@/components/modal/AccountDeletionModal';
 import { Language } from '@/types/language';
 import { useUpdateUserMutation } from '../../hooks/useUpdateUserMutation';
-import AvatarForm from '../../components/form/AvatarForm';
+import AvatarForm from './AvatarForm';
 
 export default function AccountForm({ session }: { session: Session | null }) {
   const toast = useToast();

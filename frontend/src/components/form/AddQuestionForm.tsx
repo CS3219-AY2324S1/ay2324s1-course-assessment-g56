@@ -10,7 +10,7 @@ import {
 import { QuestionComplexity } from '@/types/question';
 import { ChangeEvent, MutableRefObject } from 'react';
 
-interface QuestionFormProps {
+interface AddQuestionFormProps {
   changeTitle: (e: ChangeEvent<HTMLInputElement>) => void;
   changeDescription: (e: ChangeEvent<HTMLInputElement>) => void;
   changeCategories: (e: ChangeEvent<HTMLInputElement>) => void;
@@ -19,14 +19,14 @@ interface QuestionFormProps {
   initialRef: MutableRefObject<null>;
 }
 
-function QuestionForm({
+function AddQuestionForm({
   initialRef,
   changeCategories,
   changeComplexity,
   changeDescription,
   changeTitle,
   changeLink,
-}: QuestionFormProps) {
+}: AddQuestionFormProps) {
   const placeholder = 'Choose difficulty';
 
   return (
@@ -79,4 +79,4 @@ function QuestionForm({
   );
 }
 
-export default QuestionForm;
+export default AddQuestionForm;

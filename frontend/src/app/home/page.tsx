@@ -5,7 +5,7 @@ import Table from '@/components/table/Table';
 import defaultColumns from '@/constants/columns';
 import { useState, useEffect } from 'react';
 import { FiPlus } from 'react-icons/fi';
-import QuestionFormModal from '@/components/modal/QuestionFormModal';
+import AddQuestionFormModal from '@/components/modal/AddQuestionFormModal';
 import { useUserData } from '@/hooks/useUserData';
 import { useQuestionListData } from '@/hooks/useQuestionListData';
 import { useSession } from '@/contexts/SupabaseProvider';
@@ -51,7 +51,7 @@ export default function Page() {
             >
               {modalTitle}
             </Button>
-            <QuestionFormModal isOpen={isOpen} onClose={onClose} />
+            <AddQuestionFormModal isOpen={isOpen} onClose={onClose} />
           </>
         )}
       </Flex>
