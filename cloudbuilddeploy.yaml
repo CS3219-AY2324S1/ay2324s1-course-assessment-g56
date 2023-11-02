@@ -1,0 +1,16 @@
+steps:
+  # Setup
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args: ['container', 'clusters', 'get-credentials', 'autopilot-cluster-1', '--region', 'us-central1', '--project', 'thinking-return-402109']
+  # Update question-service
+  - name: 'gcr.io/cloud-builders/kubectl'
+    args: ['set', 'image', 'deployment/question-service-deployment', 'question-service=question_service:latest']
+  # Update matching-service
+  - name: 'gcr.io/cloud-builders/kubectl'
+    args: ['set', 'image', 'deployment/matching-service-deployment', 'matching-service=matching_service:latest']
+  # Update user-service
+  - name: 'gcr.io/cloud-builders/kubectl'
+    args: ['set', 'image', 'deployment/user-service-deployment', 'user-service=user_service:latest']
+  # Update frontend
+  - name: 'gcr.io/cloud-builders/kubectl'
+    args: ['set', 'image', 'deployment/frontend-deployment', 'frontend=frontend_service:latest']
