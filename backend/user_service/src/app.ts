@@ -56,6 +56,20 @@ app.get('/user', async (_req, res) => {
   }
 });
 
+app.get('/user/:username', async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('username', req.params.username)
+      .maybeSingle();
+    if (error) throw error;
+    res.json(data);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 /**
  * Deletes a user
  *
