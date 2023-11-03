@@ -44,6 +44,7 @@ function OnboardingProfileForm({
         title: 'Please fill out all required fields.',
         status: 'error',
       });
+      return;
     }
     goToNext();
   };
