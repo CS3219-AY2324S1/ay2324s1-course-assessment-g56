@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { FiEdit, FiUpload } from 'react-icons/fi';
 import {
   Button,
@@ -93,8 +93,8 @@ export default function AvatarForm({
     setAvatarStatus('');
   };
 
-  return (
-    <VStack align="flex-start">
+  const avatar = useMemo(
+    () => (
       <ChakraAvatar
         key={`${username}-${avatarUrl}`}
         height={{ base: 100, md: 150, lg: 200 }}
@@ -102,6 +102,13 @@ export default function AvatarForm({
         src={avatarUrl}
         name={username || ''}
       />
+    ),
+    [avatarUrl],
+  );
+
+  return (
+    <VStack align="flex-start">
+      {avatar}
       <Popover isOpen={isOpen} onClose={onClose}>
         <PopoverTrigger>
           <Button
