@@ -19,6 +19,7 @@ import AgoraRTC, {
 import './VideoCollection.css';
 import { FiMic, FiMicOff, FiVideo, FiVideoOff } from 'react-icons/fi';
 import { HStack, IconButton, Text } from '@chakra-ui/react';
+import { getVideoAccessToken } from '@/lib/video_token';
 
 const config: ClientConfig = {
   mode: 'rtc',
@@ -95,16 +96,14 @@ interface Props {
   roomId: string;
 }
 
-const TEMP_TOKEN =
-  '007eJxTYNjzTuixlOPE303OEhurXnJ31M7/InKz3na2zaG0UJkrhv4KDKlJxgZGFmmmaRapqSZGJqmWhknJiZbGyWmmZiYpycaWZUU2qQ2BjAwurz0ZGRkgEMRnYQhxDQ5hYAAAWVwe4w==';
-
-const getToken = async (roomId: string): Promise<string> => `${roomId}`;
-// try {
-//   const response = await VideoApi.getToken(roomId);
-//   return response.token;
-// } catch (error) {
-//   return '';
-// }
+const getToken = async (roomId: string): Promise<string> => {
+  try {
+    const response = await getVideoAccessToken(roomId);
+    return response.token;
+  } catch (error) {
+    return '';
+  }
+};
 
 function VideoCollection({
   partnerUsername,
@@ -152,8 +151,7 @@ function VideoCollection({
         );
       });
 
-      // const token = await getToken(channelName);
-      const token = TEMP_TOKEN;
+      const token = await getToken(channelName);
       await client.join(appId, channelName, token, null);
       setInCall(true);
       if (tracks) {
