@@ -1,4 +1,5 @@
 import { Language } from './language';
+import { QuestionCategory } from './question';
 
 export type Json =
   | string
@@ -61,7 +62,7 @@ export interface DatabaseQuestion {
   slug?: string;
   title: string;
   description: string;
-  category: string;
-  difficulty: number;
+  categories: QuestionCategory[];
+  difficulty: 1 | 2 | 3;
   link: string;
 }

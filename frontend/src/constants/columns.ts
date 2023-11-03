@@ -49,9 +49,9 @@ const defaultColumns = [
       type: 'string',
     },
   }),
-  columnHelper.accessor('category', {
-    cell: (categories) => categories.getValue(),
-    header: 'Category',
+  columnHelper.accessor('categories', {
+    cell: (categories) => categories.getValue().join(', '),
+    header: 'Categories',
     meta: {
       type: 'string',
     },

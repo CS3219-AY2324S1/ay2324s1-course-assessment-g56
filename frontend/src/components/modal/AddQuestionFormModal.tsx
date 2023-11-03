@@ -2,7 +2,11 @@
 
 import { Button } from '@chakra-ui/react';
 import { useRef, useState } from 'react';
-import { Question, QuestionDifficulty } from '@/types/question';
+import {
+  Question,
+  QuestionCategory,
+  QuestionDifficulty,
+} from '@/types/question';
 import { useCreateQuestionMutation } from '@/hooks/useCreateQuestionMutation';
 import { useSession } from '@/contexts/SupabaseProvider';
 import Modal from './Modal';
@@ -35,7 +39,7 @@ function AddQuestionFormModal({
     const question: Question = {
       title,
       description: desc,
-      category: cat,
+      categories: cat.split(', ') as QuestionCategory[],
       difficulty,
       link,
     };

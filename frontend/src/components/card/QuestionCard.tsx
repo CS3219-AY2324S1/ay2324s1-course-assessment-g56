@@ -1,7 +1,10 @@
 'use client';
 
 import { useQuestionData } from '@/hooks/useQuestionData';
-import { QuestionDifficultyToColourMap } from '@/types/question';
+import {
+  QuestionCategory,
+  QuestionDifficultyToColourMap,
+} from '@/types/question';
 import {
   VStack,
   useColorModeValue,
@@ -66,7 +69,7 @@ function QuestionCard({ slug, access_token }: QuestionCardProps) {
           <Tag key="difficulty" colorScheme={difficultyColour}>
             {fetchedQuestion?.difficulty}
           </Tag>
-          {fetchedQuestion?.category.split(', ').map((category: string) => (
+          {fetchedQuestion?.categories.map((category: QuestionCategory) => (
             <Tag key={category} colorScheme="blue">
               {category}
             </Tag>

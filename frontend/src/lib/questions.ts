@@ -122,7 +122,7 @@ export const testing = () => {
       
       1 <= s.length <= 105
       s[i] is a printable ascii character`,
-    category: 'String, Algorithms',
+    categories: ['String', 'Array'],
     difficulty: QuestionDifficulty.EASY,
     link: 'example.com/101',
   };

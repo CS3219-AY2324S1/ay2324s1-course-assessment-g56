@@ -29,7 +29,7 @@ function EditQuestionForm({ slug, access_token }: EditQuestionFormProps) {
   const validQuestionForm =
     question?.description &&
     question?.title &&
-    question?.category &&
+    question?.categories &&
     question?.difficulty;
   const router = useRouter();
 
@@ -93,16 +93,16 @@ function EditQuestionForm({ slug, access_token }: EditQuestionFormProps) {
         </Flex>
       </FormControl>
 
-      <FormControl id="category" isRequired>
+      <FormControl id="categories" isRequired>
         <Flex alignItems="center">
           <FormLabel pl="4" flex="0 0 120px">
-            Category:{' '}
+            Categories:{' '}
           </FormLabel>
           <Skeleton isLoaded={question !== null} borderRadius="0.375rem">
             <Input
               type="text"
-              name="category"
-              value={(question && question.category) || ''}
+              name="categories"
+              value={(question && question.categories.join(', ')) || ''}
               onChange={handleChange}
             />
           </Skeleton>

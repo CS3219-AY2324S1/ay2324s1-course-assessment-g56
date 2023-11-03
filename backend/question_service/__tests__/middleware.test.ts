@@ -14,7 +14,7 @@ const hardValue = 3;
 const questionData: QuestionDataFromFrontend = {
   title: 'Test Question 1',
   description: 'This is a test question',
-  category: 'Testing',
+  categories: ['String'],
   difficulty: mediumValue,
   link: 'www.example.com',
 };
@@ -22,7 +22,7 @@ const questionData: QuestionDataFromFrontend = {
 const secondQuestionData: QuestionDataFromFrontend = {
   title: 'Test Question 2',
   description: 'This is the second test question',
-  category: 'Testing',
+  categories: ['String'],
   difficulty: hardValue,
   link: 'www.example.com',
 };
