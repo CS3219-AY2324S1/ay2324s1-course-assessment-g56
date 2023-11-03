@@ -40,29 +40,26 @@ function QuestionCard({ slug, access_token }: QuestionCardProps) {
       py="10"
       pb="10"
     >
-      <Flex w="100%" h={54}>
+      <Flex w="100%" align="center" justify="space-between">
         <IconButton
           aria-label="Back"
           icon={<FiArrowLeft />}
           onClick={() => router.push('/home')}
-          height={54}
-          width={54}
+          boxSize="54px"
           fontSize={30}
-          ml={10}
-          pos="absolute"
+          ml="2.5rem"
           colorScheme="teal"
         />
         <Skeleton
           isLoaded={!questionLoading}
-          ml="50%"
-          mt="7px"
-          transform="translateX(-50%)"
           borderRadius="0.375rem"
+          maxW="calc(100% - 248px)"
         >
           <Heading fontSize="3xl" fontWeight="bold">
             {fetchedQuestion?.title}
           </Heading>
         </Skeleton>
+        <div style={{ marginRight: '2.5rem', width: '54px' }} />
       </Flex>
       <Skeleton isLoaded={!questionLoading} borderRadius="0.375rem">
         <HStack spacing={2}>
@@ -80,7 +77,7 @@ function QuestionCard({ slug, access_token }: QuestionCardProps) {
         <CardBody>
           <Skeleton isLoaded={!questionLoading} borderRadius="0.375rem">
             <Text fontSize="md" fontWeight="bold">
-              <Link isExternal href={`//${fetchedQuestion?.link}`}>
+              <Link isExternal href={`${fetchedQuestion?.link}`}>
                 {fetchedQuestion?.link} <Icon as={FiExternalLink} mx="2px" />
               </Link>
             </Text>
