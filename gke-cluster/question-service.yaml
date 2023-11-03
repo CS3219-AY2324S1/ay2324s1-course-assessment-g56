@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: question-service-deployment
+  labels:
+    app: question-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: question-service
+  template:
+    metadata:
+      labels:
+        app: question-service
+    spec:
+      containers:
+        - name: question-service
+          image: thesoggy/peerprep-question-service:kub
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5001
+          envFrom:
+            - secretRef:
+                name: firebase-secret
+            - secretRef:
+                name: supabase-secret
+          env:
+            - name: QUESTION_SERVICE_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: main-config
+                  key: QUESTION_SERVICE_PORT
+            - name: FRONTEND_SERVICE
+              valueFrom:
+                configMapKeyRef:
+                  name: main-config
+                  key: FRONTEND_SERVICE
+            - name: NODE_ENV
+              valueFrom:
+                configMapKeyRef:
+                  name: main-config
+                  key: NODE_ENV
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: question-service-service
+spec:
+  selector:
+    app: question-service
+  ports:
+    - protocol: TCP
+      port: 5001
+      targetPort: 5001
