@@ -14,7 +14,7 @@ export enum QuestionDifficulty {
 
 type QuestionDifficultyNumber = 1 | 2 | 3;
 
-const questionCategories = [
+export const questionCategories = [
   'Two Pointers',
   'Same Direction Two Pointers',
   'Opposite Direction Two Pointers',

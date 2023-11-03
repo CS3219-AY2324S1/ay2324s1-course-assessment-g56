@@ -1,6 +1,11 @@
 'use client';
 
-import { QuestionDifficulty, QuestionRowData } from '@/types/question';
+import {
+  QuestionCategory,
+  QuestionDifficulty,
+  QuestionRowData,
+  questionCategories,
+} from '@/types/question';
 import {
   Button,
   Flex,
@@ -8,11 +13,12 @@ import {
   FormLabel,
   IconButton,
   Input,
-  Select,
+  Select as ChakraSelect,
   Skeleton,
   useColorModeValue,
   VStack,
 } from '@chakra-ui/react';
+import { Select } from 'chakra-react-select';
 import { FiArrowLeft } from 'react-icons/fi';
 import React, { useEffect, useState } from 'react';
 import { useQuestionData } from '@/hooks/useQuestionData';
@@ -23,6 +29,18 @@ interface EditQuestionFormProps {
   slug: string;
   access_token: string;
 }
+
+interface CategoryOption {
+  label: string;
+  value: string;
+}
+
+const categoryOptions: CategoryOption[] = questionCategories.map(
+  (category) => ({
+    label: category,
+    value: category,
+  }),
+);
 
 function EditQuestionForm({ slug, access_token }: EditQuestionFormProps) {
   const [question, setQuestion] = useState<QuestionRowData | null>(null);
@@ -49,6 +67,13 @@ function EditQuestionForm({ slug, access_token }: EditQuestionFormProps) {
   ) => {
     const { name, value } = e.target;
     setQuestion({ ...question, [name]: value } as QuestionRowData);
+  };
+
+  const handleChangeCategories = (newValues: CategoryOption[]) => {
+    setQuestion({
+      ...question,
+      categories: newValues.map((value) => value.value as QuestionCategory),
+    } as QuestionRowData);
   };
 
   const updateQuestionMutation = useUpdateQuestionMutation(
@@ -98,12 +123,27 @@ function EditQuestionForm({ slug, access_token }: EditQuestionFormProps) {
           <FormLabel pl="4" flex="0 0 120px">
             Categories:{' '}
           </FormLabel>
-          <Skeleton isLoaded={question !== null} borderRadius="0.375rem">
-            <Input
-              type="text"
+          <Skeleton
+            isLoaded={question !== null}
+            maxW="60%"
+            maxH={24}
+            minW="320px"
+            borderRadius="0.375rem"
+          >
+            <Select
+              isMulti
+              hideSelectedOptions
               name="categories"
-              value={(question && question.categories.join(', ')) || ''}
-              onChange={handleChange}
+              colorScheme="blue"
+              options={categoryOptions}
+              defaultValue={question?.categories.map((category) => ({
+                value: category,
+                label: category,
+              }))}
+              isOptionDisabled={() => question?.categories.length >= 5}
+              placeholder="Select categories"
+              closeMenuOnSelect={false}
+              onChange={handleChangeCategories}
             />
           </Skeleton>
         </Flex>
@@ -131,7 +171,7 @@ function EditQuestionForm({ slug, access_token }: EditQuestionFormProps) {
             Difficulty:{' '}
           </FormLabel>
           <Skeleton isLoaded={question !== null} borderRadius="0.375rem">
-            <Select
+            <ChakraSelect
               name="difficulty"
               value={
                 (question && question.difficulty) || QuestionDifficulty.EASY
@@ -141,7 +181,7 @@ function EditQuestionForm({ slug, access_token }: EditQuestionFormProps) {
               <option value={QuestionDifficulty.EASY}>Easy</option>
               <option value={QuestionDifficulty.MEDIUM}>Medium</option>
               <option value={QuestionDifficulty.HARD}>Hard</option>
-            </Select>
+            </ChakraSelect>
           </Skeleton>
         </Flex>
       </FormControl>

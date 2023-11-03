@@ -12,6 +12,11 @@ import { useSession } from '@/contexts/SupabaseProvider';
 import Modal from './Modal';
 import AddQuestionForm from '../form/AddQuestionForm';
 
+interface CategoryOption {
+  label: string;
+  value: string;
+}
+
 function AddQuestionFormModal({
   isOpen,
   onClose,
@@ -23,7 +28,7 @@ function AddQuestionFormModal({
   const initialRef = useRef(null);
   const [title, setTitle] = useState('');
   const [desc, setDesc] = useState('');
-  const [cat, setCat] = useState('');
+  const [cat, setCat] = useState<QuestionCategory[]>([]);
   const [difficulty, setDifficulty] = useState<QuestionDifficulty>(
     QuestionDifficulty.EASY,
   );
@@ -35,11 +40,15 @@ function AddQuestionFormModal({
     session?.access_token ?? '',
   );
 
+  const changeCategories = (newValues: CategoryOption[]) => {
+    setCat(newValues.map((option) => option.value as QuestionCategory));
+  };
+
   const handleSubmit = () => {
     const question: Question = {
       title,
       description: desc,
-      categories: cat.split(', ') as QuestionCategory[],
+      categories: cat,
       difficulty,
       link,
     };
@@ -73,7 +82,7 @@ function AddQuestionFormModal({
     >
       <AddQuestionForm
         initialRef={initialRef}
-        changeCategories={(e) => setCat(e.target.value)}
+        changeCategories={changeCategories}
         changeDifficulty={(e) =>
           setDifficulty(e.target.value as QuestionDifficulty)
         }
