@@ -61,6 +61,9 @@ export default function Page() {
         columns={columns}
         isLoading={!session || questionListLoading}
       />
+      <Button variant="outline" colorScheme="gray">
+        Non-functional Button
+      </Button>
     </>
   );
 }
