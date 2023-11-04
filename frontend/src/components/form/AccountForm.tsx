@@ -25,7 +25,7 @@ import AvatarForm from './AvatarForm';
 
 export default function AccountForm({ session }: { session: Session | null }) {
   const toast = useToast();
-  const { data, isLoading, isError } = useUserData();
+  const { data, isPending, isError } = useUserData();
   const [profileData, setProfileData] = useState<ProfileData>({
     fullName: null,
     username: null,
@@ -105,7 +105,7 @@ export default function AccountForm({ session }: { session: Session | null }) {
 
           <FormControl isRequired>
             <FormLabel htmlFor="fullName">Full Name</FormLabel>
-            <Skeleton isLoaded={!isLoading} borderRadius="0.375rem">
+            <Skeleton isLoaded={!isPending} borderRadius="0.375rem">
               <Input
                 id="fullName"
                 type="text"
@@ -117,7 +117,7 @@ export default function AccountForm({ session }: { session: Session | null }) {
 
           <FormControl isRequired>
             <FormLabel htmlFor="username">Username</FormLabel>
-            <Skeleton isLoaded={!isLoading} borderRadius="0.375rem">
+            <Skeleton isLoaded={!isPending} borderRadius="0.375rem">
               <Input
                 id="username"
                 type="text"
@@ -131,7 +131,7 @@ export default function AccountForm({ session }: { session: Session | null }) {
             <FormLabel id="preferredInterviewLanguage">
               Preferred Interview Language
             </FormLabel>
-            <Skeleton isLoaded={!isLoading} borderRadius="0.375rem">
+            <Skeleton isLoaded={!isPending} borderRadius="0.375rem">
               <Select
                 onChange={changeLanguage}
                 value={profileData.preferredInterviewLanguage || ''}
@@ -149,7 +149,7 @@ export default function AccountForm({ session }: { session: Session | null }) {
 
           <FormControl>
             <FormLabel htmlFor="website">Website</FormLabel>
-            <Skeleton isLoaded={!isLoading} borderRadius="0.375rem">
+            <Skeleton isLoaded={!isPending} borderRadius="0.375rem">
               <Input
                 id="website"
                 type="url"
@@ -171,7 +171,7 @@ export default function AccountForm({ session }: { session: Session | null }) {
           <AvatarForm
             uid={user?.id ?? ''}
             profile={profileData}
-            isLoading={isLoading}
+            isLoading={isPending}
           />
         </VStack>
       </Flex>
@@ -179,13 +179,13 @@ export default function AccountForm({ session }: { session: Session | null }) {
         colorScheme="blue"
         onClick={updateProfile}
         isLoading={updateUserMutation.isPending}
-        isDisabled={isLoading}
+        isDisabled={isPending}
       >
         Update
       </Button>
       <Box>
         <form action="/auth/signout" method="post">
-          <Button type="submit" isDisabled={isLoading}>
+          <Button type="submit" isDisabled={isPending}>
             Sign out
           </Button>
         </form>
@@ -195,7 +195,7 @@ export default function AccountForm({ session }: { session: Session | null }) {
           type="submit"
           onClick={onOpen}
           colorScheme="red"
-          isDisabled={isLoading}
+          isDisabled={isPending}
         >
           Delete Account
         </Button>

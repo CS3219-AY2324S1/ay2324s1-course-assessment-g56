@@ -23,7 +23,7 @@ export default function Page() {
   const session = useSession();
   const {
     data: questionList,
-    isLoading: questionListLoading,
+    isPending: questionListLoading,
     isError,
   } = useQuestionListData(session?.access_token ?? '');
   const { data: profileData } = useUserData();

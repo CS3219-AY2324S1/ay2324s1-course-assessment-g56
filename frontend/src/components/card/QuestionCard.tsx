@@ -30,7 +30,7 @@ interface QuestionCardProps {
 
 function QuestionCard({ slug, access_token }: QuestionCardProps) {
   const router = useRouter();
-  const { data: fetchedQuestion, isLoading: questionLoading } = useQuestionData(
+  const { data: fetchedQuestion, isPending: questionLoading } = useQuestionData(
     slug,
     access_token ?? '',
   );

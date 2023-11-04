@@ -51,7 +51,7 @@ function EditQuestionForm({ slug, access_token }: EditQuestionFormProps) {
     question?.difficulty;
   const router = useRouter();
 
-  const { data: fetchedQuestion, isLoading: questionLoading } = useQuestionData(
+  const { data: fetchedQuestion, isPending: questionLoading } = useQuestionData(
     slug,
     access_token ?? '',
   );

@@ -9,9 +9,9 @@ import SkeletonArray from '@/components/skeleton/SkeletonArray';
 function Page({ params }: { params: { slug: string } }) {
   const { slug } = params;
   const session = useSession();
-  const { data: user, isLoading } = useUserData();
+  const { data: user, isPending } = useUserData();
 
-  if (isLoading) {
+  if (isPending) {
     return <SkeletonArray />;
   }
 
