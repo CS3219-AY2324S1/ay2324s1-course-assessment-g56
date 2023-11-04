@@ -7,14 +7,14 @@ import {
 } from '@chakra-ui/react';
 import { KeyboardEvent, useEffect } from 'react';
 import {
-  NumberToQuestionComplexityMap,
-  QuestionComplexity,
+  NumberToQuestionDifficultyMap,
+  QuestionDifficulty,
 } from '@/types/question';
 import Thumb from './SliderThumb';
 
 type Props = {
-  setLowerBoundDifficulty: (lowerBoundDifficulty: QuestionComplexity) => void;
-  setUpperBoundDifficulty: (upperBoundDifficulty: QuestionComplexity) => void;
+  setLowerBoundDifficulty: (lowerBoundDifficulty: QuestionDifficulty) => void;
+  setUpperBoundDifficulty: (upperBoundDifficulty: QuestionDifficulty) => void;
 };
 
 export default function QuestionRangeSlider({
@@ -81,13 +81,13 @@ export default function QuestionRangeSlider({
 
   useEffect(() => {
     setLowerBoundDifficulty(
-      NumberToQuestionComplexityMap[state.value[0]] as QuestionComplexity,
+      NumberToQuestionDifficultyMap[state.value[0]] as QuestionDifficulty,
     );
   }, [state.value[0]]);
 
   useEffect(() => {
     setUpperBoundDifficulty(
-      NumberToQuestionComplexityMap[state.value[1]] as QuestionComplexity,
+      NumberToQuestionDifficultyMap[state.value[1]] as QuestionDifficulty,
     );
   }, [state.value[1]]);
 
@@ -103,7 +103,7 @@ export default function QuestionRangeSlider({
         <input {...getInputProps({ index: 0 })} hidden />
         <input {...getInputProps({ index: 1 })} hidden />
         {markers.map((markerProps, index) => {
-          const value = NumberToQuestionComplexityMap[index + 1];
+          const value = NumberToQuestionDifficultyMap[index + 1];
           return (
             <Badge
               key={value}

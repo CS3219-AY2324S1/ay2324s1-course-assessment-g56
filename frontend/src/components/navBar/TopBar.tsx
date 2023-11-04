@@ -23,7 +23,7 @@ function TopBar({ onOpen, ...rest }: MobileProps) {
   const { toggleColorMode } = useColorMode();
   const text = useColorModeValue('dark', 'light');
   const SwitchIcon = useColorModeValue(FiMoon, FiSun);
-  const { data: profileData, isLoading: loading } = useUserData();
+  const { data: profileData, isPending } = useUserData();
   return (
     <Flex
       ml={{ base: 0, md: 60 }}
@@ -61,7 +61,7 @@ function TopBar({ onOpen, ...rest }: MobileProps) {
           label={`Switch to ${text} mode`}
           onClick={toggleColorMode}
         />
-        {!loading && <UserPopover profileData={profileData!} />}
+        {!isPending && <UserPopover profileData={profileData!} />}
       </HStack>
     </Flex>
   );

@@ -1,7 +1,7 @@
 import { QUESTION_LIST_KEY } from '@/constants/queryKey';
 import { updateQuestionById } from '@/lib/questions';
 import {
-  NumberToQuestionComplexityMap,
+  NumberToQuestionDifficultyMap,
   QuestionRowData,
 } from '@/types/question';
 import { useToast } from '@chakra-ui/react';
@@ -19,7 +19,7 @@ export const useUpdateQuestionMutation = (
     mutationFn: (question: QuestionRowData) =>
       updateQuestionById(question, access_token),
     onMutate: () => {
-      queryClient.removeQueries([QUESTION_LIST_KEY, slug]);
+      queryClient.removeQueries({ queryKey: [QUESTION_LIST_KEY, slug] });
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: [QUESTION_LIST_KEY] });
@@ -28,7 +28,7 @@ export const useUpdateQuestionMutation = (
         ...data,
         uuid: data.uuid!,
         slug: data.slug!,
-        complexity: NumberToQuestionComplexityMap[data.complexity],
+        difficulty: NumberToQuestionDifficultyMap[data.difficulty],
       });
       toast({
         title: 'Question updated.',

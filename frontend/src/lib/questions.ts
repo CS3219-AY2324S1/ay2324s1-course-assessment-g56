@@ -1,8 +1,8 @@
 import { DatabaseQuestion } from '@/types/database.types';
 import {
   Question,
-  QuestionComplexity,
-  QuestionComplexityToNumberMap,
+  QuestionDifficulty,
+  QuestionDifficultyToNumberMap,
   QuestionRowData,
 } from '@/types/question';
 import initialiseClient from './axios';
@@ -25,7 +25,7 @@ export const getQuestions = async (
 
 const convertQuestionToDatabaseQuestion = (question: Question) => ({
   ...question,
-  complexity: QuestionComplexityToNumberMap[question.complexity],
+  difficulty: QuestionDifficultyToNumberMap[question.difficulty],
 });
 
 export const createQuestion = (
@@ -122,8 +122,8 @@ export const testing = () => {
       
       1 <= s.length <= 105
       s[i] is a printable ascii character`,
-    category: 'String, Algorithms',
-    complexity: QuestionComplexity.EASY,
+    categories: ['String', 'Array'],
+    difficulty: QuestionDifficulty.EASY,
     link: 'example.com/101',
   };
 

@@ -25,7 +25,7 @@ export async function POST() {
 
   const client = initialiseClient(session.access_token);
 
-  await client.delete(`${process.env.USER_SERVICE}/user`).catch((error) => {
+  await client.delete(`${process.env.USER_PATH}/user`).catch((error) => {
     console.error('Error deleting user:', error);
   });
 

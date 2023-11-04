@@ -11,12 +11,12 @@ import {
   RES_FIND_PAIR,
   RES_FOUND_PAIR,
 } from 'constants/socket';
-import { QuestionComplexity } from 'types/question';
+import { QuestionDifficulty } from 'types/question';
 import { User } from 'types/user';
 
 type FindPairFunction = (
-  lowerBoundDifficulty: QuestionComplexity,
-  upperBoundDifficulty: QuestionComplexity,
+  lowerBoundDifficulty: QuestionDifficulty,
+  upperBoundDifficulty: QuestionDifficulty,
 ) => Promise<void>;
 const TIMEOUT_DURATION = 30000;
 
@@ -28,8 +28,8 @@ const supabase = createClient(
 const handleFindPair =
   (socket: Socket, io: Server): FindPairFunction =>
   async (
-    lowerBoundDifficulty: QuestionComplexity,
-    upperBoundDifficulty: QuestionComplexity,
+    lowerBoundDifficulty: QuestionDifficulty,
+    upperBoundDifficulty: QuestionDifficulty,
   ): Promise<void> => {
     console.log(
       `Socket ${socket.id} finding pair for ${lowerBoundDifficulty} to ${upperBoundDifficulty}`,

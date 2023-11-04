@@ -14,7 +14,7 @@ import {
   RES_STOP_FINDING_PAIR,
 } from '../src/constants/socket';
 import { ApiServer } from '../src/server';
-import { QuestionComplexity } from '../src/types/question';
+import { QuestionDifficulty } from '../src/types/question';
 
 const serverUrl = `http://localhost:${process.env.MATCHING_SERVICE_PORT}`;
 
@@ -70,16 +70,16 @@ describe('Integration Tests', () => {
 
     socket1.emit(
       REQ_FIND_PAIR,
-      QuestionComplexity.EASY,
-      QuestionComplexity.MEDIUM,
+      QuestionDifficulty.EASY,
+      QuestionDifficulty.MEDIUM,
     );
 
     // Add a 29-second delay before the second emit
     await setTimeout(29000);
     socket2.emit(
       REQ_FIND_PAIR,
-      QuestionComplexity.MEDIUM,
-      QuestionComplexity.HARD,
+      QuestionDifficulty.MEDIUM,
+      QuestionDifficulty.HARD,
     );
 
     await Promise.all([socket1FoundPair, socket2FoundPair]);
@@ -95,11 +95,11 @@ describe('Integration Tests', () => {
       });
     });
 
-    const expectedDequeueDifficulty = QuestionComplexity.EASY;
+    const expectedDequeueDifficulty = QuestionDifficulty.EASY;
     socket1.emit(
       REQ_FIND_PAIR,
       expectedDequeueDifficulty,
-      QuestionComplexity.HARD,
+      QuestionDifficulty.HARD,
     );
 
     await socket1CannotFindPair;
@@ -129,8 +129,8 @@ describe('Integration Tests', () => {
       });
     });
 
-    const expectedDequeueDifficulty1 = QuestionComplexity.EASY;
-    const expectedDequeueDifficulty2 = QuestionComplexity.MEDIUM;
+    const expectedDequeueDifficulty1 = QuestionDifficulty.EASY;
+    const expectedDequeueDifficulty2 = QuestionDifficulty.MEDIUM;
 
     socket1.emit(
       REQ_FIND_PAIR,
@@ -171,8 +171,8 @@ describe('Integration Tests', () => {
 
     socket1.emit(
       REQ_FIND_PAIR,
-      QuestionComplexity.EASY,
-      QuestionComplexity.EASY,
+      QuestionDifficulty.EASY,
+      QuestionDifficulty.EASY,
     );
 
     // Wait for 10 seconds and then disconnect the socket
@@ -202,8 +202,8 @@ describe('Integration Tests', () => {
 
     socket1.emit(
       REQ_FIND_PAIR,
-      QuestionComplexity.EASY,
-      QuestionComplexity.EASY,
+      QuestionDifficulty.EASY,
+      QuestionDifficulty.EASY,
     );
 
     // Wait for 29 seconds and then disconnect the socket
@@ -227,16 +227,16 @@ describe('Integration Tests', () => {
 
     socket1.emit(
       REQ_FIND_PAIR,
-      QuestionComplexity.EASY,
-      QuestionComplexity.EASY,
+      QuestionDifficulty.EASY,
+      QuestionDifficulty.EASY,
     );
 
     // Wait for 10 seconds and then request find pair again
     await setTimeout(10000);
     socket1.emit(
       REQ_FIND_PAIR,
-      QuestionComplexity.MEDIUM,
-      QuestionComplexity.MEDIUM,
+      QuestionDifficulty.MEDIUM,
+      QuestionDifficulty.MEDIUM,
     );
 
     await socket1ErrorFindPair;
@@ -246,7 +246,7 @@ describe('Integration Tests', () => {
   }, 26000);
 
   it('Queue the same user twice. Time to requeue is after the timeout time of 30 seconds. Expect "Removing user from difficulty queue"', async () => {
-    const expectedDequeueDifficulty = QuestionComplexity.EASY;
+    const expectedDequeueDifficulty = QuestionDifficulty.EASY;
     let failCounter = 0;
     socket1.on(RES_CANNOT_FIND_PAIR, async () => {
       failCounter += 1;
@@ -261,8 +261,8 @@ describe('Integration Tests', () => {
 
     socket1.emit(
       REQ_FIND_PAIR,
-      QuestionComplexity.EASY,
-      QuestionComplexity.EASY,
+      QuestionDifficulty.EASY,
+      QuestionDifficulty.EASY,
     );
 
     // Wait for slightly more than 30 seconds and then request find pair again
@@ -270,7 +270,7 @@ describe('Integration Tests', () => {
     socket1.emit(
       REQ_FIND_PAIR,
       expectedDequeueDifficulty,
-      QuestionComplexity.MEDIUM,
+      QuestionDifficulty.MEDIUM,
     );
   }, 63000);
 

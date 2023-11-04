@@ -21,8 +21,8 @@ const hardValue = 3;
 const questionData: QuestionDataFromFrontend = {
   title: 'Test Question 1',
   description: 'This is a test question',
-  category: 'Testing',
-  complexity: mediumValue,
+  categories: ['String'],
+  difficulty: mediumValue,
   link: 'www.example.com',
 };
 
@@ -31,16 +31,16 @@ let app: Express;
 const secondQuestionData: QuestionDataFromFrontend = {
   title: 'Test Question 2',
   description: 'This is the second test question',
-  category: 'Testing',
-  complexity: hardValue,
+  categories: ['String', 'Array'],
+  difficulty: hardValue,
   link: 'www.example.com',
 };
 
 const questionDataWithSameTitle: QuestionDataFromFrontend = {
   title: 'Test Question 1',
   description: 'This is a test question with only the same title',
-  category: 'Insert, Testing',
-  complexity: easyValue,
+  categories: ['String', 'Sort'],
+  difficulty: easyValue,
   link: 'www.example.com/extra',
 };
 

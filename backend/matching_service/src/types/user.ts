@@ -1,10 +1,10 @@
-import { QuestionComplexity } from './question';
+import { QuestionDifficulty } from './question';
 
 export interface User {
   uid: string;
   sid: string;
   username: string | null;
   avatarUrl: string | null;
-  lowerBoundDifficulty: QuestionComplexity;
-  upperBoundDifficulty: QuestionComplexity;
+  lowerBoundDifficulty: QuestionDifficulty;
+  upperBoundDifficulty: QuestionDifficulty;
 }

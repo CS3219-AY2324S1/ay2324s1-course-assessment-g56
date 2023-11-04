@@ -4,29 +4,42 @@ import {
   FormControl,
   FormLabel,
   Input,
-  Select,
+  Select as ChakraSelect,
   VStack,
 } from '@chakra-ui/react';
-import { QuestionComplexity } from '@/types/question';
+import { QuestionDifficulty, questionCategories } from '@/types/question';
 import { ChangeEvent, MutableRefObject } from 'react';
+import { Select } from 'chakra-react-select';
 
-interface QuestionFormProps {
+interface AddQuestionFormProps {
   changeTitle: (e: ChangeEvent<HTMLInputElement>) => void;
   changeDescription: (e: ChangeEvent<HTMLInputElement>) => void;
-  changeCategories: (e: ChangeEvent<HTMLInputElement>) => void;
-  changeComplexity: (e: ChangeEvent<HTMLSelectElement>) => void;
+  changeCategories: (newValue) => void;
+  changeDifficulty: (e: ChangeEvent<HTMLSelectElement>) => void;
   changeLink: (e: ChangeEvent<HTMLInputElement>) => void;
   initialRef: MutableRefObject<null>;
 }
 
-function QuestionForm({
+interface CategoryOption {
+  label: string;
+  value: string;
+}
+
+const categoryOptions: CategoryOption[] = questionCategories.map(
+  (category) => ({
+    label: category,
+    value: category,
+  }),
+);
+
+function AddQuestionForm({
   initialRef,
   changeCategories,
-  changeComplexity,
+  changeDifficulty,
   changeDescription,
   changeTitle,
   changeLink,
-}: QuestionFormProps) {
+}: AddQuestionFormProps) {
   const placeholder = 'Choose difficulty';
 
   return (
@@ -52,23 +65,27 @@ function QuestionForm({
 
       <FormControl id="cat" isRequired>
         <FormLabel>Categories</FormLabel>
-        <Input
-          type="text"
-          placeholder="Enter categories (comma-separated)"
+        <Select
+          isMulti
+          name="categories"
+          colorScheme="blue"
+          options={categoryOptions}
+          placeholder="Select categories"
+          closeMenuOnSelect={false}
           onChange={changeCategories}
         />
       </FormControl>
 
-      <FormControl id="complexity" isRequired>
+      <FormControl id="difficulty" isRequired>
         <FormLabel>Difficulty</FormLabel>
-        <Select onChange={changeComplexity} required>
+        <ChakraSelect onChange={changeDifficulty} required>
           <option value={placeholder} disabled>
             {placeholder}
           </option>
-          <option value={QuestionComplexity.EASY}>Easy</option>
-          <option value={QuestionComplexity.MEDIUM}>Medium</option>
-          <option value={QuestionComplexity.HARD}>Hard</option>
-        </Select>
+          <option value={QuestionDifficulty.EASY}>Easy</option>
+          <option value={QuestionDifficulty.MEDIUM}>Medium</option>
+          <option value={QuestionDifficulty.HARD}>Hard</option>
+        </ChakraSelect>
       </FormControl>
 
       <FormControl id="link" isRequired>
@@ -79,4 +96,4 @@ function QuestionForm({
   );
 }
 
-export default QuestionForm;
+export default AddQuestionForm;

@@ -1,11 +1,18 @@
 'use client';
 
-import { Button, Flex, Heading, Spacer, useDisclosure } from '@chakra-ui/react';
+import {
+  Button,
+  Flex,
+  Heading,
+  Spacer,
+  useDisclosure,
+  useToast,
+} from '@chakra-ui/react';
 import Table from '@/components/table/Table';
 import defaultColumns from '@/constants/columns';
 import { useState, useEffect } from 'react';
 import { FiPlus } from 'react-icons/fi';
-import QuestionFormModal from '@/components/modal/QuestionFormModal';
+import AddQuestionFormModal from '@/components/modal/AddQuestionFormModal';
 import { useUserData } from '@/hooks/useUserData';
 import { useQuestionListData } from '@/hooks/useQuestionListData';
 import { useSession } from '@/contexts/SupabaseProvider';
@@ -14,12 +21,16 @@ import { useDeleteQuestionMutation } from '@/hooks/useDeleteQuestionMutation';
 export default function Page() {
   const modalTitle = 'Add Question';
   const session = useSession();
-  const { data: questionList, isLoading: questionListLoading } =
-    useQuestionListData(session?.access_token ?? '');
+  const {
+    data: questionList,
+    isPending: questionListLoading,
+    isError,
+  } = useQuestionListData(session?.access_token ?? '');
   const { data: profileData } = useUserData();
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [columns, setColumns] = useState(defaultColumns.slice(0, -1));
+  const toast = useToast();
 
   useEffect(() => {
     if (profileData === undefined || profileData!.role !== 'Maintainer') {
@@ -33,6 +44,16 @@ export default function Page() {
     session?.access_token ?? '',
   );
   const removeRow = async (uuid: string) => deleteQuestionMutation.mutate(uuid);
+
+  useEffect(() => {
+    if (isError && !questionList) {
+      toast({
+        title: 'Failed to fetch questions!',
+        description: 'Please refresh the page.',
+        status: 'error',
+      });
+    }
+  }, [isError]);
 
   return (
     <>
@@ -51,7 +72,7 @@ export default function Page() {
             >
               {modalTitle}
             </Button>
-            <QuestionFormModal isOpen={isOpen} onClose={onClose} />
+            <AddQuestionFormModal isOpen={isOpen} onClose={onClose} />
           </>
         )}
       </Flex>

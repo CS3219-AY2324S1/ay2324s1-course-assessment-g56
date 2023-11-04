@@ -4,14 +4,14 @@ import { Avatar, Button, HStack, Text } from '@chakra-ui/react';
 import { useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { BasicProfileData } from '@/types/profile';
-import { QuestionComplexity } from '@/types/question';
+import { QuestionDifficulty } from '@/types/question';
 import Modal from './Modal';
 
 interface MatchFoundModalProps {
   isOpen: boolean;
   roomId: string;
   matchedUser: BasicProfileData;
-  difficulty: QuestionComplexity;
+  difficulty: QuestionDifficulty;
 }
 
 function MatchFoundModal({

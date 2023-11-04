@@ -1,7 +1,7 @@
 import {
-  NumberToQuestionComplexityMap,
-  QuestionComplexity,
-  QuestionComplexityToNumberMap,
+  NumberToQuestionDifficultyMap,
+  QuestionDifficulty,
+  QuestionDifficultyToNumberMap,
 } from '../types/question';
 import { User } from '../types/user';
 
@@ -9,16 +9,16 @@ import LinkedList from './LinkedList';
 import Node from './Node';
 
 class MatchingQueue {
-  private queues: Map<QuestionComplexity, LinkedList<User>>;
+  private queues: Map<QuestionDifficulty, LinkedList<User>>;
   // Contains uids, cos a user might have multiple sockets
 
-  private alreadyEnqueued: Map<string, [QuestionComplexity, Node<User>][]>;
+  private alreadyEnqueued: Map<string, [QuestionDifficulty, Node<User>][]>;
 
   constructor() {
     this.queues = new Map();
-    this.queues.set(QuestionComplexity.EASY, new LinkedList());
-    this.queues.set(QuestionComplexity.MEDIUM, new LinkedList());
-    this.queues.set(QuestionComplexity.HARD, new LinkedList());
+    this.queues.set(QuestionDifficulty.EASY, new LinkedList());
+    this.queues.set(QuestionDifficulty.MEDIUM, new LinkedList());
+    this.queues.set(QuestionDifficulty.HARD, new LinkedList());
     this.alreadyEnqueued = new Map();
   }
 
@@ -26,7 +26,7 @@ class MatchingQueue {
     return this.alreadyEnqueued.has(uid);
   }
 
-  public enqueue(user: User): [QuestionComplexity, User, User] | undefined {
+  public enqueue(user: User): [QuestionDifficulty, User, User] | undefined {
     if (this.isInQueue(user.uid)) {
       console.log('User already in queue, no change');
       throw new Error();
@@ -35,13 +35,13 @@ class MatchingQueue {
     const matchingOrder = Array.from(
       {
         length:
-          QuestionComplexityToNumberMap[user.upperBoundDifficulty] -
-          QuestionComplexityToNumberMap[user.lowerBoundDifficulty] +
+          QuestionDifficultyToNumberMap[user.upperBoundDifficulty] -
+          QuestionDifficultyToNumberMap[user.lowerBoundDifficulty] +
           1,
       },
       (_, i) =>
-        NumberToQuestionComplexityMap[
-          QuestionComplexityToNumberMap[user.upperBoundDifficulty] - i
+        NumberToQuestionDifficultyMap[
+          QuestionDifficultyToNumberMap[user.upperBoundDifficulty] - i
         ],
     );
 
@@ -67,7 +67,7 @@ class MatchingQueue {
 
   private matchByQueue(
     user: User,
-    difficulty: QuestionComplexity,
+    difficulty: QuestionDifficulty,
   ): [User, User] | undefined {
     const queue = this.queues.get(difficulty);
     if (queue == null) {

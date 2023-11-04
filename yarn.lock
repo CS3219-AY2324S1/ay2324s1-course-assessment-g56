@@ -4063,29 +4063,28 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/query-core@npm:4.36.1":
-  version: 4.36.1
-  resolution: "@tanstack/query-core@npm:4.36.1"
-  checksum: 47672094da20d89402d9fe03bb7b0462be73a76ff9ca715169738bc600a719d064d106d083a8eedae22a2c22de22f87d5eb5d31ef447aba771d9190f2117ed10
+"@tanstack/query-core@npm:5.4.3":
+  version: 5.4.3
+  resolution: "@tanstack/query-core@npm:5.4.3"
+  checksum: 961701ed2978da4fc7862896bdd75a3333f71fdae568809896d6578a88609e6f5527eea363d68893110654f47a2876d3f0f54f1f594a64271eea4e37f2325f03
   languageName: node
   linkType: hard
 
-"@tanstack/react-query@npm:^4.36.1":
-  version: 4.36.1
-  resolution: "@tanstack/react-query@npm:4.36.1"
+"@tanstack/react-query@npm:^5.4.3":
+  version: 5.4.3
+  resolution: "@tanstack/react-query@npm:5.4.3"
   dependencies:
-    "@tanstack/query-core": 4.36.1
-    use-sync-external-store: ^1.2.0
+    "@tanstack/query-core": 5.4.3
   peerDependencies:
-    react: ^16.8.0 || ^17.0.0 || ^18.0.0
-    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
+    react: ^18.0.0
+    react-dom: ^18.0.0
     react-native: "*"
   peerDependenciesMeta:
     react-dom:
       optional: true
     react-native:
       optional: true
-  checksum: 1aff0a476859386f8d32253fa0d0bde7b81769a6d4d4d9cbd78778f0f955459a3bdb7ee27a0d2ee7373090f12998b45df80db0b5b313bd0a7a39d36c6e8e51c5
+  checksum: a1a656d51df3a2f6c1596b14aba22f6ce46a4cb740efd8d799700c8daadc0c1444d6f9e5f77300973846bf57404583850c7ed48d91b94dc3415f72590ec6a321
   languageName: node
   linkType: hard
 
@@ -4301,7 +4300,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/jest@npm:^29.5.6":
+"@types/jest@npm:^29.5.6, @types/jest@npm:^29.5.7":
   version: 29.5.7
   resolution: "@types/jest@npm:29.5.7"
   dependencies:
@@ -4374,11 +4373,11 @@ __metadata:
   linkType: hard
 
 "@types/node@npm:*, @types/node@npm:>=10.0.0, @types/node@npm:>=12.12.47, @types/node@npm:>=13.7.0, @types/node@npm:^20.5.9, @types/node@npm:^20.6.0":
-  version: 20.8.9
-  resolution: "@types/node@npm:20.8.9"
+  version: 20.8.10
+  resolution: "@types/node@npm:20.8.10"
   dependencies:
     undici-types: ~5.26.4
-  checksum: 0c05f3502a9507ff27e91dd6fd574fa6f391b3fafedcfe8e0c8d33351fb22d02c0121f854e5b6b3ecb9a8a468407ddf6e7ac0029fb236d4c7e1361ffc758a01f
+  checksum: 7c61190e43e8074a1b571e52ff14c880bc67a0447f2fe5ed0e1a023eb8a23d5f815658edb98890f7578afe0f090433c4a635c7c87311762544e20dd78723e515
   languageName: node
   linkType: hard
 
@@ -5421,13 +5420,13 @@ __metadata:
   linkType: hard
 
 "caniuse-lite@npm:^1.0.30001406, caniuse-lite@npm:^1.0.30001541":
-  version: 1.0.30001558
-  resolution: "caniuse-lite@npm:1.0.30001558"
-  checksum: 1bd6ef855a0de6ff052234912910d699e58edabcf2f34848b7df1f97ee40b059bbdf1901ac919d19360a0603e32e2ac30ae89670ceca8f118e750be3280ef5b1
+  version: 1.0.30001559
+  resolution: "caniuse-lite@npm:1.0.30001559"
+  checksum: 17c7af10244dca2c7ca41c884df19fc4c7313b9b03ed1f9b1f352bffbc871701f35431f766838f669ebe1f9d20627c0c6f2d760a0837538bd1d21de5833020f4
   languageName: node
   linkType: hard
 
-"chakra-react-select@npm:^4.7.2":
+"chakra-react-select@npm:^4.7.6":
   version: 4.7.6
   resolution: "chakra-react-select@npm:4.7.6"
   dependencies:
@@ -5849,6 +5848,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"dayjs@npm:^1.11.10":
+  version: 1.11.10
+  resolution: "dayjs@npm:1.11.10"
+  checksum: a6b5a3813b8884f5cd557e2e6b7fa569f4c5d0c97aca9558e38534af4f2d60daafd3ff8c2000fed3435cfcec9e805bcebd99f90130c6d1c5ef524084ced588c4
+  languageName: node
+  linkType: hard
+
 "debug@npm:2.6.9, debug@npm:^2.2.0":
   version: 2.6.9
   resolution: "debug@npm:2.6.9"
@@ -6077,9 +6083,9 @@ __metadata:
   linkType: hard
 
 "electron-to-chromium@npm:^1.4.535":
-  version: 1.4.571
-  resolution: "electron-to-chromium@npm:1.4.571"
-  checksum: 4e0900ef08e941be51e727fb51ef9375157806de2d6888ec52bdea933a8cd672ad8b68746c9f84d396780b75140fb279e06c5c197a865794436c6c9271fddaa2
+  version: 1.4.572
+  resolution: "electron-to-chromium@npm:1.4.572"
+  checksum: f7f111908febb03ba775dff02be288c0f9e3fe1766c22b915d6b40fdba30ee4aa899234513ca64028b56dd5d5a051b25e3e42fda557f57d149416fc325147706
   languageName: node
   linkType: hard
 
@@ -7132,13 +7138,14 @@ __metadata:
     "@supabase/auth-ui-react": ^0.4.5
     "@supabase/auth-ui-shared": ^0.1.7
     "@supabase/supabase-js": ^2.37.0
-    "@tanstack/react-query": ^4.36.1
+    "@tanstack/react-query": ^5.4.3
     "@tanstack/react-table": ^8.9.9
     "@types/node": 20.6.0
     "@types/react": ^18.2.21
     "@types/react-dom": ^18
     axios: ^1.5.1
-    chakra-react-select: ^4.7.2
+    chakra-react-select: ^4.7.6
+    dayjs: ^1.11.10
     dotenv: ^16.3.1
     framer-motion: ^10.16.4
     next: 13.5.4
@@ -10902,13 +10909,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"source-map-support@npm:0.5.13, source-map-support@npm:^0.5.12":
+"source-map-support@npm:0.5.13":
   version: 0.5.13
   resolution: "source-map-support@npm:0.5.13"
   dependencies:
     buffer-from: ^1.0.0
     source-map: ^0.6.0
   checksum: 933550047b6c1a2328599a21d8b7666507427c0f5ef5eaadd56b5da0fd9505e239053c66fe181bf1df469a3b7af9d775778eee283cbb7ae16b902ddc09e93a97
+  languageName: node
+  linkType: hard
+
+"source-map-support@npm:^0.5.12":
+  version: 0.5.21
+  resolution: "source-map-support@npm:0.5.21"
+  dependencies:
+    buffer-from: ^1.0.0
+    source-map: ^0.6.0
+  checksum: 43e98d700d79af1d36f859bdb7318e601dfc918c7ba2e98456118ebc4c4872b327773e5a1df09b0524e9e5063bb18f0934538eace60cca2710d1fa687645d137
   languageName: node
   linkType: hard
 
@@ -11757,15 +11774,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"use-sync-external-store@npm:^1.2.0":
-  version: 1.2.0
-  resolution: "use-sync-external-store@npm:1.2.0"
-  peerDependencies:
-    react: ^16.8.0 || ^17.0.0 || ^18.0.0
-  checksum: 5c639e0f8da3521d605f59ce5be9e094ca772bd44a4ce7322b055a6f58eeed8dda3c94cabd90c7a41fb6fa852210092008afe48f7038792fd47501f33299116a
-  languageName: node
-  linkType: hard
-
 "user_service@workspace:backend/user_service":
   version: 0.0.0-use.local
   resolution: "user_service@workspace:backend/user_service"
@@ -11773,9 +11781,11 @@ __metadata:
     "@supabase/supabase-js": ^2.33.1
     "@types/cors": ^2
     "@types/express": ^4.17.1
+    "@types/jest": ^29.5.7
     "@types/jsonwebtoken": ^9
     "@types/morgan": ^1.9.5
     "@types/node": ^20.5.9
+    "@types/supertest": ^2.0.15
     body-parser: ^1.20.2
     cors: ^2.8.5
     cross-env: ^7.0.3
@@ -11787,6 +11797,7 @@ __metadata:
     morgan: ^1.10.0
     nodemon: ^3.0.1
     supertest: ^6.3.3
+    ts-jest: ^29.1.1
     ts-node-dev: ^2.0.0
     tsconfig-paths: ^4.2.0
     typescript: ^5.2.2
