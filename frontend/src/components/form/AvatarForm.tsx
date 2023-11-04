@@ -23,6 +23,15 @@ import { ProfileData } from '@/types/profile';
 import { useUpdateUserMutation } from '@/hooks/useUpdateUserMutation';
 import { useSupabase } from '@/contexts/SupabaseProvider';
 
+function getInitials(name: string) {
+  const names = name.split(' ');
+  const firstName = names[0] ?? '';
+  const lastName = names.length > 1 ? names[names.length - 1] : '';
+  return firstName && lastName
+    ? `${firstName.charAt(0)}${lastName.charAt(0)}`
+    : firstName.charAt(0);
+}
+
 export default function AvatarForm({
   uid,
   profile,
@@ -35,6 +44,7 @@ export default function AvatarForm({
   const supabase = useSupabase();
   const toast = useToast();
   const { avatarUrl, username } = profile;
+  const initials = useMemo(() => getInitials(username ?? ''), [username]);
   const updateUserMutation = useUpdateUserMutation(uid ?? '');
   const [avatarStatus, setAvatarStatus] = useState('');
   const buttonHoverColor = useColorModeValue('blue.300', 'blue.600');
@@ -103,7 +113,7 @@ export default function AvatarForm({
         name={username || ''}
       />
     ),
-    [avatarUrl],
+    [avatarUrl, initials],
   );
 
   return (
