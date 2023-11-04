@@ -1,5 +1,6 @@
 import {
   Box,
+  Button,
   Tab,
   TabList,
   TabPanel,
@@ -67,9 +68,15 @@ function CollabRoomRight({
           </TabPanels>
         </Tabs>
       </Box>
-      <Box height="40vh">
+
+      {/* Bottom Half of room right */}
+      <VStack height="40vh">
+        {/* Search bar */}
+        {/* Video Window */}
         <VideoCollection roomId="TEST" partnerUsername={username2} />
-      </Box>
+        {/* Close room */}
+        <Button colorScheme="red">Close Room</Button>
+      </VStack>
     </VStack>
   );
 }
