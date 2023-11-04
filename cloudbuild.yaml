@@ -134,6 +134,15 @@ steps:
       - '-c'
       - |
         rm frontend/.env
+  # Trigger update of images in deployed to GKE
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        if [ "$BUILD_STATUS" == "SUCCESS" ]; then
+          gcloud pubsub topics publish update-images --message "Build successful at $BUILD_ID"
+        fi
 images:
   - 'gcr.io/$PROJECT_ID/question_service:latest'
   - 'gcr.io/$PROJECT_ID/matching_service:latest'
