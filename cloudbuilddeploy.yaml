@@ -13,8 +13,8 @@ steps:
         export CLOUDSDK_CONTAINER_CLUSTER=autopilot-cluster-1
         export KUBECTL_VERSION=1.27
         # Update question-service and other services
-        kubectl set image deployment/question-service-deployment question-service=gcr.io/thinking-return-402109/question_service:latest
-        kubectl set image deployment/matching-service-deployment matching-service=gcr.io/thinking-return-402109/matching_service:latest
-        kubectl set image deployment/user-service-deployment user-service=gcr.io/thinking-return-402109/user_service:latest
-        kubectl set image deployment/frontend-deployment frontend=gcr.io/thinking-return-402109/frontend_service:latest
+        kubectl rollout restart deployment/question-service-deployment
+        kubectl rollout restart deployment/matching-service-deployment
+        kubectl rollout restart deployment/user-service-deployment
+        kubectl rollout restart deployment/frontend-deployment
 
