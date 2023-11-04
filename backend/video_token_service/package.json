@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "npx tsc && nodemon -x 'node index.ts || (sleep 10;touch index.ts)'"
+    "start": "npx tsc && nodemon -x 'node src/index.ts || (sleep 10;touch src/index.ts)'"
   },
   "dependencies": {
     "agora-access-token": "^2.0.4",
