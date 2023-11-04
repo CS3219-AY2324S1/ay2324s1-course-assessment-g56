@@ -14,6 +14,7 @@ import {
 import {
   useReactTable,
   getCoreRowModel,
+  getPaginationRowModel,
   getSortedRowModel,
   SortingState,
   ColumnDef,
@@ -24,6 +25,7 @@ import NextLink from 'next/link';
 import { QuestionRowData } from '@/types/question';
 import { Tr, flexRender } from './TableUtils';
 import TableHeader from './TableHeader';
+import TablePagination from './TablePagination';
 
 interface TableProps<T extends object> {
   tableData: T[];
@@ -31,6 +33,7 @@ interface TableProps<T extends object> {
   columns: ColumnDef<T, any>[];
   isLoading?: boolean;
   isSortable?: boolean;
+  isPaginated?: boolean;
 }
 
 declare module '@tanstack/table-core' {
@@ -48,6 +51,7 @@ function Table<T extends object>({
   columns,
   isLoading = false,
   isSortable = true,
+  isPaginated = true,
 }: TableProps<T>) {
   const [sortBy, setSortBy] = useState<SortingState>([]);
   const table = useReactTable<T>({
@@ -65,6 +69,9 @@ function Table<T extends object>({
     ...(isSortable && {
       getSortedRowModel: getSortedRowModel(),
       onSortingChange: setSortBy,
+    }),
+    ...(isPaginated && {
+      getPaginationRowModel: getPaginationRowModel(),
     }),
   });
 
@@ -126,6 +133,7 @@ function Table<T extends object>({
           ))}
         </Tbody>
       </ChakraTable>
+      {isPaginated && <TablePagination table={table} />}
     </Card>
   );
 }
