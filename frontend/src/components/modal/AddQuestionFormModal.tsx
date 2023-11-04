@@ -13,8 +13,8 @@ import Modal from './Modal';
 import AddQuestionForm from '../form/AddQuestionForm';
 
 interface CategoryOption {
-  label: string;
-  value: string;
+  label: QuestionCategory;
+  value: QuestionCategory;
 }
 
 function AddQuestionFormModal({
@@ -41,7 +41,7 @@ function AddQuestionFormModal({
   );
 
   const changeCategories = (newValues: CategoryOption[]) => {
-    setCat(newValues.map((option) => option.value as QuestionCategory));
+    setCat(newValues.map((option) => option.value));
   };
 
   const handleSubmit = () => {
@@ -82,6 +82,7 @@ function AddQuestionFormModal({
     >
       <AddQuestionForm
         initialRef={initialRef}
+        categories={cat}
         changeCategories={changeCategories}
         changeDifficulty={(e) =>
           setDifficulty(e.target.value as QuestionDifficulty)

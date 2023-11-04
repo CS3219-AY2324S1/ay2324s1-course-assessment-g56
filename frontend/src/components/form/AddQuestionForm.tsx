@@ -7,11 +7,16 @@ import {
   Select as ChakraSelect,
   VStack,
 } from '@chakra-ui/react';
-import { QuestionDifficulty, questionCategories } from '@/types/question';
+import {
+  QuestionCategory,
+  QuestionDifficulty,
+  questionCategories,
+} from '@/types/question';
 import { ChangeEvent, MutableRefObject } from 'react';
 import { Select } from 'chakra-react-select';
 
 interface AddQuestionFormProps {
+  categories: QuestionCategory[];
   changeTitle: (e: ChangeEvent<HTMLInputElement>) => void;
   changeDescription: (e: ChangeEvent<HTMLInputElement>) => void;
   changeCategories: (newValue) => void;
@@ -21,8 +26,8 @@ interface AddQuestionFormProps {
 }
 
 interface CategoryOption {
-  label: string;
-  value: string;
+  label: QuestionCategory;
+  value: QuestionCategory;
 }
 
 const categoryOptions: CategoryOption[] = questionCategories.map(
@@ -34,6 +39,7 @@ const categoryOptions: CategoryOption[] = questionCategories.map(
 
 function AddQuestionForm({
   initialRef,
+  categories,
   changeCategories,
   changeDifficulty,
   changeDescription,
@@ -71,6 +77,7 @@ function AddQuestionForm({
           colorScheme="blue"
           options={categoryOptions}
           placeholder="Select categories"
+          isOptionDisabled={() => categories.length >= 5}
           closeMenuOnSelect={false}
           onChange={changeCategories}
         />
