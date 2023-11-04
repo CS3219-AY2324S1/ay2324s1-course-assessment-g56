@@ -29,8 +29,8 @@ interface Props {
   username: string;
   // socket: Socket | null;
   roomSlug: string;
-  width?: string;
-  height?: string;
+  // width?: string;
+  // height?: string;
 }
 
 export default function CodeEditor({
