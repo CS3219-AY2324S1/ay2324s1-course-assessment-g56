@@ -70,12 +70,12 @@ function AddQuestionFormModal({
             colorScheme="blue"
             mr={3}
             onClick={handleSubmit}
-            isDisabled={createQuestionMutation.isLoading}
+            isDisabled={createQuestionMutation.isPending}
           >
             Save
           </Button>
           <Button onClick={onClose}>
-            {createQuestionMutation.isLoading ? 'Minimise' : 'Cancel'}
+            {createQuestionMutation.isPending ? 'Minimise' : 'Cancel'}
           </Button>
         </>
       }

@@ -19,7 +19,7 @@ export const useUpdateQuestionMutation = (
     mutationFn: (question: QuestionRowData) =>
       updateQuestionById(question, access_token),
     onMutate: () => {
-      queryClient.removeQueries([QUESTION_LIST_KEY, slug]);
+      queryClient.removeQueries({ queryKey: [QUESTION_LIST_KEY, slug] });
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: [QUESTION_LIST_KEY] });

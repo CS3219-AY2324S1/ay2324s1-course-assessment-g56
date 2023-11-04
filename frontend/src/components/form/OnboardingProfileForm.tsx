@@ -13,7 +13,6 @@ import {
 import { useSession } from '@/contexts/SupabaseProvider';
 import { ChangeEvent, Dispatch, SetStateAction, useRef } from 'react';
 import { ProfileData } from '@/types/profile';
-import { checkIfUsernameExists } from '@/hooks/useUserData';
 import AvatarForm from './AvatarForm';
 
 interface OnboardingProfileFormProps {
@@ -39,19 +38,10 @@ function OnboardingProfileForm({
     }));
   };
 
-  const checkUniqueUsername = async (username: string) : Promise<boolean> => checkIfUsernameExists(username)
-
   const validateProfile = async () => {
     if (!profileData.fullName || !profileData.username) {
       toast({
         title: 'Please fill out all required fields.',
-        status: 'error',
-      });
-      return;
-    }
-    if (await checkUniqueUsername(profileData.username)) {
-      toast({
-        title: 'Username already exists.',
         status: 'error',
       });
       return;

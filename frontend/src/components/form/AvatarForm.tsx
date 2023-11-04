@@ -127,7 +127,7 @@ export default function AvatarForm({
             colorScheme="blue"
             isDisabled={isLoading}
             _disabled={{ opacity: 1, cursor: 'not-allowed' }}
-            isLoading={avatarStatus !== '' || updateUserMutation.isLoading}
+            isLoading={avatarStatus !== '' || updateUserMutation.isPending}
             loadingText={avatarStatus}
             onClick={onToggle}
           >
@@ -144,7 +144,7 @@ export default function AvatarForm({
                 accept="image/*"
                 id="single"
                 onChange={uploadAvatar}
-                disabled={updateUserMutation.isLoading || isLoading}
+                disabled={updateUserMutation.isPending || isLoading}
                 ref={inputRef}
                 hidden
               />

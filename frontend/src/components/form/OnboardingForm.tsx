@@ -26,11 +26,6 @@ const steps = [
 ];
 
 function OnboardingForm() {
-  const { activeStep, goToNext, goToPrevious } = useSteps({
-    index: 1,
-    count: steps.length,
-  });
-
   const { data } = useUserData();
 
   const [profileData, setProfileData] = useState<ProfileData>({
@@ -48,6 +43,13 @@ function OnboardingForm() {
       setProfileData(data);
     }
   }, [data]);
+
+  const accountInfoFilled = data?.fullName && data?.username;
+
+  const { activeStep, goToNext, goToPrevious } = useSteps({
+    index: accountInfoFilled ? 2 : 1,
+    count: steps.length,
+  });
 
   const stepContent = [
     <OnboardingProfileForm

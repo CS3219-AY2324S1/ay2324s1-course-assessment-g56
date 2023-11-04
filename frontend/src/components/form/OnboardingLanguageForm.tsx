@@ -51,8 +51,14 @@ function OnboardingLanguageForm({
       });
       return;
     }
-    await updateUserMutation.mutateAsync(profileData);
-    goToNext();
+    await updateUserMutation
+      .mutateAsync(profileData)
+      .then(() => {
+        goToNext();
+      })
+      .catch(() => {
+        goToPrevious();
+      });
   };
 
   return (
@@ -61,8 +67,12 @@ function OnboardingLanguageForm({
         <FormLabel id="preferredInterviewLanguage">
           Preferred Interview Language
         </FormLabel>
-        <Select onChange={changeLanguage} required>
-          <option value="" disabled hidden selected>
+        <Select
+          onChange={changeLanguage}
+          required
+          value={profileData.preferredInterviewLanguage ?? ''}
+        >
+          <option value="" disabled hidden>
             Choose Language
           </option>
           <option value={Language.JAVA}>Java</option>
@@ -74,14 +84,14 @@ function OnboardingLanguageForm({
         <Button
           colorScheme="green"
           onClick={goToPrevious}
-          disabled={updateUserMutation.isLoading}
+          disabled={updateUserMutation.isPending}
         >
           Previous Step
         </Button>
         <Button
           colorScheme="green"
           onClick={saveProfile}
-          isLoading={updateUserMutation.isLoading}
+          isLoading={updateUserMutation.isPending}
         >
           Next Step
         </Button>

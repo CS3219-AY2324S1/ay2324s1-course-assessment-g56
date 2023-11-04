@@ -16,12 +16,21 @@ export default async function authMiddleware(req: NextRequest) {
 
   const { data } = await supabase
     .from('profiles')
-    .select('updated_at')
+    .select('full_name, username, preferred_interview_language')
     .single();
 
-  if (data && !data.updated_at && req.nextUrl.pathname !== '/onboarding') {
+  const hasOnboarded =
+    data?.full_name && data?.username && data?.preferred_interview_language;
+
+  if (data && !hasOnboarded && req.nextUrl.pathname !== '/onboarding') {
     return NextResponse.redirect(
       new URL('/onboarding', process.env.FRONTEND_SERVICE),
+    );
+  }
+
+  if (data && hasOnboarded && req.nextUrl.pathname === '/onboarding') {
+    return NextResponse.redirect(
+      new URL('/account', process.env.FRONTEND_SERVICE),
     );
   }
 
@@ -49,5 +58,6 @@ export const config = {
     '/matching',
     '/account',
     '/room/:id*',
+    '/onboarding',
   ],
 };

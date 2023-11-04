@@ -26,7 +26,19 @@ export default function AppProvider({
   session: MaybeSession;
   colorMode: 'light' | 'dark';
 }) {
-  const [queryClient] = React.useState(() => new QueryClient());
+  const [queryClient] = React.useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            gcTime: 1000 * 60 * 15, // 15 minutes
+            enabled: session !== null,
+            refetchOnWindowFocus: false,
+            refetchOnMount: false,
+          },
+        },
+      }),
+  );
 
   const theme = extendTheme({
     config: {

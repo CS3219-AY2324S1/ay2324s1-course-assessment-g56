@@ -16,7 +16,7 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import { Session } from '@supabase/auth-helpers-nextjs';
-import { checkIfUsernameExists, useUserData } from '@/hooks/useUserData';
+import { useUserData } from '@/hooks/useUserData';
 import { ProfileData } from '@/types/profile';
 import AccountDeletionModal from '@/components/modal/AccountDeletionModal';
 import { Language } from '@/types/language';
@@ -57,7 +57,6 @@ export default function AccountForm({ session }: { session: Session | null }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const updateUserMutation = useUpdateUserMutation(user?.id ?? '');
-  const checkUniqueUsername = async (username: string) : Promise<boolean> => checkIfUsernameExists(username)
 
   const updateProfile = async () => {
     if (
@@ -67,13 +66,6 @@ export default function AccountForm({ session }: { session: Session | null }) {
     ) {
       toast({
         title: 'Please fill out all required fields.',
-        status: 'error',
-      });
-      return;
-    }
-    if (await checkUniqueUsername(profileData.username)) {
-      toast({
-        title: 'Username already exists.',
         status: 'error',
       });
       return;
@@ -186,7 +178,7 @@ export default function AccountForm({ session }: { session: Session | null }) {
       <Button
         colorScheme="blue"
         onClick={updateProfile}
-        isLoading={updateUserMutation.isLoading}
+        isLoading={updateUserMutation.isPending}
         isDisabled={isLoading}
       >
         Update

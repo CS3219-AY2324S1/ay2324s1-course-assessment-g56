@@ -25,7 +25,7 @@ export const useUpdateUserMutation = (userId: string) => {
       return profileData;
     },
     onMutate: async (profileData: ProfileData) => {
-      await queryClient.cancelQueries([USER_QUERY_KEY]);
+      await queryClient.cancelQueries({ queryKey: [USER_QUERY_KEY] });
       const previousProfileData: ProfileData = queryClient.getQueryData([
         USER_QUERY_KEY,
       ]);
@@ -33,6 +33,7 @@ export const useUpdateUserMutation = (userId: string) => {
       return { previousProfileData };
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [USER_QUERY_KEY] });
       toast({
         title: 'Profile updated!',
         description: "We've updated your profile.",
@@ -41,11 +42,31 @@ export const useUpdateUserMutation = (userId: string) => {
     },
     onError: (error: Error, _newData, context) => {
       queryClient.setQueryData([USER_QUERY_KEY], context?.previousProfileData);
-      toast({
-        title: 'Something went wrong!',
-        description: `We've failed to update your profile. ${error.message}`,
-        status: 'error',
-      });
+      if (
+        error.message.includes(
+          'violates unique constraint "profiles_username_key"',
+        )
+      ) {
+        toast({
+          title: 'Username taken!',
+          description: 'This username is already taken.',
+          status: 'error',
+        });
+      } else if (
+        error.message.includes('violates check constraint "username_length"')
+      ) {
+        toast({
+          title: 'Username too short!',
+          description: 'Your username is too short.',
+          status: 'error',
+        });
+      } else {
+        toast({
+          title: 'Something went wrong!',
+          description: `We've failed to update your profile. ${error.message}`,
+          status: 'error',
+        });
+      }
     },
   });
 };

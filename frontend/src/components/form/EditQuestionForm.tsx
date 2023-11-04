@@ -204,7 +204,7 @@ function EditQuestionForm({ slug, access_token }: EditQuestionFormProps) {
       <Button
         onClick={handleSubmit}
         colorScheme="green"
-        isLoading={updateQuestionMutation.isLoading}
+        isLoading={updateQuestionMutation.isPending}
         loadingText="Saving"
         isDisabled={questionLoading || !validQuestionForm}
       >

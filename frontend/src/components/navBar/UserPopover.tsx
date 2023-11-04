@@ -33,7 +33,7 @@ function UserPopover(props: Props) {
         src={profileData.avatarUrl !== null ? profileData.avatarUrl : undefined}
       />
     ),
-    [profileData.avatarUrl],
+    [profileData.avatarUrl, profileData.username],
   );
 
   return (
