@@ -39,7 +39,7 @@ function CollabRoomRight({
 
   return (
     <VStack spacing={4} align="start" height="100vh">
-      <Box height="60vh" width="100%">
+      <Box width="100%">
         <Tabs>
           <TabList>
             <Tab>{username1}</Tab>
@@ -47,7 +47,7 @@ function CollabRoomRight({
           </TabList>
 
           <TabPanels>
-            <TabPanel>
+            <TabPanel height="60vh">
               <CodeEditor
                 language={language1}
                 // TODO: replace this with an actual room slug generator
@@ -56,7 +56,7 @@ function CollabRoomRight({
               />
             </TabPanel>
 
-            <TabPanel>
+            <TabPanel height="60vh">
               <CodeEditor
                 language={language2}
                 // TODO: replace this with an actual room slug generator

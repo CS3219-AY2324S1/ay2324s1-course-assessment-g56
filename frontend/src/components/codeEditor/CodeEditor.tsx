@@ -33,6 +33,19 @@ interface Props {
   // height?: string;
 }
 
+function format_language(language: Language) {
+  switch (language) {
+    case Language.PYTHON_THREE:
+      return 'Python 3';
+    case Language.JAVASCRIPT:
+      return 'JavaScript';
+    case Language.JAVA:
+      return 'Java';
+    default:
+      return language;
+  }
+}
+
 export default function CodeEditor({
   roomSlug,
   language,
@@ -144,7 +157,7 @@ export default function CodeEditor({
         <Select value={selectedLanguage} onChange={handleLanguageChange}>
           {Object.values(Language).map((lang) => (
             <option key={lang} value={lang}>
-              {lang}
+              {format_language(lang)}
             </option>
           ))}
         </Select>
