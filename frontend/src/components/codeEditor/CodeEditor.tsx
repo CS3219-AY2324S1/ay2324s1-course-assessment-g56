@@ -75,9 +75,12 @@ export default function CodeEditor({
     // Best to launch our own signaling server
     const provider = new WebrtcProvider(roomSlug, ydoc, {
       signaling: [
-        'wss://signaling.yjs.dev',
-        'wss://y-webrtc-signaling-eu.herokuapp.com',
-        'wss://y-webrtc-signaling-us.herokuapp.com',
+        // Local
+        'ws://localhost:8080',
+        // Public
+        // 'wss://signaling.yjs.dev',
+        // 'wss://y-webrtc-signaling-eu.herokuapp.com',
+        // 'wss://y-webrtc-signaling-us.herokuapp.com',
       ],
     });
     const yText = ydoc.getText(roomSlug);
