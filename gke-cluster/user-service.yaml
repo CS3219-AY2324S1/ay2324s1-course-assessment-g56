@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-service-deployment
+  labels:
+    app: user-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user-service
+  template:
+    metadata:
+      labels:
+        app: user-service
+    spec:
+      containers:
+        - name: user-service
+          image: thesoggy/peerprep-user-service:kub
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5005
+          envFrom:
+            - secretRef:
+                name: supabase-secret
+          env:
+            - name: USER_SERVICE_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: main-config
+                  key: USER_SERVICE_PORT
+            - name: FRONTEND_SERVICE
+              valueFrom:
+                configMapKeyRef:
+                  name: main-config
+                  key: FRONTEND_SERVICE
+            - name: NODE_ENV
+              valueFrom:
+                configMapKeyRef:
+                  name: main-config
+                  key: NODE_ENV
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-service-service
+spec:
+  selector:
+    app: user-service
+  ports:
+    - protocol: TCP
+      port: 5005
+      targetPort: 5005
