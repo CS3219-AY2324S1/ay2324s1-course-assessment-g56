@@ -10,6 +10,7 @@ import {
   Td,
   Text,
   useColorModeValue,
+  useMediaQuery,
 } from '@chakra-ui/react';
 import {
   useReactTable,
@@ -20,7 +21,7 @@ import {
   ColumnDef,
   RowData,
 } from '@tanstack/react-table';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import NextLink from 'next/link';
 import { QuestionRowData } from '@/types/question';
 import { Tr, flexRender } from './TableUtils';
@@ -74,6 +75,16 @@ function Table<T extends object>({
       getPaginationRowModel: getPaginationRowModel(),
     }),
   });
+
+  const [isLargeScreen] = useMediaQuery('(min-width: 62em)');
+
+  useEffect(() => {
+    if (isLargeScreen) {
+      table.getColumn('link').toggleVisibility(true);
+    } else {
+      table.getColumn('link').toggleVisibility(false);
+    }
+  }, [isLargeScreen]);
 
   return (
     <Card variant="outline" bg={useColorModeValue('white', 'gray.900')}>
