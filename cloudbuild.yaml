@@ -140,7 +140,7 @@ steps:
     args:
       - '-c'
       - |
-        if [ "$BUILD_STATUS" == "SUCCESS" ]; then
+        if [ "$_BUILD_STATUS" == "SUCCESS" ]; then
           gcloud pubsub topics publish update-images --message "Build successful at $BUILD_ID"
         fi
 images:
