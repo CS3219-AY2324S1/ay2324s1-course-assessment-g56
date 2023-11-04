@@ -47,7 +47,7 @@ function EditQuestionForm({ slug, access_token }: EditQuestionFormProps) {
   const validQuestionForm =
     question?.description &&
     question?.title &&
-    question?.categories &&
+    question?.categories?.length > 0 &&
     question?.difficulty;
   const router = useRouter();
 
@@ -204,6 +204,8 @@ function EditQuestionForm({ slug, access_token }: EditQuestionFormProps) {
       <Button
         onClick={handleSubmit}
         colorScheme="green"
+        isLoading={updateQuestionMutation.isLoading}
+        loadingText="Saving"
         isDisabled={questionLoading || !validQuestionForm}
       >
         Save Changes
