@@ -37,7 +37,11 @@ function TablePagination<T extends object>({ table }: TablePaginationProps<T>) {
   } = table;
   const { pageIndex, pageSize } = getState().pagination;
   return (
-    <Flex justifyContent="space-between" margin={4} alignItems="center">
+    <Flex
+      justifyContent="space-between"
+      p={{ base: 2, md: 4 }}
+      alignItems="center"
+    >
       <Flex>
         <Tooltip label="First Page">
           <IconButton
@@ -47,7 +51,7 @@ function TablePagination<T extends object>({ table }: TablePaginationProps<T>) {
             }}
             isDisabled={!getCanPreviousPage()}
             icon={<FiArrowLeft height={3} width={3} />}
-            mr={4}
+            mr={{ base: 2, md: 4 }}
           />
         </Tooltip>
 
@@ -80,15 +84,15 @@ function TablePagination<T extends object>({ table }: TablePaginationProps<T>) {
           size="sm"
           marginLeft={2}
           marginRight={8}
-          width={28}
-          min={Math.min(1, getPageCount())}
-          max={getPageCount()}
+          width={20}
+          min={1}
+          max={Math.max(1, getPageCount())}
           onChange={(_str, num) => {
             if (!Number.isNaN(num)) {
               setPageIndex(Math.min(Math.max(num - 1, 0), getPageCount() - 1));
             }
           }}
-          defaultValue={pageIndex + 1}
+          value={pageIndex + 1}
         >
           <NumberInputField />
           <NumberInputStepper>
@@ -99,15 +103,15 @@ function TablePagination<T extends object>({ table }: TablePaginationProps<T>) {
 
         <Select
           size="sm"
-          width={32}
+          width={28}
           value={pageSize}
           onChange={(e) => {
             setPageSize(Number(e.target.value));
           }}
         >
-          {numEntriesPerPageOptions.map((newPageSize) => (
-            <option key={newPageSize} value={newPageSize}>
-              Show {newPageSize}
+          {numEntriesPerPageOptions.map((number) => (
+            <option key={number} value={number}>
+              Show {number}
             </option>
           ))}
         </Select>
@@ -130,7 +134,7 @@ function TablePagination<T extends object>({ table }: TablePaginationProps<T>) {
             }}
             isDisabled={!getCanNextPage()}
             icon={<FiArrowRight height={3} width={3} />}
-            marginLeft={4}
+            ml={{ base: 2, md: 4 }}
           />
         </Tooltip>
       </Flex>
