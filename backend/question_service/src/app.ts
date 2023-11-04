@@ -42,7 +42,7 @@ app.use((error: unknown, _req: Request, res: Response, _next: NextFunction) => {
     statusCode = error.status;
     message = error.message;
   }
-  res.status(statusCode).json({ message });
+  res.status(statusCode).json({ errors: [{ msg: message }] });
 });
 
 const server = app.listen(process.env.QUESTION_SERVICE_PORT, () => {

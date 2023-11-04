@@ -19,10 +19,10 @@ export const useCreateQuestionMutation = (
         status: 'success',
       });
     },
-    onError: (error: Error) => {
+    onError: (error) => {
       toast({
-        title: 'An error has occurred.',
-        description: error.message,
+        title: 'Something Went Wrong.',
+        description: `We've failed to add your question. ${error.message}`,
         status: 'error',
       });
     },
