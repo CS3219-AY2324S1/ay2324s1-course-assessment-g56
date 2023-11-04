@@ -141,7 +141,7 @@ steps:
       - '-c'
       - |
         if [ "$_BUILD_STATUS" == "SUCCESS" ]; then
-          gcloud pubsub topics publish update-images --message "Build successful at $BUILD_ID"
+          gcloud pubsub topics publish projects/thinking-return-402109/topics/update-images --message "Build successful at $BUILD_ID"
         fi
 images:
   - 'gcr.io/$PROJECT_ID/question_service:latest'
