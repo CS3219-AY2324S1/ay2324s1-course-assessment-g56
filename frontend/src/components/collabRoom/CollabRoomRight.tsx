@@ -7,6 +7,8 @@ import {
   TabPanels,
   Tabs,
   VStack,
+  HStack,
+  Spacer,
 } from '@chakra-ui/react';
 
 import React, { ReactElement } from 'react';
@@ -39,7 +41,7 @@ function CollabRoomRight({
   );
 
   return (
-    <VStack spacing={4} align="start" height="100vh">
+    <VStack spacing={2} align="start" height="100vh">
       <Box width="100%">
         <Tabs>
           <TabList>
@@ -70,12 +72,19 @@ function CollabRoomRight({
       </Box>
 
       {/* Bottom Half of room right */}
-      <VStack height="40vh">
+      <VStack height="30vh" width="100%">
         {/* Search bar */}
         {/* Video Window */}
-        <VideoCollection roomId="TEST" partnerUsername={username2} />
-        {/* Close room */}
-        <Button colorScheme="red">Close Room</Button>
+        <HStack width="100%">
+          <Spacer />
+          <VideoCollection roomId="TEST" partnerUsername={username2} />
+        </HStack>
+
+        {/* Close Room button */}
+        <HStack width="100%">
+          <Spacer />
+          <Button colorScheme="red">Close Room</Button>
+        </HStack>
       </VStack>
     </VStack>
   );
