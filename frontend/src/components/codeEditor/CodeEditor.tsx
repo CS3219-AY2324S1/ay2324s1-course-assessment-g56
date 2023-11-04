@@ -9,7 +9,6 @@ import { useColorMode, Select, Flex, Box } from '@chakra-ui/react';
 import { Compartment, EditorState } from '@codemirror/state';
 import { oneDark } from '@codemirror/theme-one-dark';
 import { EditorView, keymap } from '@codemirror/view';
-// import { Socket } from 'socket.io-client';
 import { yCollab } from 'y-codemirror.next';
 import { Doc } from 'yjs';
 import { Language } from '@/types/code';
@@ -17,15 +16,12 @@ import { Language } from '@/types/code';
 import { WebrtcProvider } from 'y-webrtc';
 import { insertTab, indentLess } from '@codemirror/commands';
 
-// import { CodeMirrorBinding } from 'y-codemirror';
-// import { WebsocketProvider } from 'y-websocket';
-
 import {
   CURSOR_COLOR_TO_SEND_PARTNER,
   ONE_DARK_BACKGROUND_COLOR,
 } from './colors';
 import getLanguageExtension from './languages';
-// import { YjsProvider } from './YjsProvider';
+
 import './CodeEditor.css';
 
 interface Props {
@@ -38,7 +34,6 @@ interface Props {
 }
 
 export default function CodeEditor({
-  // socket,
   roomSlug,
   language,
   username,
