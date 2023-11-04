@@ -140,8 +140,10 @@ steps:
     args:
       - '-c'
       - |
-        if [ "$_BUILD_STATUS" == "SUCCESS" ]; then
-          gcloud pubsub topics publish projects/thinking-return-402109/topics/update-images --message "Build successful at $BUILD_ID"
+        if [ "$?" -eq 0 ]; then
+          gcloud pubsub topics publish projects/thinking-return-402109/topics/update-images --message "Build steps completed successfully."
+        else
+          echo "Build steps failed, not publishing Pub/Sub message."
         fi
 images:
   - 'gcr.io/$PROJECT_ID/question_service:latest'
