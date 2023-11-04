@@ -44,7 +44,9 @@ export const createQuestion = (
       return response.data;
     })
     .catch((error) => {
-      throw new Error(error.response.data.error);
+      throw new Error(
+        error.response.data.errors.map((err) => err.msg).join('. '),
+      );
     });
 };
 
@@ -59,7 +61,9 @@ export const getQuestionBySlug = async (
     return response.data;
   } catch (error) {
     console.error('Error fetching question:', error);
-    throw error;
+    throw new Error(
+      error.response.data.errors.map((err) => err.msg).join('. '),
+    );
   }
 };
 
@@ -75,10 +79,13 @@ export const deleteQuestionById = async (
     console.log('DELETE request successful');
   } catch (error) {
     console.error('DELETE request error:', error);
+    throw new Error(
+      error.response.data.errors.map((err) => err.msg).join('. '),
+    );
   }
 };
 
-export const updateQuestionById = (
+export const updateQuestionById = async (
   question: QuestionRowData,
   access_token: string,
 ): Promise<DatabaseQuestion> => {
@@ -87,15 +94,15 @@ export const updateQuestionById = (
 
   const client = initialiseClient(access_token);
 
-  return client
-    .put(newApiURL, questionForDb)
-    .then((response) => {
-      console.log('PUT request successful');
-      return response.data;
-    })
-    .catch((error) => {
-      throw new Error(error.response.data.error);
-    });
+  try {
+    const response = await client.put(newApiURL, questionForDb);
+    console.log('PUT request successful');
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response.data.errors.map((err) => err.msg).join('. '),
+    );
+  }
 };
 
 export const testing = () => {

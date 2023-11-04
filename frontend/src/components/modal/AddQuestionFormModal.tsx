@@ -70,7 +70,8 @@ function AddQuestionFormModal({
             colorScheme="blue"
             mr={3}
             onClick={handleSubmit}
-            isDisabled={createQuestionMutation.isPending}
+            isLoading={createQuestionMutation.isPending}
+            loadingText="Saving"
           >
             Save
           </Button>

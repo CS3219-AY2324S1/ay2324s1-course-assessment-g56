@@ -7,7 +7,7 @@ export interface QuestionData {
   [key: string]: any; // This allows any key-value pair
 }
 
-const questionCategories = [
+export const questionCategories = [
   'Two Pointers',
   'Same Direction Two Pointers',
   'Opposite Direction Two Pointers',
