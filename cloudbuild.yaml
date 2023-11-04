@@ -124,7 +124,7 @@ steps:
       - 'build'
       - '-t'
       - 'gcr.io/$PROJECT_ID/frontend_service'
-      - ./
+      - ./frontend
     # Add any other Docker build options as needed.
 
   # Step 3: Delete the .env file
