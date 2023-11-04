@@ -83,7 +83,6 @@ class MatchingQueue {
 
   public remove(user: User): void {
     if (!this.alreadyEnqueued.has(user.uid)) {
-      console.log('User not found in alreadyEnqueued!');
       return;
     }
 
