@@ -36,6 +36,9 @@ export default function Page() {
 
   return (
     <>
+      <Button variant="outline" colorScheme="red">
+        Non-functional Button
+      </Button>
       <Flex minWidth="max-content" alignItems="center" gap="2" margin={2}>
         <Heading fontSize="3xl" fontWeight="bold">
           Questions
@@ -61,9 +64,6 @@ export default function Page() {
         columns={columns}
         isLoading={!session || questionListLoading}
       />
-      <Button variant="outline" colorScheme="gray">
-        Non-functional Button
-      </Button>
     </>
   );
 }
