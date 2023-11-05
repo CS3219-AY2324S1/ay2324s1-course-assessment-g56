@@ -10,20 +10,23 @@ import {
   Td,
   Text,
   useColorModeValue,
+  useMediaQuery,
 } from '@chakra-ui/react';
 import {
   useReactTable,
   getCoreRowModel,
+  getPaginationRowModel,
   getSortedRowModel,
   SortingState,
   ColumnDef,
   RowData,
 } from '@tanstack/react-table';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import NextLink from 'next/link';
 import { QuestionRowData } from '@/types/question';
 import { Tr, flexRender } from './TableUtils';
 import TableHeader from './TableHeader';
+import TablePagination from './TablePagination';
 
 interface TableProps<T extends object> {
   tableData: T[];
@@ -31,6 +34,7 @@ interface TableProps<T extends object> {
   columns: ColumnDef<T, any>[];
   isLoading?: boolean;
   isSortable?: boolean;
+  isPaginated?: boolean;
 }
 
 declare module '@tanstack/table-core' {
@@ -48,6 +52,7 @@ function Table<T extends object>({
   columns,
   isLoading = false,
   isSortable = true,
+  isPaginated = true,
 }: TableProps<T>) {
   const [sortBy, setSortBy] = useState<SortingState>([]);
   const table = useReactTable<T>({
@@ -66,7 +71,20 @@ function Table<T extends object>({
       getSortedRowModel: getSortedRowModel(),
       onSortingChange: setSortBy,
     }),
+    ...(isPaginated && {
+      getPaginationRowModel: getPaginationRowModel(),
+    }),
   });
+
+  const [isLargeScreen] = useMediaQuery('(min-width: 62em)');
+
+  useEffect(() => {
+    if (isLargeScreen) {
+      table.getColumn('link').toggleVisibility(true);
+    } else {
+      table.getColumn('link').toggleVisibility(false);
+    }
+  }, [isLargeScreen]);
 
   return (
     <Card variant="outline" bg={useColorModeValue('white', 'gray.900')}>
@@ -100,7 +118,7 @@ function Table<T extends object>({
                 </Tr>
               )}
           {table.getRowModel().rows.map((row) => (
-            <Tr key={row.id}>
+            <Tr key={row.id} h="40px">
               {row.getVisibleCells().map((cell) =>
                 cell.column.id === 'title' ? (
                   <LinkBox as={Td} key={cell.id}>
@@ -126,6 +144,7 @@ function Table<T extends object>({
           ))}
         </Tbody>
       </ChakraTable>
+      {isPaginated && <TablePagination table={table} />}
     </Card>
   );
 }

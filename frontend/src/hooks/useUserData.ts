@@ -2,7 +2,6 @@ import { useQuery } from '@tanstack/react-query';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { Database } from '@/types/database.types';
 import { USER_QUERY_KEY } from '@/constants/queryKey';
-import { useSession } from '@/contexts/SupabaseProvider';
 import { ProfileData } from '@/types/profile';
 
 const supabase = createClientComponentClient<Database>({
@@ -19,8 +18,9 @@ const getUserData = async () => {
       username: data.username,
       website: data.website,
       avatarUrl: data.avatar_url,
+      preferredInterviewLanguage: data.preferred_interview_language,
       role: data.role,
-      updatedAt: new Date(data.updated_at),
+      updatedAt: data.updated_at ? new Date(data.updated_at) : null,
     };
     return profileData;
   }
@@ -28,12 +28,8 @@ const getUserData = async () => {
 };
 
 export function useUserData() {
-  const session = useSession();
-
-  return useQuery<ProfileData | undefined>([USER_QUERY_KEY], getUserData, {
-    enabled: session !== null,
-    refetchOnWindowFocus: false,
-    refetchOnMount: false,
-    cacheTime: 1000 * 60 * 60, // 1 hour,
+  return useQuery<ProfileData | undefined>({
+    queryKey: [USER_QUERY_KEY],
+    queryFn: getUserData,
   });
 }

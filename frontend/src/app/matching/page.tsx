@@ -13,7 +13,7 @@ import {
   useDisclosure,
   CloseButton,
 } from '@chakra-ui/react';
-import { QuestionComplexity } from '@/types/question';
+import { QuestionDifficulty } from '@/types/question';
 import {
   DISCONNECT,
   REQ_FIND_PAIR,
@@ -36,16 +36,16 @@ import MatchFoundModal from '@/components/modal/MatchFoundModal';
 
 function Page() {
   const [lowerBoundDifficulty, setLowerBoundDifficulty] =
-    useState<QuestionComplexity>(QuestionComplexity.EASY);
+    useState<QuestionDifficulty>(QuestionDifficulty.EASY);
 
   const [upperBoundDifficulty, setUpperBoundDifficulty] =
-    useState<QuestionComplexity>(QuestionComplexity.HARD);
+    useState<QuestionDifficulty>(QuestionDifficulty.HARD);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isCancelling, setIsCancelling] = useState(false);
   const [matchedUser, setMatchedUser] = useState<BasicProfileData | null>(null);
   const [roomId, setRoomId] = useState('');
-  const [difficulty, setDifficulty] = useState<QuestionComplexity | null>(null);
+  const [difficulty, setDifficulty] = useState<QuestionDifficulty | null>(null);
 
   const {
     isOpen: isDisconnectVisible,
@@ -116,7 +116,7 @@ function Page() {
       }: {
         matchedUser: BasicProfileData;
         roomId: string;
-        difficulty: QuestionComplexity;
+        difficulty: QuestionDifficulty;
       }) => {
         doneMatching();
         setMatchedUser(user);

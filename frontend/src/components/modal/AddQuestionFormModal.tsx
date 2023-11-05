@@ -2,13 +2,22 @@
 
 import { Button } from '@chakra-ui/react';
 import { useRef, useState } from 'react';
-import { Question, QuestionComplexity } from '@/types/question';
+import {
+  Question,
+  QuestionCategory,
+  QuestionDifficulty,
+} from '@/types/question';
 import { useCreateQuestionMutation } from '@/hooks/useCreateQuestionMutation';
 import { useSession } from '@/contexts/SupabaseProvider';
 import Modal from './Modal';
-import QuestionForm from '../form/QuestionForm';
+import AddQuestionForm from '../form/AddQuestionForm';
 
-function QuestionFormModal({
+interface CategoryOption {
+  label: QuestionCategory;
+  value: QuestionCategory;
+}
+
+function AddQuestionFormModal({
   isOpen,
   onClose,
 }: {
@@ -19,9 +28,9 @@ function QuestionFormModal({
   const initialRef = useRef(null);
   const [title, setTitle] = useState('');
   const [desc, setDesc] = useState('');
-  const [cat, setCat] = useState('');
-  const [complexity, setComplexity] = useState<QuestionComplexity>(
-    QuestionComplexity.EASY,
+  const [cat, setCat] = useState<QuestionCategory[]>([]);
+  const [difficulty, setDifficulty] = useState<QuestionDifficulty>(
+    QuestionDifficulty.EASY,
   );
   const [link, setLink] = useState('');
   const session = useSession();
@@ -31,12 +40,16 @@ function QuestionFormModal({
     session?.access_token ?? '',
   );
 
+  const changeCategories = (newValues: CategoryOption[]) => {
+    setCat(newValues.map((option) => option.value));
+  };
+
   const handleSubmit = () => {
     const question: Question = {
       title,
       description: desc,
-      category: cat,
-      complexity,
+      categories: cat,
+      difficulty,
       link,
     };
 
@@ -57,21 +70,23 @@ function QuestionFormModal({
             colorScheme="blue"
             mr={3}
             onClick={handleSubmit}
-            isDisabled={createQuestionMutation.isLoading}
+            isLoading={createQuestionMutation.isPending}
+            loadingText="Saving"
           >
             Save
           </Button>
           <Button onClick={onClose}>
-            {createQuestionMutation.isLoading ? 'Minimise' : 'Cancel'}
+            {createQuestionMutation.isPending ? 'Minimise' : 'Cancel'}
           </Button>
         </>
       }
     >
-      <QuestionForm
+      <AddQuestionForm
         initialRef={initialRef}
-        changeCategories={(e) => setCat(e.target.value)}
-        changeComplexity={(e) =>
-          setComplexity(e.target.value as QuestionComplexity)
+        categories={cat}
+        changeCategories={changeCategories}
+        changeDifficulty={(e) =>
+          setDifficulty(e.target.value as QuestionDifficulty)
         }
         changeDescription={(e) => setDesc(e.target.value)}
         changeTitle={(e) => setTitle(e.target.value)}
@@ -81,4 +96,4 @@ function QuestionFormModal({
   );
 }
 
-export default QuestionFormModal;
+export default AddQuestionFormModal;

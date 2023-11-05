@@ -1,8 +1,8 @@
 import { DatabaseQuestion } from '@/types/database.types';
 import {
   Question,
-  QuestionComplexity,
-  QuestionComplexityToNumberMap,
+  QuestionDifficulty,
+  QuestionDifficultyToNumberMap,
   QuestionRowData,
 } from '@/types/question';
 import initialiseClient from './axios';
@@ -25,7 +25,7 @@ export const getQuestions = async (
 
 const convertQuestionToDatabaseQuestion = (question: Question) => ({
   ...question,
-  complexity: QuestionComplexityToNumberMap[question.complexity],
+  difficulty: QuestionDifficultyToNumberMap[question.difficulty],
 });
 
 export const createQuestion = (
@@ -44,7 +44,9 @@ export const createQuestion = (
       return response.data;
     })
     .catch((error) => {
-      throw new Error(error.response.data.error);
+      throw new Error(
+        error.response.data.errors.map((err) => err.msg).join('. '),
+      );
     });
 };
 
@@ -59,7 +61,9 @@ export const getQuestionBySlug = async (
     return response.data;
   } catch (error) {
     console.error('Error fetching question:', error);
-    throw error;
+    throw new Error(
+      error.response.data.errors.map((err) => err.msg).join('. '),
+    );
   }
 };
 
@@ -75,10 +79,13 @@ export const deleteQuestionById = async (
     console.log('DELETE request successful');
   } catch (error) {
     console.error('DELETE request error:', error);
+    throw new Error(
+      error.response.data.errors.map((err) => err.msg).join('. '),
+    );
   }
 };
 
-export const updateQuestionById = (
+export const updateQuestionById = async (
   question: QuestionRowData,
   access_token: string,
 ): Promise<DatabaseQuestion> => {
@@ -87,15 +94,15 @@ export const updateQuestionById = (
 
   const client = initialiseClient(access_token);
 
-  return client
-    .put(newApiURL, questionForDb)
-    .then((response) => {
-      console.log('PUT request successful');
-      return response.data;
-    })
-    .catch((error) => {
-      throw new Error(error.response.data.error);
-    });
+  try {
+    const response = await client.put(newApiURL, questionForDb);
+    console.log('PUT request successful');
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response.data.errors.map((err) => err.msg).join('. '),
+    );
+  }
 };
 
 export const testing = () => {
@@ -122,8 +129,8 @@ export const testing = () => {
       
       1 <= s.length <= 105
       s[i] is a printable ascii character`,
-    category: 'String, Algorithms',
-    complexity: QuestionComplexity.EASY,
+    categories: ['String', 'Array'],
+    difficulty: QuestionDifficulty.EASY,
     link: 'example.com/101',
   };
 

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { ReactNode, useState, useEffect } from 'react';
+import React, { ReactNode } from 'react';
 import { CacheProvider } from '@chakra-ui/next-js';
 import {
   ChakraProvider,
@@ -11,43 +11,34 @@ import {
 import { mode } from '@chakra-ui/theme-tools';
 
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
-import { Database } from '@/types/database.types';
-import {
-  createClientComponentClient,
-  Session,
-} from '@supabase/auth-helpers-nextjs';
+import { Session } from '@supabase/auth-helpers-nextjs';
 import menuTheme from '@/styles/menuTheme';
 import SupabaseProvider from './SupabaseProvider';
 
+type MaybeSession = Session | null;
+
 export default function AppProvider({
   children,
+  session,
   colorMode,
 }: {
   children: ReactNode;
+  session: MaybeSession;
   colorMode: 'light' | 'dark';
 }) {
-  const [queryClient] = React.useState(() => new QueryClient());
-  type MaybeSession = Session | null;
-  const [session, setSession] = useState<MaybeSession>(null);
-  const supabase = createClientComponentClient<Database>({
-    supabaseUrl: process.env.SUPABASE_URL,
-    supabaseKey: process.env.SUPABASE_ANON_KEY,
-  });
-  const [sessionFetched, setSessionFetched] = useState(false);
-
-  const fetchSession = async () => {
-    const { data: sessionData } = await supabase.auth.getSession();
-    if (sessionData === null || sessionData.session === null) {
-      setSessionFetched(false);
-    } else {
-      setSession(sessionData.session);
-      setSessionFetched(true);
-    }
-  };
-
-  useEffect(() => {
-    fetchSession();
-  }, [sessionFetched]);
+  const [queryClient] = React.useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            gcTime: 1000 * 60 * 15, // 15 minutes
+            enabled: session !== null,
+            refetchOnWindowFocus: false,
+            refetchOnMount: false,
+          },
+        },
+      }),
+  );
 
   const theme = extendTheme({
     config: {

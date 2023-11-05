@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: main-config
+data:
+  FRONTEND_SERVICE: http://peerprep.com
+  QUESTION_PATH: /question-service
+  USER_PATH: /user-service
+  MATCHING_PATH: /matching-service/socket.io
+  QUESTION_SERVICE_PORT: "5001"
+  USER_SERVICE_PORT: "5005"
+  MATCHING_SERVICE_PORT: "6006"
+  NODE_ENV: "production"
