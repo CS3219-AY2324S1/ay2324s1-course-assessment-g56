@@ -12,7 +12,7 @@ const APP_CERTIFICATE = process.env.NEXT_PUBLIC_AGORA_PRIMARY_CERTIFICATE;
 const app = express();
 const server = http.createServer(app);
 
-const port: string | number = 8080;
+const port = 8080;
 const wsReadyStateConnecting = 0;
 const wsReadyStateOpen = 1;
 const wsReadyStateClosing = 2; // eslint-disable-line
