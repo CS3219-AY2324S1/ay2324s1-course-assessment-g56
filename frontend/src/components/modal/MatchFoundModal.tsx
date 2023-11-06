@@ -35,7 +35,7 @@ function MatchFoundModal({
         <Button
           colorScheme="blue"
           onClick={() => {
-            router.push(`/room/${roomId}`);
+            router.push(`/collabRoom/${roomId}`);
           }}
         >
           Go To Room
