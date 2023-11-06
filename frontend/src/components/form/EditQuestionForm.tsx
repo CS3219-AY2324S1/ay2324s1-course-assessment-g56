@@ -17,6 +17,7 @@ import {
   Skeleton,
   useColorModeValue,
   VStack,
+  useColorMode,
 } from '@chakra-ui/react';
 import { Select } from 'chakra-react-select';
 import { FiArrowLeft } from 'react-icons/fi';
@@ -24,6 +25,7 @@ import React, { useEffect, useState } from 'react';
 import { useQuestionData } from '@/hooks/useQuestionData';
 import { useUpdateQuestionMutation } from '@/hooks/useUpdateQuestionMutation';
 import { useRouter } from 'next/navigation';
+import MDEditor from '@uiw/react-md-editor';
 
 interface EditQuestionFormProps {
   slug: string;
@@ -110,7 +112,6 @@ function EditQuestionForm({ slug, access_token }: EditQuestionFormProps) {
             <Input
               type="text"
               name="title"
-              // w={{ base: '250px', md: '350px', lg: '550px' }}
               value={(question && question.title) || ''}
               onChange={handleChange}
             />
@@ -155,11 +156,17 @@ function EditQuestionForm({ slug, access_token }: EditQuestionFormProps) {
             Description:{' '}
           </FormLabel>
           <Skeleton isLoaded={question !== null} borderRadius="0.375rem">
-            <Input
-              type="text"
-              name="description"
-              value={(question && question.description) || ''}
-              onChange={handleChange}
+            <MDEditor
+              value={question?.description ?? ''}
+              onChange={(value) => {
+                setQuestion({
+                  ...question,
+                  description: value,
+                } as QuestionRowData);
+              }}
+              data-color-mode={useColorMode().colorMode}
+              height="100%"
+              visibleDragbar={false}
             />
           </Skeleton>
         </Flex>
