@@ -12,7 +12,7 @@ import {
 
 import React, { ReactElement } from 'react';
 import dynamic from 'next/dynamic';
-import { Language } from '@/types/code';
+import { Language } from '@/types/language';
 
 import { RoomProvider } from './RoomContext';
 import CloseRoomButton from './CloseRoomButton';
