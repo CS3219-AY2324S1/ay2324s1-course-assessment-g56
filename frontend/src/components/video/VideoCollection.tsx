@@ -151,7 +151,6 @@ function VideoCollection({
         );
       });
 
-      // const token = '007eJxTYPhZwvBV30jgyp1dDb8b1jhzLX3aM69UySf22jLpuxZL76gpMKQmGRsYWaSZplmkppoYmaRaGiYlJ1oaJ6eZmpmkJBtbmkm6pTYEMjL4e2SyMDJAIIjPwhDiGhzCwAAAgSge0A==';
       const token = await getToken(channelName);
       await client.join(appId, channelName, token, null);
       setInCall(true);
