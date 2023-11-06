@@ -37,12 +37,14 @@ function CollabRoomRight({ roomId }: Props): ReactElement<Props, 'div'> {
   };
   const { username2, language2 } =
     user.username === roomData.user1Username
-      ? { username2: roomData.user2Username, language2: roomData.user2PreferredLanguage }
+      ? {
+          username2: roomData.user2Username,
+          language2: roomData.user2PreferredLanguage,
+        }
       : {
           username2: roomData.user1Username,
           language2: roomData.user1PreferredLanguage,
         };
-
 
   const VideoCollection = dynamic(
     () => import('@/components/video/VideoCollection'),
@@ -57,7 +59,7 @@ function CollabRoomRight({ roomId }: Props): ReactElement<Props, 'div'> {
   );
 
   return (
-    <RoomProvider>
+    <RoomProvider basicRoomState={roomData}>
       <VStack spacing={2} align="start" height="100vh">
         <Box width="100%">
           <Tabs>
