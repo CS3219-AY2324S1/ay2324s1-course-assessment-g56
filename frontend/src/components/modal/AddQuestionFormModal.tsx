@@ -62,6 +62,7 @@ function AddQuestionFormModal({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
+      size="3xl"
       title={modalTitle}
       initialRef={initialRef}
       actions={
@@ -84,11 +85,12 @@ function AddQuestionFormModal({
       <AddQuestionForm
         initialRef={initialRef}
         categories={cat}
+        description={desc}
         changeCategories={changeCategories}
         changeDifficulty={(e) =>
           setDifficulty(e.target.value as QuestionDifficulty)
         }
-        changeDescription={(e) => setDesc(e.target.value)}
+        changeDescription={setDesc}
         changeTitle={(e) => setTitle(e.target.value)}
         changeLink={(e) => setLink(e.target.value)}
       />

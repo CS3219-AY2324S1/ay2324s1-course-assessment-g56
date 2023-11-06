@@ -69,11 +69,11 @@ function TablePagination<T extends object>({ table }: TablePaginationProps<T>) {
         <Text fontSize="sm" flexShrink="0" marginRight={8}>
           {'Page '}
           <Text fontSize="sm" fontWeight="bold" as="span">
-            {Math.min(pageIndex + 1, getPageCount())}
+            {pageIndex + 1}
           </Text>
           {' of '}
           <Text fontSize="sm" fontWeight="bold" as="span">
-            {getPageCount()}
+            {Math.max(1, getPageCount())}
           </Text>
         </Text>
 

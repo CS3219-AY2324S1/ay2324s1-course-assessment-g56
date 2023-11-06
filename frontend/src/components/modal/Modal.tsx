@@ -21,6 +21,7 @@ interface ModalProps {
   initialRef?: MutableRefObject<null>;
   finalRef?: MutableRefObject<null>;
   isClosable?: boolean;
+  size?: string;
 }
 
 function Modal({
@@ -32,6 +33,7 @@ function Modal({
   initialRef,
   finalRef,
   isClosable = true,
+  size = 'md',
 }: ModalProps) {
   if (!initialRef) {
     initialRef = useRef(null);
@@ -47,6 +49,7 @@ function Modal({
       isOpen={isOpen}
       onClose={onClose}
       isCentered
+      size={size}
     >
       <ModalOverlay />
       <ModalContent>

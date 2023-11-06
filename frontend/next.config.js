@@ -1,4 +1,4 @@
-require("dotenv").config();
+require('dotenv').config();
 
 const nextConfig = {
   env: {
@@ -13,15 +13,8 @@ const nextConfig = {
     SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY,
     AGORA_ID: process.env.AGORA_ID,
   },
-  output: "standalone",
-  // async rewrites() {
-  //   return [
-  //     {
-  //       source: "/question/:path*",
-  //       destination: "/",
-  //     },
-  //   ];
-  // },
+  output: 'standalone',
+  transpilePackages: ['parse5'],
 };
 
 module.exports = nextConfig;

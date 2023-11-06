@@ -22,6 +22,15 @@ import {
 } from '@chakra-ui/react';
 import { useRouter } from 'next/navigation';
 import { FiArrowLeft, FiExternalLink } from 'react-icons/fi';
+import Markdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
+import pre from '../markdown/Pre';
+import strong from '../markdown/Strong';
+import style from '../markdown/Style';
+import code from '../markdown/Code';
+import ul from '../markdown/Ul';
 
 interface QuestionCardProps {
   slug: string;
@@ -85,11 +94,31 @@ function QuestionCard({ slug, access_token }: QuestionCardProps) {
               </Link>
             </Text>
           </Skeleton>
-          <Skeleton isLoaded={!questionLoading} borderRadius="0.375rem">
-            <Text>{fetchedQuestion?.description}</Text>
+          <Skeleton
+            isLoaded={!questionLoading}
+            borderRadius="0.375rem"
+            whiteSpace="pre-wrap"
+          >
+            <Markdown
+              remarkPlugins={[remarkGfm, remarkMath]}
+              rehypePlugins={[rehypeKatex]}
+              components={{
+                pre,
+                strong,
+                ul,
+                style,
+                code,
+              }}
+            >
+              {fetchedQuestion?.description}
+            </Markdown>
           </Skeleton>
         </CardBody>
       </Card>
+      <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"
+      />
     </VStack>
   );
 }
