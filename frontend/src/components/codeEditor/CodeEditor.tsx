@@ -12,7 +12,7 @@ import { oneDark } from '@codemirror/theme-one-dark';
 import { EditorView, keymap } from '@codemirror/view';
 import { yCollab } from 'y-codemirror.next';
 import { Doc } from 'yjs';
-import { Language } from '@/types/code';
+import { Language } from '@/types/language';
 
 import { WebrtcProvider } from 'y-webrtc';
 import { insertTab, indentLess } from '@codemirror/commands';
@@ -37,7 +37,7 @@ interface Props {
 
 function formatLanguage(language: Language) {
   switch (language) {
-    case Language.PYTHON_THREE:
+    case Language.PYTHON:
       return 'Python 3';
     case Language.JAVASCRIPT:
       return 'JavaScript';
