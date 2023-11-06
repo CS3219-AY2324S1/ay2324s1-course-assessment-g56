@@ -13,6 +13,7 @@ import {
 } from 'constants/socket';
 import { QuestionDifficulty } from 'types/question';
 import { User } from 'types/user';
+import { createRoom } from 'utils/api';
 
 type FindPairFunction = (
   lowerBoundDifficulty: QuestionDifficulty,
@@ -99,6 +100,8 @@ const handleFindPair =
 
     // We found a match!
     const [difficulty, user1, user2] = result;
+
+    const roomId = (await createRoom(user1.uid, user2.uid, difficulty)).room_id;
     console.log(
       'Match found at',
       difficulty,
@@ -113,7 +116,7 @@ const handleFindPair =
     UidToCallbackMap.stopAndRemove(user2.uid);
 
     io.to(user1.uid).emit(RES_FOUND_PAIR, {
-      roomId: 'test',
+      roomId,
       matchedUser: {
         username: user2.username,
         avatarUrl: user2.avatarUrl,
@@ -121,7 +124,7 @@ const handleFindPair =
       difficulty,
     });
     io.to(user2.uid).emit(RES_FOUND_PAIR, {
-      roomId: 'test',
+      roomId,
       matchedUser: {
         username: user1.username,
         avatarUrl: user1.avatarUrl,
