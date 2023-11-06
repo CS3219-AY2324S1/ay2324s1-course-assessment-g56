@@ -1,7 +1,8 @@
 import React, { ReactElement, useEffect, useContext } from 'react';
 
 import { Button } from '@chakra-ui/react';
-// import { SupabaseClient } from '@supabase/supabase-js';
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { Database } from '@/types/database.types';
 
 import { RoomContext } from './RoomContext';
 
