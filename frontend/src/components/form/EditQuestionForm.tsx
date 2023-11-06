@@ -26,6 +26,9 @@ import { useQuestionData } from '@/hooks/useQuestionData';
 import { useUpdateQuestionMutation } from '@/hooks/useUpdateQuestionMutation';
 import { useRouter } from 'next/navigation';
 import MDEditor from '@uiw/react-md-editor';
+import rehypeKatex from 'rehype-katex';
+import remarkGfm from 'remark-gfm';
+import remarkMath from 'remark-math';
 
 interface EditQuestionFormProps {
   slug: string;
@@ -108,7 +111,12 @@ function EditQuestionForm({ slug, access_token }: EditQuestionFormProps) {
           <FormLabel pl="4" flex="0 0 120px">
             Title:{' '}
           </FormLabel>
-          <Skeleton isLoaded={question !== null} borderRadius="0.375rem">
+          <Skeleton
+            isLoaded={question !== null}
+            borderRadius="0.375rem"
+            w="100%"
+            mr={5}
+          >
             <Input
               type="text"
               name="title"
@@ -126,10 +134,10 @@ function EditQuestionForm({ slug, access_token }: EditQuestionFormProps) {
           </FormLabel>
           <Skeleton
             isLoaded={question !== null}
-            maxW="60%"
             maxH={24}
-            minW="320px"
             borderRadius="0.375rem"
+            w="100%"
+            mr={5}
           >
             <Select
               isMulti
@@ -155,7 +163,12 @@ function EditQuestionForm({ slug, access_token }: EditQuestionFormProps) {
           <FormLabel pl="4" flex="0 0 120px">
             Description:{' '}
           </FormLabel>
-          <Skeleton isLoaded={question !== null} borderRadius="0.375rem">
+          <Skeleton
+            isLoaded={question !== null}
+            borderRadius="0.375rem"
+            width="100%"
+            mr={5}
+          >
             <MDEditor
               value={question?.description ?? ''}
               onChange={(value) => {
@@ -166,7 +179,12 @@ function EditQuestionForm({ slug, access_token }: EditQuestionFormProps) {
               }}
               data-color-mode={useColorMode().colorMode}
               height="100%"
+              width="100%"
               visibleDragbar={false}
+              previewOptions={{
+                remarkPlugins: [remarkGfm, remarkMath],
+                rehypePlugins: [rehypeKatex],
+              }}
             />
           </Skeleton>
         </Flex>
@@ -177,7 +195,12 @@ function EditQuestionForm({ slug, access_token }: EditQuestionFormProps) {
           <FormLabel pl="4" flex="0 0 120px">
             Difficulty:{' '}
           </FormLabel>
-          <Skeleton isLoaded={question !== null} borderRadius="0.375rem">
+          <Skeleton
+            isLoaded={question !== null}
+            borderRadius="0.375rem"
+            w="100%"
+            mr={5}
+          >
             <ChakraSelect
               name="difficulty"
               value={
@@ -198,7 +221,12 @@ function EditQuestionForm({ slug, access_token }: EditQuestionFormProps) {
           <FormLabel pl="4" flex="0 0 120px">
             Link:{' '}
           </FormLabel>
-          <Skeleton isLoaded={question !== null} borderRadius="0.375rem">
+          <Skeleton
+            isLoaded={question !== null}
+            borderRadius="0.375rem"
+            w="100%"
+            mr={5}
+          >
             <Input
               type="text"
               name="link"
@@ -217,6 +245,10 @@ function EditQuestionForm({ slug, access_token }: EditQuestionFormProps) {
       >
         Save Changes
       </Button>
+      <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"
+      />
     </VStack>
   );
 }
