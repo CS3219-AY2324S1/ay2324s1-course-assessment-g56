@@ -12,24 +12,38 @@ import {
 
 import React, { ReactElement } from 'react';
 import dynamic from 'next/dynamic';
-import { Language } from '@/types/language';
 
+import { useRoomData } from '@/hooks/useRoomData';
+import { useUserData } from '@/hooks/useUserData';
 import { RoomProvider } from './RoomContext';
 import CloseRoomButton from './CloseRoomButton';
+import SkeletonArray from '../skeleton/SkeletonArray';
 
 interface Props {
-  username1: string;
-  username2: string;
-  language1: Language;
-  language2: Language;
+  roomId: string;
 }
 
-function CollabRoomRight({
-  username1,
-  username2,
-  language1,
-  language2,
-}: Props): ReactElement<Props, 'div'> {
+function CollabRoomRight({ roomId }: Props): ReactElement<Props, 'div'> {
+  const { data: roomData, isPending: isRoomPending } = useRoomData(roomId);
+  const { data: user, isPending: isUserPending } = useUserData();
+
+  if (isRoomPending || isUserPending) {
+    return <SkeletonArray />;
+  }
+
+  const { username1, language1 } = {
+    username1: user.username,
+    language1: user.preferredInterviewLanguage,
+  };
+  const { username2, language2 } =
+    user.username === roomData.user1Username
+      ? { username2: roomData.user2Username, language2: roomData.user2PreferredLanguage }
+      : {
+          username2: roomData.user1Username,
+          language2: roomData.user1PreferredLanguage,
+        };
+
+
   const VideoCollection = dynamic(
     () => import('@/components/video/VideoCollection'),
     {
@@ -83,7 +97,7 @@ function CollabRoomRight({
           {/* Video Window */}
           <HStack width="100%">
             <Spacer />
-            <VideoCollection roomId="TEST" partnerUsername={username2} />
+            <VideoCollection roomId={roomId} partnerUsername={username2} />
           </HStack>
 
           {/* Close Room button */}
