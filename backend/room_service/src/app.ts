@@ -55,7 +55,10 @@ app.post('/create', async (req, res) => {
 });
 
 app.get('/', async (req, res) => {
-  const {data, error} = await supabase.from('collaborations').select().eq('room_id', req.query.room_id);
+  const { data, error } = await supabase
+    .from('collaborations')
+    .select()
+    .eq('room_id', req.query.room_id);
   return res.status(200).json(data);
 });
 
