@@ -12,14 +12,13 @@ import AgoraRTC, {
   IMicrophoneAudioTrack,
 } from 'agora-rtc-sdk-ng';
 
-// import Typography from 'components/typography';
-// import { useUser } from 'contexts/UserContext';
 // import VideoApi from 'lib/videoService';
 
 import './VideoCollection.css';
 import { FiMic, FiMicOff, FiVideo, FiVideoOff } from 'react-icons/fi';
-import { HStack, IconButton, Text } from '@chakra-ui/react';
+import { HStack, IconButton, Text, useToast } from '@chakra-ui/react';
 import { getVideoAccessToken } from '@/lib/video_token';
+import { useUserData } from '@/hooks/useUserData';
 
 const config: ClientConfig = {
   mode: 'rtc',
@@ -114,8 +113,9 @@ function VideoCollection({
   const [start, setStart] = useState<boolean>(false);
   const [hasInitialised, setHasInitialised] = useState<boolean>(false);
   const client = useClient();
+  const toast = useToast();
+  const { data: userData } = useUserData();
   const { ready, tracks } = useMicrophoneAndCameraTracks();
-  // const userProfile = useUser();
 
   useEffect(() => {
     // function to initialise the SDK
@@ -152,12 +152,22 @@ function VideoCollection({
       });
 
       const token = await getToken(channelName);
-      await client.join(appId, channelName, token, null);
+      if (client.channelName !== channelName) {
+        await client.join(appId, channelName, token, null);
+      }
       setInCall(true);
       if (tracks) {
         await client.publish([tracks[0], tracks[1]]);
+        setStart(true);
+      } else {
+        toast({
+          title: 'Error',
+          description: 'Could not get access to microphone and camera',
+          status: 'error',
+          duration: 5000,
+          isClosable: true,
+        });
       }
-      setStart(true);
     };
 
     if (ready && tracks && !hasInitialised) {
@@ -176,7 +186,7 @@ function VideoCollection({
         <>
           <div className="video-panel">
             <AgoraVideoPlayer className="video" videoTrack={tracks[1]} />
-            <Controls tracks={tracks} username="cheng yi" />
+            <Controls tracks={tracks} username={userData.username} />
           </div>
           {users.length > 0 && users[0].videoTrack ? (
             <div className="video-panel">
