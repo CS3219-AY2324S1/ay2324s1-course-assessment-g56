@@ -10,6 +10,7 @@ const nextConfig = {
     CODE_EXECUTION_PATH: process.env.CODE_EXECUTION_PATH,
     SUPABASE_URL: process.env.SUPABASE_URL,
     SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY,
+    ROOM_PATH: process.env.ROOM_PATH,
   },
   output: 'standalone',
   // async rewrites() {
