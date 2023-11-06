@@ -22,6 +22,7 @@ interface LinkWithIconProps {
 
 interface SideBarProps extends BoxProps {
   onClose: () => void;
+  isDrawer?: boolean;
 }
 
 const LinkItems: LinkWithIconProps[] = [
@@ -30,7 +31,7 @@ const LinkItems: LinkWithIconProps[] = [
   { name: 'Settings', icon: FiSettings, href: '/account' },
 ];
 
-function SideBar({ onClose, ...rest }: SideBarProps) {
+function SideBar({ onClose, isDrawer = false, ...rest }: SideBarProps) {
   return (
     <Box
       bg={useColorModeValue('white', 'gray.900')}
@@ -51,7 +52,10 @@ function SideBar({ onClose, ...rest }: SideBarProps) {
         >
           PeerPrep
         </Text>
-        <CloseButton display={{ base: 'flex', md: 'none' }} onClick={onClose} />
+        <CloseButton
+          display={{ base: 'flex', md: isDrawer ? 'flex' : 'none' }}
+          onClick={onClose}
+        />
       </Flex>
       {LinkItems.map((link) => (
         <SideBarChild

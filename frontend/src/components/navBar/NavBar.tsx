@@ -13,28 +13,34 @@ import TopBar from './TopBar';
 
 interface NavBarProps {
   children?: ReactNode;
+  showSideBar?: boolean;
 }
 
-function Navbar(props: NavBarProps) {
+function Navbar({ children, showSideBar = true }: NavBarProps) {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { children } = props;
   return (
-    <Box minH="100vh" bg={useColorModeValue('gray.100', 'gray.800')}>
-      <SideBar onClose={onClose} display={{ base: 'none', md: 'block' }} />
+    <Box
+      minH="100vh"
+      minW="100vw"
+      bg={useColorModeValue('gray.100', 'gray.800')}
+    >
+      {showSideBar && (
+        <SideBar onClose={onClose} display={{ base: 'none', md: 'block' }} />
+      )}
       <Drawer
         isOpen={isOpen}
         placement="left"
         onClose={onClose}
         returnFocusOnClose={false}
         onOverlayClick={onClose}
-        size="full"
+        styleConfig={{ width: { base: 'full', md: 'xs' } }}
       >
         <DrawerContent>
-          <SideBar onClose={onClose} />
+          <SideBar onClose={onClose} isDrawer={!showSideBar} />
         </DrawerContent>
       </Drawer>
-      <TopBar onOpen={onOpen} />
-      <Box ml={{ base: 0, md: 60 }} p="4">
+      <TopBar onOpen={onOpen} showSideBar={showSideBar} />
+      <Box ml={{ base: 0, md: showSideBar ? 60 : 0 }} p="4">
         {children}
       </Box>
     </Box>
