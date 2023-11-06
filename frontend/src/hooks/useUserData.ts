@@ -9,7 +9,7 @@ const supabase = createClientComponentClient<Database>({
   supabaseKey: process.env.SUPABASE_ANON_KEY,
 });
 
-const getUserData = async () => {
+export const getUserData = async () => {
   const { data } = await supabase.from('profiles').select('*').single();
 
   if (data) {
@@ -24,7 +24,7 @@ const getUserData = async () => {
     };
     return profileData;
   }
-  return undefined;
+  throw new Error('Profile not found');
 };
 
 export function useUserData() {

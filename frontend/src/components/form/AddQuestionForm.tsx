@@ -6,6 +6,7 @@ import {
   Input,
   Select as ChakraSelect,
   VStack,
+  useColorMode,
 } from '@chakra-ui/react';
 import {
   QuestionCategory,
@@ -14,11 +15,16 @@ import {
 } from '@/types/question';
 import { ChangeEvent, MutableRefObject } from 'react';
 import { Select } from 'chakra-react-select';
+import MDEditor from '@uiw/react-md-editor';
+import rehypeKatex from 'rehype-katex';
+import remarkGfm from 'remark-gfm';
+import remarkMath from 'remark-math';
 
 interface AddQuestionFormProps {
   categories: QuestionCategory[];
+  description: string;
   changeTitle: (e: ChangeEvent<HTMLInputElement>) => void;
-  changeDescription: (e: ChangeEvent<HTMLInputElement>) => void;
+  changeDescription: (value: string) => void;
   changeCategories: (newValue) => void;
   changeDifficulty: (e: ChangeEvent<HTMLSelectElement>) => void;
   changeLink: (e: ChangeEvent<HTMLInputElement>) => void;
@@ -40,6 +46,7 @@ const categoryOptions: CategoryOption[] = questionCategories.map(
 function AddQuestionForm({
   initialRef,
   categories,
+  description,
   changeCategories,
   changeDifficulty,
   changeDescription,
@@ -62,10 +69,17 @@ function AddQuestionForm({
 
       <FormControl id="desc" isRequired>
         <FormLabel>Description</FormLabel>
-        <Input
-          type="text"
-          placeholder="Enter description"
+        <MDEditor
+          value={description}
           onChange={changeDescription}
+          data-color-mode={useColorMode().colorMode}
+          height={250}
+          width="100%"
+          visibleDragbar={false}
+          previewOptions={{
+            remarkPlugins: [remarkGfm, remarkMath],
+            rehypePlugins: [rehypeKatex],
+          }}
         />
       </FormControl>
 

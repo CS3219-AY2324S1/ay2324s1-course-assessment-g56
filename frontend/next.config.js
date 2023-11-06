@@ -10,14 +10,7 @@ const nextConfig = {
     SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY,
   },
   output: 'standalone',
-  // async rewrites() {
-  //   return [
-  //     {
-  //       source: "/question/:path*",
-  //       destination: "/",
-  //     },
-  //   ];
-  // },
+  transpilePackages: ['parse5'],
 };
 
 module.exports = nextConfig;

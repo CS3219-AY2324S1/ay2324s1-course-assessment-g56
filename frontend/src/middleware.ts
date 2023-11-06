@@ -47,6 +47,8 @@ export default async function authMiddleware(req: NextRequest) {
     return NextResponse.redirect(url);
   }
 
+  await supabase.auth.getSession();
+
   return res;
 }
 
