@@ -6,13 +6,12 @@ const { RtcTokenBuilder, RtcRole } = require('agora-access-token');
 
 require('dotenv').config();
 
-const APP_ID = process.env.NEXT_PUBLIC_AGORA_ID;
-const APP_CERTIFICATE = process.env.NEXT_PUBLIC_AGORA_PRIMARY_CERTIFICATE;
+const APP_ID = process.env.AGORA_ID;
+const APP_CERTIFICATE = process.env.AGORA_PRIMARY_CERTIFICATE;
 
 const app = express();
 const server = http.createServer(app);
 
-const port = 8080;
 const wsReadyStateConnecting = 0;
 const wsReadyStateOpen = 1;
 const wsReadyStateClosing = 2; // eslint-disable-line
@@ -225,6 +224,6 @@ app.get('/access_token', nocache, generateAccessToken);
 // app.listen(port, () => {
 //   console.log(`Listening on port: ${port}`);
 // });
-server.listen(port, () => {
-  console.log('Signaling server running on localhost:', port);
+server.listen(process.env.VIDEO_TOKEN_SERVICE_PORT, () => {
+  console.log(`> Ready on port:${process.env.VIDEO_TOKEN_SERVICE_PORT}`);
 });

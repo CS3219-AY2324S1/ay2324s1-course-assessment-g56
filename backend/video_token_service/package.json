@@ -3,7 +3,6 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-
     "start": "cross-env NODE_ENV=development ts-node-dev --exit-child --respawn --transpile-only -r tsconfig-paths/register ./src/index.ts"
   },
   "dependencies": {
@@ -25,4 +24,3 @@
     "typescript": "^5.2.2"
   }
 }
-

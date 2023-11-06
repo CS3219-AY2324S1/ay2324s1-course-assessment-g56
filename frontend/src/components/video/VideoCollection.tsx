@@ -26,7 +26,7 @@ const config: ClientConfig = {
   codec: 'vp8',
 };
 
-const appId = process.env.NEXT_PUBLIC_AGORA_ID ?? '';
+const appId = process.env.AGORA_ID ?? '';
 
 if (process.env.NODE_ENV !== 'development') {
   AgoraRTC.setLogLevel(4);
