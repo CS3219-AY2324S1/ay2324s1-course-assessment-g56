@@ -77,6 +77,7 @@ function Table<T extends object>({
   });
 
   const [isLargeScreen] = useMediaQuery('(min-width: 62em)');
+  const [isSmallScreen] = useMediaQuery('(max-width: 30em)');
 
   useEffect(() => {
     if (isLargeScreen) {
@@ -85,6 +86,14 @@ function Table<T extends object>({
       table.getColumn('link').toggleVisibility(false);
     }
   }, [isLargeScreen]);
+
+  useEffect(() => {
+    if (isSmallScreen) {
+      table.getColumn('categories').toggleVisibility(false);
+    } else {
+      table.getColumn('categories').toggleVisibility(true);
+    }
+  }, [isSmallScreen]);
 
   return (
     <Card variant="outline" bg={useColorModeValue('white', 'gray.900')}>
