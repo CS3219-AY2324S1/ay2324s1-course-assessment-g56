@@ -74,10 +74,11 @@ function AddQuestionForm({
           onChange={changeDescription}
           data-color-mode={useColorMode().colorMode}
           height={250}
-          width="100%"
+          style={{ width: '100%' }}
           visibleDragbar={false}
           previewOptions={{
             remarkPlugins: [remarkGfm, remarkMath],
+            // @ts-expect-error
             rehypePlugins: [rehypeKatex],
           }}
         />
