@@ -6,7 +6,16 @@ import React, {
   useState,
   useContext,
 } from 'react';
-import { useColorMode, Select, Flex, Box, Skeleton } from '@chakra-ui/react';
+import {
+  useColorMode,
+  Select,
+  Flex,
+  Box,
+  Skeleton,
+  Button,
+  Textarea,
+  HStack,
+} from '@chakra-ui/react';
 import { Compartment, EditorState } from '@codemirror/state';
 import { oneDark } from '@codemirror/theme-one-dark';
 import { EditorView, keymap } from '@codemirror/view';
@@ -53,8 +62,8 @@ export default function CodeEditor({
   language,
   username,
   isUser1, // isRoomOpen,
-} // setState,
-: Props): ReactElement<Props, 'div'> {
+  // setState,
+}: Props): ReactElement<Props, 'div'> {
   const { colorMode } = useColorMode();
   const isDark = colorMode === 'dark';
   const [element, setElement] = useState<HTMLElement>();
@@ -64,6 +73,8 @@ export default function CodeEditor({
   const [selectedLanguage, setSelectedLanguage] = useState<Language | null>(
     language,
   );
+  const [codeResult, setCodeResult] = useState('No code result yet');
+  const [isRunningCode, setIsRunningCode] = useState(false);
   const languageCompartment = useMemo(() => new Compartment(), []);
 
   const {
@@ -82,8 +93,30 @@ export default function CodeEditor({
   ) => {
     setSelectedLanguage(event.target.value as Language);
   };
-  // Toggles between read only and editable
-  // let readOnly = false;
+
+  // Evaluate the code
+  const runCode = async () => {
+    if (view) {
+      const code = view.state.doc.toString();
+      setIsRunningCode(true);
+      try {
+        // Replace with your actual API call
+        const response = await fetch('/api/execute-code', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ code }),
+        });
+        const result = await response.json();
+        setCodeResult(result.output);
+      } catch (error) {
+        console.error('Error running code:', error);
+        setCodeResult('Error running code.');
+      }
+      setIsRunningCode(false);
+    }
+  };
 
   const ref = useCallback((node: HTMLElement | null): void => {
     if (!node) {
@@ -97,20 +130,18 @@ export default function CodeEditor({
     if (!element) {
       return;
     }
-    setYdoc(new Doc());
-    // Best to launch our own signaling server
-    setProvider(
-      new WebrtcProvider(roomSlug, ydoc, {
-        signaling: [
-          // Local
-          'ws://localhost:8080',
-          // Public
-          // 'wss://signaling.yjs.dev',
-          // 'wss://y-webrtc-signaling-eu.herokuapp.com',
-          // 'wss://y-webrtc-signaling-us.herokuapp.com',
-        ],
-      }),
-    );
+    const ydoc = new Doc();
+
+    const provider = new WebrtcProvider(roomSlug, ydoc, {
+      signaling: [
+        // Local
+        process.env.SIGNALING_PATH,
+        // Public
+        // 'wss://signaling.yjs.dev',
+        // 'wss://y-webrtc-signaling-eu.herokuapp.com',
+        // 'wss://y-webrtc-signaling-us.herokuapp.com',
+      ],
+    });
 
     const yText = ydoc.getText(roomSlug);
 
@@ -148,6 +179,9 @@ export default function CodeEditor({
         parent: element,
       }),
     );
+
+    setProvider(provider);
+    setYdoc(ydoc);
 
     provider.on('synced', (synced) => {
       // NOTE: This is only called when a different browser connects to this client
@@ -191,35 +225,46 @@ export default function CodeEditor({
   return (
     <Flex direction="column" padding={4} height="100%" width="100%">
       <Box width="max-content">
-        <Select value={selectedLanguage} onChange={handleLanguageChange}>
-          {Object.values(Language).map((lang) => (
-            <option key={lang} value={lang}>
-              {formatLanguage(lang)}
-            </option>
-          ))}
-        </Select>
+        <HStack>
+          <Select value={selectedLanguage} onChange={handleLanguageChange}>
+            {Object.values(Language).map((lang) => (
+              <option key={lang} value={lang}>
+                {formatLanguage(lang)}
+              </option>
+            ))}
+          </Select>
+
+          <Button
+            colorScheme="blue"
+            onClick={runCode}
+            isLoading={isRunningCode}
+            loadingText="Running"
+            disabled={!selectedLanguage}
+          >
+            Run Code
+          </Button>
+        </HStack>
       </Box>
 
       <Box flex="1" minHeight="0">
-        <div
-          ref={ref}
-          style={{
-            height: '100%',
-            width: '100%',
-            backgroundColor: isDark ? ONE_DARK_BACKGROUND_COLOR : 'snow',
-          }}
-        />
-        {/* Conditionally render a skeleton while the editor is loading */}
-        {!view && (
-          <Skeleton
-            position="absolute"
-            top="0"
-            left="0"
-            height="100%"
-            width="100%"
-            zIndex="1"
+        <HStack height="100%">
+          <div
+            ref={ref}
+            style={{
+              height: '100%',
+              width: '100%',
+              backgroundColor: isDark ? ONE_DARK_BACKGROUND_COLOR : 'snow',
+            }}
           />
-        )}
+
+          <Textarea
+            value={codeResult}
+            placeholder="Results will be shown here..."
+            readOnly
+            variant="filled"
+            height="100%"
+          />
+        </HStack>
       </Box>
     </Flex>
   );

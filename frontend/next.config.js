@@ -8,6 +8,7 @@ const nextConfig = {
     MATCHING_PATH: process.env.MATCHING_PATH,
     ROOM_PATH: process.env.ROOM_PATH,
     VIDEO_PATH: process.env.VIDEO_PATH,
+    SIGNALING_PATH: process.env.SIGNALING_PATH,
     CODE_EXECUTION_PATH: process.env.CODE_EXECUTION_PATH,
     SUPABASE_URL: process.env.SUPABASE_URL,
     SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY,
