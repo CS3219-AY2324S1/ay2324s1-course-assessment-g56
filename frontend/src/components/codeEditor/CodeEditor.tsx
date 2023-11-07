@@ -59,6 +59,8 @@ export default function CodeEditor({
   const isDark = colorMode === 'dark';
   const [element, setElement] = useState<HTMLElement>();
   const [view, setView] = useState<EditorView>();
+  const [provider, setProvider] = useState<WebrtcProvider>();
+  const [ydoc, setYdoc] = useState<Doc>();
   const [selectedLanguage, setSelectedLanguage] = useState<Language | null>(
     language,
   );
@@ -95,18 +97,21 @@ export default function CodeEditor({
     if (!element) {
       return;
     }
-    const ydoc = new Doc();
+    setYdoc(new Doc());
     // Best to launch our own signaling server
-    const provider = new WebrtcProvider(roomSlug, ydoc, {
-      signaling: [
-        // Local
-        'ws://localhost:8080',
-        // Public
-        // 'wss://signaling.yjs.dev',
-        // 'wss://y-webrtc-signaling-eu.herokuapp.com',
-        // 'wss://y-webrtc-signaling-us.herokuapp.com',
-      ],
-    });
+    setProvider(
+      new WebrtcProvider(roomSlug, ydoc, {
+        signaling: [
+          // Local
+          'ws://localhost:8080',
+          // Public
+          // 'wss://signaling.yjs.dev',
+          // 'wss://y-webrtc-signaling-eu.herokuapp.com',
+          // 'wss://y-webrtc-signaling-us.herokuapp.com',
+        ],
+      }),
+    );
+
     const yText = ydoc.getText(roomSlug);
 
     provider.awareness.setLocalStateField('user', {
@@ -176,6 +181,10 @@ export default function CodeEditor({
       // readOnly = true;
       // Progapage the export state to the close button
       setState(view.state.toJSON());
+      // close room
+      view?.destroy();
+      provider.disconnect();
+      ydoc.destroy();
     }
   }, [isRoomOpen, view]);
 

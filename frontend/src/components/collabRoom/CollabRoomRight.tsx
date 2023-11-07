@@ -18,6 +18,7 @@ import { useUserData } from '@/hooks/useUserData';
 import { RoomProvider } from './RoomContext';
 import CloseRoomButton from './CloseRoomButton';
 import SkeletonArray from '../skeleton/SkeletonArray';
+import ErrorBoundary from '../errorBoundary/ErrorBoundary';
 
 interface Props {
   roomId: string;
@@ -59,57 +60,59 @@ function CollabRoomRight({ roomId }: Props): ReactElement<Props, 'div'> {
   );
 
   return (
-    <RoomProvider basicRoomState={roomData}>
-      <VStack spacing={2} align="start" height="100vh">
-        <Box width="100%">
-          <Tabs>
-            <TabList>
-              <Tab>{username1}</Tab>
-              <Tab>{username2}</Tab>
-            </TabList>
+    <ErrorBoundary>
+      <RoomProvider basicRoomState={roomData}>
+        <VStack spacing={2} align="start" height="100vh">
+          <Box width="100%">
+            <Tabs>
+              <TabList>
+                <Tab>{username1}</Tab>
+                <Tab>{username2}</Tab>
+              </TabList>
 
-            <TabPanels>
-              <TabPanel height="60vh">
-                <CodeEditor
-                  language={language1}
-                  // TODO: replace this with an actual room slug generator
-                  roomSlug={username1 + username2}
-                  username={username1}
-                  // eslint-disable-next-line react/jsx-boolean-value
-                  isUser1={true}
-                />
-              </TabPanel>
+              <TabPanels>
+                <TabPanel height="60vh">
+                  <CodeEditor
+                    language={language1}
+                    // TODO: replace this with an actual room slug generator
+                    roomSlug={username1 + username2}
+                    username={username1}
+                    // eslint-disable-next-line react/jsx-boolean-value
+                    isUser1={true}
+                  />
+                </TabPanel>
 
-              <TabPanel height="60vh">
-                <CodeEditor
-                  language={language2}
-                  // TODO: replace this with an actual room slug generator
-                  roomSlug={username2 + username1}
-                  username={username2}
-                  isUser1={false}
-                />
-              </TabPanel>
-            </TabPanels>
-          </Tabs>
-        </Box>
+                <TabPanel height="60vh">
+                  <CodeEditor
+                    language={language2}
+                    // TODO: replace this with an actual room slug generator
+                    roomSlug={username2 + username1}
+                    username={username2}
+                    isUser1={false}
+                  />
+                </TabPanel>
+              </TabPanels>
+            </Tabs>
+          </Box>
 
-        {/* Bottom Half of room right */}
-        <VStack height="30vh" width="100%">
-          {/* Search bar */}
-          {/* Video Window */}
-          <HStack width="100%">
-            <Spacer />
-            <VideoCollection roomId={roomId} partnerUsername={username2} />
-          </HStack>
+          {/* Bottom Half of room right */}
+          <VStack height="30vh" width="100%">
+            {/* Search bar */}
+            {/* Video Window */}
+            <HStack width="100%">
+              <Spacer />
+              <VideoCollection roomId={roomId} partnerUsername={username2} />
+            </HStack>
 
-          {/* Close Room button */}
-          <HStack width="100%">
-            <Spacer />
-            <CloseRoomButton />
-          </HStack>
+            {/* Close Room button */}
+            <HStack width="100%">
+              <Spacer />
+              <CloseRoomButton />
+            </HStack>
+          </VStack>
         </VStack>
-      </VStack>
-    </RoomProvider>
+      </RoomProvider>
+    </ErrorBoundary>
   );
 }
 

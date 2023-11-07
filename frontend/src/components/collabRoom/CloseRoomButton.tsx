@@ -3,6 +3,7 @@ import React, { ReactElement, useEffect, useContext } from 'react';
 import { Button } from '@chakra-ui/react';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { Database } from '@/types/database.types';
+import NextLink from 'next/link';
 
 import { RoomContext } from './RoomContext';
 
@@ -46,11 +47,18 @@ export default function CloseRoomButton(): ReactElement {
 
   return (
     <Button
+      as={NextLink}
+      href="/"
       colorScheme="red"
       variant="outline"
       onClick={() => {
-        setIsRoomOpen(false);
-        console.log('close room');
+        const userConfirmed = window.confirm(
+          "You're about to close the room. Are you sure?",
+        );
+        if (userConfirmed) {
+          setIsRoomOpen(false);
+          console.log('close room');
+        }
       }}
     >
       Close Room
