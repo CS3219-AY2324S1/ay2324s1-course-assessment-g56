@@ -88,6 +88,7 @@ function AddQuestionForm({
         <FormLabel>Categories</FormLabel>
         <Select
           isMulti
+          instanceId={1}
           name="categories"
           colorScheme="blue"
           options={categoryOptions}
