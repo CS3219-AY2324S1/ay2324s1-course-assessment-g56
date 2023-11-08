@@ -61,7 +61,7 @@ export const questionCategories = [
   'Segment Tree',
   'Balanced Binary Tree',
   'Game Theory',
-  'Mathmatics',
+  'Mathematics',
   'Computational Geometry',
   'Binary',
   'Data Stream',

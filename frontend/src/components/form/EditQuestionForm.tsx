@@ -142,6 +142,7 @@ function EditQuestionForm({ slug, access_token }: EditQuestionFormProps) {
             <Select
               isMulti
               hideSelectedOptions
+              instanceId={1}
               name="categories"
               colorScheme="blue"
               options={categoryOptions}
