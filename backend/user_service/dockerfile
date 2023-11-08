@@ -8,6 +8,7 @@ COPY package*.json ./
 
 COPY tsconfig.json ./
 
+RUN apk add --update --no-cache python3 build-base gcc && ln -sf /usr/bin/python3 /usr/bin/python
 # Install app dependencies
 RUN npm install
 
