@@ -210,3 +210,47 @@ export const getQuestionBySlug: RequestHandler[] = [
     }
   },
 ];
+
+export const getTwoRandomQuestionsByDifficulty: RequestHandler[] = [
+  param('difficulty')
+    .notEmpty()
+    .trim()
+    .withMessage('Difficulty is required')
+    .isInt({ min: 1, max: 3 })
+    .withMessage('Difficulty must be between 1 and 3'),
+  async (req, res, next) => {
+    if (!validationResult(req).isEmpty()) {
+      res.status(400).json({ errors: validationResult(req).array() });
+      return;
+    }
+    const difficulty = parseInt(req.params?.difficulty, 10);
+    try {
+      const q = query(
+        collection(firebaseDB, collectionName),
+        where('difficulty', '==', difficulty),
+      );
+      const queryQuestions = (await getDocs(q)).docs;
+      if (queryQuestions.length === 0) {
+        res.status(404).json({ errors: [{ msg: 'Question not found' }] });
+        return;
+      }
+      const randomIndex1 = Math.floor(Math.random() * queryQuestions.length);
+      const tmp = Math.floor(Math.random() * queryQuestions.length - 1);
+      const randomIndex2 = tmp >= randomIndex1 ? tmp + 1 : tmp;
+      const question1 = queryQuestions[randomIndex1];
+      const question2 = queryQuestions[randomIndex2];
+      res.status(200).json([
+        {
+          uuid: question1.id,
+          ...question1.data(),
+        },
+        {
+          uuid: question2.id,
+          ...question2.data(),
+        },
+      ]);
+    } catch (error) {
+      next(error);
+    }
+  },
+];

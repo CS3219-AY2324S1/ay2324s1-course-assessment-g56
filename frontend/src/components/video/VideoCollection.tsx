@@ -15,10 +15,9 @@ import AgoraRTC, {
 // import VideoApi from 'lib/videoService';
 
 import './VideoCollection.css';
-import { FiMic, FiMicOff, FiVideo, FiVideoOff } from 'react-icons/fi';
+import { /* FiMic, FiMicOff, */ FiVideo, FiVideoOff } from 'react-icons/fi';
 import { HStack, IconButton, Text, useToast } from '@chakra-ui/react';
 import { getVideoAccessToken } from '@/lib/video_token';
-import { useUserData } from '@/hooks/useUserData';
 
 const config: ClientConfig = {
   mode: 'rtc',
@@ -80,6 +79,7 @@ function Controls(props: {
           <IconButton
             aria-label="Video"
             color="white"
+            bg="whiteAlpha.300"
             icon={trackState.video ? <FiVideo /> : <FiVideoOff />}
             onClick={(): Promise<void> => toggle('video')}
             size="xs"
@@ -91,6 +91,7 @@ function Controls(props: {
 }
 
 interface Props {
+  username: string;
   partnerUsername: string;
   roomId: string;
 }
@@ -105,6 +106,7 @@ const getToken = async (roomId: string): Promise<string> => {
 };
 
 function VideoCollection({
+  username,
   partnerUsername,
   roomId,
 }: Props): ReactElement<'div'> | null {
@@ -114,7 +116,6 @@ function VideoCollection({
   const [hasInitialised, setHasInitialised] = useState<boolean>(false);
   const client = useClient();
   const toast = useToast();
-  const { data: userData } = useUserData();
   const { ready, tracks } = useMicrophoneAndCameraTracks();
 
   useEffect(() => {
@@ -164,8 +165,6 @@ function VideoCollection({
           title: 'Error',
           description: 'Could not get access to microphone and camera',
           status: 'error',
-          duration: 5000,
-          isClosable: true,
         });
       }
     };
@@ -186,7 +185,7 @@ function VideoCollection({
         <>
           <div className="video-panel">
             <AgoraVideoPlayer className="video" videoTrack={tracks[1]} />
-            <Controls tracks={tracks} username={userData.username} />
+            <Controls tracks={tracks} username={username} />
           </div>
           {users.length > 0 && users[0].videoTrack ? (
             <div className="video-panel">

@@ -4,6 +4,8 @@ import express, { NextFunction, Request, Response } from 'express';
 import createHttpError, { isHttpError } from 'http-errors';
 import morgan from 'morgan';
 
+import { getTwoRandomQuestionsByDifficulty } from 'controllers/questions';
+
 import 'dotenv/config';
 
 import * as AuthMiddleWare from './middleware/authMiddleware';
@@ -11,13 +13,20 @@ import questionRoutes from './routes/questions';
 import adminQuestionRoutes from './routes/questionsAdmin';
 
 const app = express();
+const allowedOrigins = [process.env.FRONTEND_SERVICE, process.env.ROOM_SERVICE];
 
 app.use(morgan('dev'));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(
   cors({
-    origin: process.env.FRONTEND_SERVICE,
+    origin(origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true); // Allow the request
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     optionsSuccessStatus: 200,
     credentials: true,
   }),
@@ -26,7 +35,21 @@ app.use(
 /**
  * Firebase routes
  */
-
+app.get(
+  '/questions/random/:difficulty',
+  cors({
+    origin(origin, callback) {
+      if (!origin || origin === process.env.ROOM_SERVICE) {
+        callback(null, true); // Allow the request
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+    optionsSuccessStatus: 200,
+    credentials: true,
+  }),
+  getTwoRandomQuestionsByDifficulty,
+);
 app.use('/questions', AuthMiddleWare.verifyAccessToken, questionRoutes);
 app.use('/admin/questions', AuthMiddleWare.protectAdmin, adminQuestionRoutes);
 

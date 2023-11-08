@@ -46,20 +46,64 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_KEY || '',
 );
 
-app.post('/create', async (req, res) => {
-  const { data, error } = await supabase
-    .from('collaborations')
-    .insert([req.body])
-    .select();
-  return res.status(200).json(data);
-});
+app.post(
+  '/create',
+  cors({
+    origin(origin, callback) {
+      if (!origin || origin === process.env.MATCHING_SERVICE) {
+        callback(null, true); // Allow the request
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+    optionsSuccessStatus: 200,
+    credentials: true,
+  }),
+  async (req, res) => {
+    const response = await fetch(
+      `${process.env.QUESTION_SERVICE}/questions/random/${req.body.difficulty}`,
+    );
+    const questions = await response.json();
+    req.body.user1_question_slug = questions[0].slug;
+    req.body.user2_question_slug = questions[1].slug;
+    const { data, error } = await supabase
+      .from('collaborations')
+      .insert([req.body])
+      .select();
+    if (error) {
+      return res.status(500).json(error);
+    }
+    return res.status(200).json(data);
+  },
+);
 
-app.get('/', async (req, res) => {
-  const { data, error } = await supabase
+app.get('/:roomId', async (req, res) => {
+  const { roomId } = req.params;
+  console.log(roomId);
+  const { data } = await supabase
     .from('collaborations')
-    .select()
-    .eq('room_id', req.query.room_id);
-  return res.status(200).json(data);
+    .select(
+      'room_id, difficulty, user1_question_slug, user2_question_slug, user1_id, user2_id',
+    )
+    .eq('room_id', roomId)
+    .single();
+
+  console.log(data);
+
+  const { data: user1Details } = await supabase
+    .from('profiles')
+    .select('username, avatar_url, preferred_interview_language')
+    .eq('id', data?.user1_id)
+    .single();
+
+  console.log(user1Details);
+
+  const { data: user2Details } = await supabase
+    .from('profiles')
+    .select('username, avatar_url, preferred_interview_language')
+    .eq('id', data?.user2_id)
+    .single();
+  return res.status(200).json({ ...data, user1Details, user2Details });
 });
 
 const server = app.listen(process.env.ROOM_SERVICE_PORT, () => {
