@@ -11,7 +11,6 @@ import {
   Select,
   Flex,
   Box,
-  Skeleton,
   Button,
   Textarea,
   HStack,
@@ -21,6 +20,8 @@ import { oneDark } from '@codemirror/theme-one-dark';
 import { EditorView, keymap } from '@codemirror/view';
 import { yCollab } from 'y-codemirror.next';
 import { Doc } from 'yjs';
+import axios from 'axios';
+
 import { Language } from '@/types/language';
 
 import { WebrtcProvider } from 'y-webrtc';
@@ -44,6 +45,76 @@ interface Props {
   // setState: (state: EditorState) => void;
 }
 
+// setting wait to true does not scale well
+// but i m too lazy to write the polling code
+const tokenUrl = `${process.env.CODE_EXECUTION_PATH}/submissions?base64_encoded=false&wait=true}`;
+
+const resultUrl = (token) =>
+  `${process.env.CODE_EXECUTION_PATH}/submissions/${token}?base64_encoded=false`;
+
+const MAX_ATTEMPTS = 10; // Maximum number of polling attempts
+const POLLING_INTERVAL = 2000; // Delay between polling attempts in milliseconds
+
+const getSubmissionResult = async (token, attempts = 0) => {
+  try {
+    const response = await axios.get(resultUrl(token));
+    const statusId = response.data.status.id;
+
+    if (!(statusId === 1 || statusId === 2)) {
+      return response.data;
+    } else if (attempts < MAX_ATTEMPTS) {
+      // If the submission is still being processed, wait and then retry
+      await new Promise((resolve) => setTimeout(resolve, POLLING_INTERVAL));
+      return getSubmissionResult(token, attempts + 1);
+    } else {
+      return 'Time Limit Exceeded';
+    }
+  } catch (error) {
+    console.error('Error fetching result:', error);
+    throw error;
+  }
+};
+
+function formatJudge0Message(result) {
+  let message = '';
+
+  // Check if there's a compile error
+  if (result.compile_output) {
+    message += `Compile Error:\n${result.compile_output}\n`;
+  }
+
+  // Check if there's a runtime error
+  if (result.stderr) {
+    message += `Runtime Error:\n${result.stderr}\n`;
+  }
+
+  // Check if the code executed successfully but there's no output
+  if (result.stdout === null && !result.stderr) {
+    message += `No output\n`;
+  }
+
+  // If there's output, display it
+  if (result.stdout) {
+    message += `Output:\n${result.stdout}\n`;
+  }
+
+  // Add time and memory usage
+  message += `Time: ${result.time} seconds\n`;
+  message += `Memory: ${result.memory} KB\n`;
+
+  // Add status message
+  if (result.status && result.status.description) {
+    message += `Status: ${result.status.description}\n`;
+  }
+
+  // Add any additional message
+  if (result.message) {
+    message += `Message: ${result.message}\n`;
+  }
+
+  return message.trim();
+}
+
 function formatLanguage(language: Language) {
   switch (language) {
     case Language.PYTHON:
@@ -57,13 +128,26 @@ function formatLanguage(language: Language) {
   }
 }
 
+function getLanguageId(language: Language) {
+  switch (language) {
+    case Language.PYTHON:
+      return 71;
+    case Language.JAVASCRIPT:
+      return 63;
+    case Language.JAVA:
+      return 62;
+    default:
+      return 71;
+  }
+}
+
 export default function CodeEditor({
   roomSlug,
   language,
   username,
   isUser1, // isRoomOpen,
-  // setState,
-}: Props): ReactElement<Props, 'div'> {
+} // setState,
+: Props): ReactElement<Props, 'div'> {
   const { colorMode } = useColorMode();
   const isDark = colorMode === 'dark';
   const [element, setElement] = useState<HTMLElement>();
@@ -101,18 +185,27 @@ export default function CodeEditor({
       setIsRunningCode(true);
       try {
         // Replace with your actual API call
-        const response = await fetch('/api/execute-code', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ code }),
-        });
-        const result = await response.json();
-        setCodeResult(result.output);
+        const data = {
+          source_code: code,
+          language_id: getLanguageId(selectedLanguage),
+          stdin: 'world',
+        };
+
+        const { token } = (await axios.post(tokenUrl, data)).data;
+
+        const output = await getSubmissionResult(token);
+        setCodeResult(formatJudge0Message(output));
       } catch (error) {
         console.error('Error running code:', error);
-        setCodeResult('Error running code.');
+        if (error.response) {
+          console.error(error.response.data);
+          console.error(error.response.status);
+          console.error(error.response.headers);
+        } else if (error.request) {
+          console.error(error.request);
+        } else {
+          console.error('Error', error.message);
+        }
       }
       setIsRunningCode(false);
     }
