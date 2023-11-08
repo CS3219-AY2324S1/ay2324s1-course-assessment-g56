@@ -1,7 +1,3 @@
-// 'use client';
-
-// import { useSession } from '@/contexts/SupabaseProvider';
-import { getUserData } from '@/hooks/useUserData';
 import EditQuestionForm from '@/components/form/EditQuestionForm';
 import QuestionCard from '@/components/card/QuestionCard';
 import { getQuestionDataBySlug } from '@/hooks/useQuestionData';
@@ -13,7 +9,7 @@ import {
   QueryClient,
 } from '@tanstack/react-query';
 import { cookies } from 'next/headers';
-import { QUESTION_LIST_KEY, USER_QUERY_KEY } from '@/constants/queryKey';
+import { QUESTION_LIST_KEY } from '@/constants/queryKey';
 
 async function Page({ params }: { params: { slug: string } }) {
   const { slug } = params;
@@ -32,11 +28,6 @@ async function Page({ params }: { params: { slug: string } }) {
 
   const user = (await supabase.from('profiles').select('role').single()).data;
   const queryClient = new QueryClient();
-
-  await queryClient.prefetchQuery({
-    queryKey: [USER_QUERY_KEY],
-    queryFn: () => getUserData(),
-  });
 
   await queryClient.prefetchQuery({
     queryKey: [QUESTION_LIST_KEY, slug],
