@@ -8,9 +8,12 @@ Create a .env file in the `backend/question_service` directory, then copy and pa
 cd backend/question_service
 
 docker build -t peerprep/question_service
+
+docker run --env-file .env -p 5005:5005 peerprep/question_service
+
 ```
 
-Step 2: Build the docker image for user_service
+Step 2: Build and run the docker image for user_service
 
 ```
 Create a .env file in the `backend/user_service` directory, then copy and paste the contents from Assignment4-userServiceEnvironmentVariables.txt into this .env file.
@@ -18,9 +21,11 @@ Create a .env file in the `backend/user_service` directory, then copy and paste 
 cd backend/user_service
 
 docker build -t peerprep/user_service
+
+docker run --env-file .env -p 5005:5005 peerprep/user_service
 ```
 
-Step 3: Run the frontend
+Step 3: Run frontend
 
 ```
 Create a .env file in the `frontend` directory, then copy and paste the contents from Assignment4-frontendEnvironmentVariables.txt into this .env file.
@@ -28,6 +33,7 @@ Create a .env file in the `frontend` directory, then copy and paste the contents
 cd frontend
 
 npm start
+
 ```
 
 Step 4: Verify that question_service and user_service are working
