@@ -105,7 +105,7 @@ function CollabRoomLeft({ roomId }: CollabRoomLeftProps) {
           </HStack>
         </Skeleton>
         <Card>
-          <CardBody>
+          <CardBody width="330px">
             <Skeleton
               isLoaded={!displayedQuestionLoading}
               borderRadius="0.375rem"
