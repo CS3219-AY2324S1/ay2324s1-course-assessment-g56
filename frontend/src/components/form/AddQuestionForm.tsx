@@ -93,7 +93,7 @@ function AddQuestionForm({
           colorScheme="blue"
           options={categoryOptions}
           placeholder="Select categories"
-          isOptionDisabled={() => categories.length >= 5}
+          isOptionDisabled={() => categories.length >= 6}
           closeMenuOnSelect={false}
           onChange={changeCategories}
         />

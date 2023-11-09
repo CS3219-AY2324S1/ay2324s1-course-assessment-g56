@@ -19,9 +19,10 @@ import {
   QueryClient,
 } from '@tanstack/react-query';
 import { cookies } from 'next/headers';
+import { UUID } from 'crypto';
 
 async function Page({ params }: { params: { channelName: string } }) {
-  const { channelName } = params;
+  const { channelName } = params as { channelName: UUID };
   const cookieStore = cookies();
   const supabase = createServerComponentClient<Database>(
     { cookies: () => cookieStore },
@@ -71,7 +72,7 @@ async function Page({ params }: { params: { channelName: string } }) {
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
       <HStack align="flex-start">
-        <CollabRoomLeft roomId={channelName} />
+        <CollabRoomLeft roomId={channelName} username={user.username} />
         <CollabRoomRight roomId={channelName} user={user} />
       </HStack>
     </HydrationBoundary>

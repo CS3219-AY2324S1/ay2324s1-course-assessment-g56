@@ -18,6 +18,7 @@ import './VideoCollection.css';
 import { FiVideo, FiVideoOff } from 'react-icons/fi';
 import { HStack, IconButton, Text, useToast } from '@chakra-ui/react';
 import { getVideoAccessToken } from '@/lib/video_token';
+import { UUID } from 'crypto';
 
 const config: ClientConfig = {
   mode: 'rtc',
@@ -93,10 +94,10 @@ function Controls(props: {
 interface Props {
   username: string;
   partnerUsername: string;
-  roomId: string;
+  roomId: UUID;
 }
 
-const getToken = async (roomId: string): Promise<string> => {
+const getToken = async (roomId: UUID): Promise<string> => {
   try {
     const response = await getVideoAccessToken(roomId);
     return response.token;
@@ -124,7 +125,7 @@ function VideoCollection({
       return;
     }
 
-    const init = async (channelName: string): Promise<void> => {
+    const init = async (channelName: UUID): Promise<void> => {
       client.on('user-published', async (user, mediaType) => {
         await client.subscribe(user, mediaType);
         if (mediaType === 'video') {
