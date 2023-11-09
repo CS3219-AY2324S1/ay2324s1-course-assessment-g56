@@ -54,7 +54,8 @@
     "y-codemirror.next": "^0.3.2",
     "y-protocols": "^1.0.6",
     "y-webrtc": "^10.2.5",
-    "yjs": "^13.6.8"
+    "yjs": "^13.6.8",
+    "zustand": "^4.4.6"
   },
   "devDependencies": {
     "@types/node": "20.6.0",

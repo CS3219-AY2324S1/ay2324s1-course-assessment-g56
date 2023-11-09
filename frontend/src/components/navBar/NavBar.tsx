@@ -40,7 +40,7 @@ function Navbar({ children, showSideBar = true }: NavBarProps) {
         </DrawerContent>
       </Drawer>
       <TopBar onOpen={onOpen} showSideBar={showSideBar} />
-      <Box ml={{ base: 0, md: showSideBar ? 60 : 0 }} p="4">
+      <Box ml={{ base: 0, md: showSideBar ? 64 : 0 }} m={showSideBar ? 4 : 0}>
         {children}
       </Box>
     </Box>

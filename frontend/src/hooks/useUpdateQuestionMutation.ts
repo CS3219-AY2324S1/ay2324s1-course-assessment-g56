@@ -22,7 +22,11 @@ export const useUpdateQuestionMutation = (
       queryClient.removeQueries({ queryKey: [QUESTION_LIST_KEY, slug] });
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: [QUESTION_LIST_KEY] });
+      queryClient.invalidateQueries({
+        queryKey: [QUESTION_LIST_KEY],
+        exact: true,
+        refetchType: 'all',
+      });
       router.push('/home');
       queryClient.setQueryData([QUESTION_LIST_KEY, data.slug!], {
         ...data,

@@ -62,13 +62,15 @@ const getSubmissionResult = async (token, attempts = 0) => {
 
     if (!(statusId === 1 || statusId === 2)) {
       return response.data;
-    } else if (attempts < MAX_ATTEMPTS) {
-      // If the submission is still being processed, wait and then retry
-      await new Promise((resolve) => setTimeout(resolve, POLLING_INTERVAL));
-      return getSubmissionResult(token, attempts + 1);
-    } else {
-      return 'Time Limit Exceeded';
     }
+    if (attempts < MAX_ATTEMPTS) {
+      // If the submission is still being processed, wait and then retry
+      await new Promise((resolve) => {
+        setTimeout(resolve, POLLING_INTERVAL);
+      });
+      return getSubmissionResult(token, attempts + 1);
+    }
+    return 'Time Limit Exceeded';
   } catch (error) {
     console.error('Error fetching result:', error);
     throw error;
@@ -115,19 +117,6 @@ function formatJudge0Message(result) {
   return message.trim();
 }
 
-function formatLanguage(language: Language) {
-  switch (language) {
-    case Language.PYTHON:
-      return 'Python 3';
-    case Language.JAVASCRIPT:
-      return 'JavaScript';
-    case Language.JAVA:
-      return 'Java';
-    default:
-      return language;
-  }
-}
-
 function getLanguageId(language: Language) {
   switch (language) {
     case Language.PYTHON:
@@ -146,8 +135,8 @@ export default function CodeEditor({
   language,
   username,
   isUser1, // isRoomOpen,
-} // setState,
-: Props): ReactElement<Props, 'div'> {
+  // setState,
+}: Props): ReactElement<Props, 'div'> {
   const { colorMode } = useColorMode();
   const isDark = colorMode === 'dark';
   const [element, setElement] = useState<HTMLElement>();
@@ -221,11 +210,11 @@ export default function CodeEditor({
 
   useEffect(() => {
     if (!element) {
-      return;
+      return undefined;
     }
-    const ydoc = new Doc();
+    const newYdoc = new Doc();
 
-    const provider = new WebrtcProvider(roomSlug, ydoc, {
+    const newProvider = new WebrtcProvider(roomSlug, newYdoc, {
       signaling: [
         // Local
         process.env.SIGNALING_PATH,
@@ -236,9 +225,9 @@ export default function CodeEditor({
       ],
     });
 
-    const yText = ydoc.getText(roomSlug);
+    const yText = newYdoc.getText(roomSlug);
 
-    provider.awareness.setLocalStateField('user', {
+    newProvider.awareness.setLocalStateField('user', {
       name: username,
       color: CURSOR_COLOR_TO_SEND_PARTNER.color,
       colorLight: CURSOR_COLOR_TO_SEND_PARTNER.light,
@@ -252,7 +241,7 @@ export default function CodeEditor({
             languageCompartment.of(getLanguageExtension(language)),
             EditorView.lineWrapping,
             // EditorState.readOnly.of(readOnly),
-            yCollab(yText, provider.awareness),
+            yCollab(yText, newProvider.awareness),
             ...(isDark ? [oneDark] : []),
             EditorView.theme({}, { dark: isDark }),
             keymap.of([
@@ -273,10 +262,10 @@ export default function CodeEditor({
       }),
     );
 
-    setProvider(provider);
-    setYdoc(ydoc);
+    setProvider(newProvider);
+    setYdoc(newYdoc);
 
-    provider.on('synced', (synced) => {
+    newProvider.on('synced', (synced) => {
       // NOTE: This is only called when a different browser connects to this client
       // Windows of the same browser communicate directly with each other
       // Although this behavior might be subject to change.
@@ -286,8 +275,8 @@ export default function CodeEditor({
 
     return (): void => {
       view?.destroy();
-      provider.disconnect();
-      ydoc.destroy();
+      newProvider.disconnect();
+      newYdoc.destroy();
     };
   }, [element]);
 
@@ -316,13 +305,13 @@ export default function CodeEditor({
   }, [isRoomOpen, view]);
 
   return (
-    <Flex direction="column" padding={4} height="100%" width="100%">
+    <Flex direction="column" height="100%" width="100%">
       <Box width="max-content">
         <HStack>
           <Select value={selectedLanguage} onChange={handleLanguageChange}>
             {Object.values(Language).map((lang) => (
               <option key={lang} value={lang}>
-                {formatLanguage(lang)}
+                {lang}
               </option>
             ))}
           </Select>
@@ -339,7 +328,7 @@ export default function CodeEditor({
         </HStack>
       </Box>
 
-      <Box flex="1" minHeight="0">
+      <Box flex="1" minHeight="0" mt={2}>
         <HStack height="100%">
           <div
             ref={ref}

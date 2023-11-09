@@ -13,4 +13,5 @@ export interface ProfileData {
 export interface BasicProfileData {
   username: string | null;
   avatarUrl: string | null;
+  preferredInterviewLanguage?: Language;
 }
