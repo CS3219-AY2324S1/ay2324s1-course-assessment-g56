@@ -67,7 +67,7 @@ function CollabRoomLeft({ roomId }: CollabRoomLeftProps) {
         bg={useColorModeValue('white', 'gray.900')}
         spacing={4}
         p={4}
-        maxH="calc(60vh - 112px)"
+        maxH={userIsInterviewer ? 'calc(60vh - 96px)' : 'calc(100vh - 80px)'}
         overflow="auto"
       >
         <Skeleton
@@ -132,11 +132,13 @@ function CollabRoomLeft({ roomId }: CollabRoomLeftProps) {
           href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"
         />
       </VStack>
-      <Textarea
-        placeholder="Take interview notes here..."
-        h="calc(40vh)"
-        mt={4}
-      />
+      {userIsInterviewer && (
+        <Textarea
+          placeholder="Take interview notes here..."
+          h="calc(40vh)"
+          mt={4}
+        />
+      )}
     </Box>
   );
 }
