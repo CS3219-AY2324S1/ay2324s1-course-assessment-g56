@@ -146,8 +146,8 @@ export default function CodeEditor({
   username,
   questionSlug,
   isUser1, // isRoomOpen,
-  // setState,
-}: Props): ReactElement<Props, 'div'> {
+} // setState,
+: Props): ReactElement<Props, 'div'> {
   const { colorMode } = useColorMode();
   const isDark = colorMode === 'dark';
   const [element, setElement] = useState<HTMLElement>();
@@ -302,7 +302,6 @@ export default function CodeEditor({
         return;
       }
       if (user.questionSlug !== userQuestionSlug) {
-        console.log('setting user question slug', user.questionSlug);
         const questionSlugKey =
           roomData?.user1Details.username === username
             ? 'user1QuestionSlug'
@@ -326,7 +325,6 @@ export default function CodeEditor({
 
   useEffect(() => {
     if (isUser1 && provider && userQuestionSlug) {
-      console.log('setting user question slug', userQuestionSlug);
       provider.awareness.setLocalStateField('user', {
         name: username,
         color: CURSOR_COLOR_TO_SEND_PARTNER.color,
