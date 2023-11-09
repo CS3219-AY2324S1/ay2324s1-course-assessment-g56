@@ -15,7 +15,7 @@ import AgoraRTC, {
 // import VideoApi from 'lib/videoService';
 
 import './VideoCollection.css';
-import { FiMic, FiMicOff, FiVideo, FiVideoOff } from 'react-icons/fi';
+import { FiVideo, FiVideoOff } from 'react-icons/fi';
 import { HStack, IconButton, Text, useToast } from '@chakra-ui/react';
 import { getVideoAccessToken } from '@/lib/video_token';
 import { useUserData } from '@/hooks/useUserData';
