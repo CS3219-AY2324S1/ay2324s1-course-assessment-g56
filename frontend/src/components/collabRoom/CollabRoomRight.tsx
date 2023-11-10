@@ -12,18 +12,19 @@ import {
   HStack,
 } from '@chakra-ui/react';
 
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useMemo } from 'react';
 import dynamic from 'next/dynamic';
 
 import { useRoomData } from '@/hooks/useRoomData';
 import { ProfileData } from '@/types/profile';
+import { UUID } from 'crypto';
 import { RoomProvider } from './RoomContext';
 import CloseRoomButton from './CloseRoomButton';
 import ErrorBoundary from '../errorBoundary/ErrorBoundary';
 import { useRoomStore } from '../../hooks/useRoomStore';
 
 interface Props {
-  roomId: string;
+  roomId: UUID;
   user: ProfileData;
 }
 
@@ -47,6 +48,17 @@ function CollabRoomRight({ roomId, user }: Props): ReactElement<Props, 'div'> {
           language2: roomData?.user1Details?.preferredInterviewLanguage,
         };
 
+  const { question1, question2 } =
+    user?.username === roomData?.user1Details?.username
+      ? {
+          question1: roomData?.user1QuestionSlug,
+          question2: roomData?.user2QuestionSlug,
+        }
+      : {
+          question1: roomData?.user2QuestionSlug,
+          question2: roomData?.user1QuestionSlug,
+        };
+
   const VideoCollection = dynamic(
     () => import('@/components/video/VideoCollection'),
     {
@@ -54,9 +66,50 @@ function CollabRoomRight({ roomId, user }: Props): ReactElement<Props, 'div'> {
     },
   );
 
+  const videoCollection = useMemo(
+    () => (
+      <VideoCollection
+        roomId={roomId}
+        username={username1}
+        partnerUsername={username2}
+      />
+    ),
+    [roomId, username1, username2],
+  );
+
   const CodeEditor = dynamic(
     () => import('@/components/codeEditor/CodeEditor'),
     { ssr: false },
+  );
+
+  const userCodeEditor = useMemo(
+    () => (
+      <CodeEditor
+        roomId={roomId}
+        language={language1}
+        // TODO: replace this with an actual room slug generator
+        roomSlug={`${roomId}-${username1}`}
+        username={username1}
+        questionSlug={question1}
+        isUser1
+      />
+    ),
+    [language1, roomId, username1],
+  );
+
+  const partnerCodeEditor = useMemo(
+    () => (
+      <CodeEditor
+        roomId={roomId}
+        language={language2}
+        // TODO: replace this with an actual room slug generator
+        roomSlug={`${roomId}-${username2}`}
+        username={username2}
+        questionSlug={question2}
+        isUser1={false}
+      />
+    ),
+    [language2, roomId, username2],
   );
 
   return (
@@ -83,24 +136,11 @@ function CollabRoomRight({ roomId, user }: Props): ReactElement<Props, 'div'> {
 
                 <TabPanels>
                   <TabPanel height="55vh" p={0} pt={4}>
-                    <CodeEditor
-                      language={language1}
-                      // TODO: replace this with an actual room slug generator
-                      roomSlug={`${roomId}${user?.username}`}
-                      username={user?.username}
-                      // eslint-disable-next-line react/jsx-boolean-value
-                      isUser1={true}
-                    />
+                    {userCodeEditor}
                   </TabPanel>
 
                   <TabPanel height="55vh" p={0} pt={4}>
-                    <CodeEditor
-                      language={language2}
-                      // TODO: replace this with an actual room slug generator
-                      roomSlug={`${roomId}${username2}`}
-                      username={username2}
-                      isUser1={false}
-                    />
+                    {partnerCodeEditor}
                   </TabPanel>
                 </TabPanels>
               </Tabs>
@@ -112,11 +152,7 @@ function CollabRoomRight({ roomId, user }: Props): ReactElement<Props, 'div'> {
             {/* Search bar */}
             {/* Video Window */}
             <HStack width="100%" justify="right">
-              <VideoCollection
-                roomId={roomId}
-                username={username1}
-                partnerUsername={username2}
-              />
+              {videoCollection}
             </HStack>
 
             {/* Close Room button */}

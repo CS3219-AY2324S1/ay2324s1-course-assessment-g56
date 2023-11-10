@@ -25,7 +25,14 @@ import axios from 'axios';
 import { Language } from '@/types/language';
 
 import { WebrtcProvider } from 'y-webrtc';
+import { useRoomStore } from '@/hooks/useRoomStore';
 import { insertTab, indentLess } from '@codemirror/commands';
+
+import { useQueryClient } from '@tanstack/react-query';
+import { ROOM_QUERY_KEY } from '@/constants/queryKey';
+import { BasicRoomData } from '@/types/collab';
+import { useRoomData } from '@/hooks/useRoomData';
+import { UUID } from 'crypto';
 
 import {
   CURSOR_COLOR_TO_SEND_PARTNER,
@@ -37,9 +44,11 @@ import { RoomContext } from '../collabRoom/RoomContext';
 import './CodeEditor.css';
 
 interface Props {
+  roomId: UUID;
   language: Language | null;
   username: string;
   roomSlug: string;
+  questionSlug: string;
   isUser1: boolean;
   // isRoomOpen: boolean;
   // setState: (state: EditorState) => void;
@@ -131,12 +140,14 @@ function getLanguageId(language: Language) {
 }
 
 export default function CodeEditor({
+  roomId,
   roomSlug,
   language,
   username,
+  questionSlug,
   isUser1, // isRoomOpen,
-  // setState,
-}: Props): ReactElement<Props, 'div'> {
+} // setState,
+: Props): ReactElement<Props, 'div'> {
   const { colorMode } = useColorMode();
   const isDark = colorMode === 'dark';
   const [element, setElement] = useState<HTMLElement>();
@@ -166,6 +177,10 @@ export default function CodeEditor({
   ) => {
     setSelectedLanguage(event.target.value as Language);
   };
+
+  const userQuestionSlug = useRoomStore((state) => state.questionSlug);
+  const queryClient = useQueryClient();
+  const { data: roomData } = useRoomData(roomId);
 
   // Evaluate the code
   const runCode = async () => {
@@ -231,6 +246,7 @@ export default function CodeEditor({
       name: username,
       color: CURSOR_COLOR_TO_SEND_PARTNER.color,
       colorLight: CURSOR_COLOR_TO_SEND_PARTNER.light,
+      questionSlug,
     });
 
     setView(
@@ -273,12 +289,50 @@ export default function CodeEditor({
       console.log('synced!', synced);
     });
 
+    newProvider.awareness.on('change', (change) => {
+      if (isUser1) {
+        return;
+      }
+      const { updated } = change;
+      if (!updated) {
+        return;
+      }
+      const user = newProvider.awareness.getStates().get(updated[0])?.user;
+      if (!user) {
+        return;
+      }
+      if (user.questionSlug !== userQuestionSlug) {
+        const questionSlugKey =
+          roomData?.user1Details.username === username
+            ? 'user1QuestionSlug'
+            : 'user2QuestionSlug';
+        queryClient.setQueryData(
+          [ROOM_QUERY_KEY],
+          (oldData: BasicRoomData) => ({
+            ...oldData,
+            [questionSlugKey]: user.questionSlug,
+          }),
+        );
+      }
+    });
+
     return (): void => {
       view?.destroy();
       newProvider.disconnect();
       newYdoc.destroy();
     };
   }, [element]);
+
+  useEffect(() => {
+    if (isUser1 && provider && userQuestionSlug) {
+      provider.awareness.setLocalStateField('user', {
+        name: username,
+        color: CURSOR_COLOR_TO_SEND_PARTNER.color,
+        colorLight: CURSOR_COLOR_TO_SEND_PARTNER.light,
+        questionSlug: userQuestionSlug,
+      });
+    }
+  }, [userQuestionSlug, provider, isUser1, username]);
 
   useEffect(() => {
     if (view && language && selectedLanguage) {

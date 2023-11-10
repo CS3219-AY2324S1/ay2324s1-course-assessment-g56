@@ -5,11 +5,12 @@ import { useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { BasicProfileData } from '@/types/profile';
 import { QuestionDifficulty } from '@/types/question';
+import { UUID } from 'crypto';
 import Modal from './Modal';
 
 interface MatchFoundModalProps {
   isOpen: boolean;
-  roomId: string;
+  roomId: UUID;
   matchedUser: BasicProfileData;
   difficulty: QuestionDifficulty;
 }

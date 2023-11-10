@@ -19,47 +19,63 @@ import {
   Tag,
   Textarea,
   VStack,
+  Wrap,
+  WrapItem,
   useColorModeValue,
+  useDisclosure,
 } from '@chakra-ui/react';
 import Markdown from 'react-markdown';
 import rehypeKatex from 'rehype-katex';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
 import { VscArrowSwap } from 'react-icons/vsc';
+import { useMemo, useState } from 'react';
+import { useQuestionListData } from '@/hooks/useQuestionListData';
+import { UUID } from 'crypto';
 import code from '../markdown/Code';
 import pre from '../markdown/Pre';
 import strong from '../markdown/Strong';
 import style from '../markdown/Style';
 import ul from '../markdown/Ul';
+import QuestionSelectionModal from '../modal/QuestionSelectionModal';
 
 interface CollabRoomLeftProps {
-  roomId: string;
+  roomId: UUID;
+  username: string;
 }
 
-function CollabRoomLeft({ roomId }: CollabRoomLeftProps) {
-  const { data: roomData, isPending: isRoomPending } = useRoomData(roomId);
+function CollabRoomLeft({ roomId, username }: CollabRoomLeftProps) {
+  const { data: roomData, isPending: isRoomLoading } = useRoomData(roomId);
   const session = useSession();
   const userIsInterviewer = useRoomStore((state) => state.userIsInterviewer);
-  const { data: question1, isPending: question1Loading } = useQuestionData(
-    roomData?.user1QuestionSlug ?? '',
-    session?.access_token ?? '',
+  const { data: questionList, isPending: questionListLoading } =
+    useQuestionListData(session?.access_token ?? '');
+  const filteredQuestionList = useMemo(
+    () =>
+      questionList?.filter(
+        (question) => question.difficulty === roomData?.difficulty,
+      ),
+    [questionList, roomData?.difficulty],
   );
-  const { data: question2, isPending: question2Loading } = useQuestionData(
-    roomData?.user2QuestionSlug ?? '',
-    session?.access_token ?? '',
-  );
+  const [userQuestionSlug, partnerQuestionSlug] =
+    username === roomData?.user1Details?.username
+      ? [roomData?.user1QuestionSlug, roomData?.user2QuestionSlug]
+      : [roomData?.user2QuestionSlug, roomData?.user1QuestionSlug];
+  const { data: userQuestion, isPending: userQuestionLoading } =
+    useQuestionData(userQuestionSlug ?? '', session?.access_token ?? '');
+  const { data: partnerQuestion, isPending: partnerQuestionLoading } =
+    useQuestionData(partnerQuestionSlug ?? '', session?.access_token ?? '');
 
-  if (isRoomPending) {
-    return null;
-  }
-
-  const displayedQuestion = userIsInterviewer ? question1 : question2;
+  const displayedQuestion = userIsInterviewer ? partnerQuestion : userQuestion;
   const displayedQuestionLoading = userIsInterviewer
-    ? question1Loading
-    : question2Loading;
+    ? partnerQuestionLoading
+    : userQuestionLoading;
 
   const difficultyColour =
     QuestionDifficultyToColourMap[displayedQuestion?.difficulty];
+
+  const [interviewerNotes, setInterviewerNotes] = useState('');
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   return (
     <Box minW="380px" maxW="380px" maxH="calc(100vh - 80px)" p={0}>
@@ -79,11 +95,13 @@ function CollabRoomLeft({ roomId }: CollabRoomLeftProps) {
             <Heading fontSize="3xl" fontWeight="bold" mb={1}>
               {displayedQuestion?.title}
             </Heading>
-            <IconButton
-              aria-label="Change question"
-              icon={<VscArrowSwap />}
-              // TODO: Implement change question
-            />
+            {!userIsInterviewer && (
+              <IconButton
+                aria-label="Change question"
+                icon={<VscArrowSwap />}
+                onClick={onOpen}
+              />
+            )}
           </HStack>
         </Skeleton>
         <Skeleton
@@ -91,18 +109,22 @@ function CollabRoomLeft({ roomId }: CollabRoomLeftProps) {
           borderRadius="0.375rem"
           alignSelf="flex-start"
         >
-          <HStack spacing={2}>
-            <Tag key="difficulty" colorScheme={difficultyColour}>
-              {displayedQuestion?.difficulty}
-            </Tag>
+          <Wrap spacing={2}>
+            <WrapItem>
+              <Tag key="difficulty" colorScheme={difficultyColour}>
+                {displayedQuestion?.difficulty}
+              </Tag>
+            </WrapItem>
             {displayedQuestion?.categories?.map(
               (category: QuestionCategory) => (
-                <Tag key={category} colorScheme="blue">
-                  {category}
-                </Tag>
+                <WrapItem key={category}>
+                  <Tag key={category} colorScheme="blue" py={1}>
+                    {category}
+                  </Tag>
+                </WrapItem>
               ),
             )}
-          </HStack>
+          </Wrap>
         </Skeleton>
         <Card>
           <CardBody width="330px">
@@ -110,6 +132,7 @@ function CollabRoomLeft({ roomId }: CollabRoomLeftProps) {
               isLoaded={!displayedQuestionLoading}
               borderRadius="0.375rem"
               whiteSpace="pre-wrap"
+              height="100%"
             >
               <Markdown
                 remarkPlugins={[remarkGfm, remarkMath]}
@@ -135,8 +158,20 @@ function CollabRoomLeft({ roomId }: CollabRoomLeftProps) {
       {userIsInterviewer && (
         <Textarea
           placeholder="Take interview notes here..."
+          value={interviewerNotes}
+          onChange={(e) => setInterviewerNotes(e.target.value)}
           h="calc(40vh)"
           mt={4}
+        />
+      )}
+      {!questionListLoading && !isRoomLoading && (
+        <QuestionSelectionModal
+          isOpen={isOpen}
+          onClose={onClose}
+          username={username}
+          roomData={roomData}
+          questionTitle={displayedQuestion?.title}
+          questionList={filteredQuestionList}
         />
       )}
     </Box>

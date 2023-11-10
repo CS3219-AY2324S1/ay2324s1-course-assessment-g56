@@ -150,7 +150,7 @@ function EditQuestionForm({ slug, access_token }: EditQuestionFormProps) {
                 value: category,
                 label: category,
               }))}
-              isOptionDisabled={() => question?.categories.length >= 5}
+              isOptionDisabled={() => question?.categories.length >= 6}
               placeholder="Select categories"
               closeMenuOnSelect={false}
               onChange={handleChangeCategories}
