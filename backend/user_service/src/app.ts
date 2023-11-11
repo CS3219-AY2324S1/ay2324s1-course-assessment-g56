@@ -39,7 +39,7 @@ app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
 });
 
 const supabase = createClient(
-  process.env.SUPABASE_URL || '',
+  `https://${process.env.SUPABASE_URL}` || '',
   process.env.SUPABASE_SERVICE_KEY || '',
 );
 
@@ -58,9 +58,7 @@ app.get('/user', async (_req, res) => {
 
 app.get('/users', async (_req, res) => {
   try {
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('*');
+    const { data, error } = await supabase.from('profiles').select('*');
     if (error) throw error;
     if (data.length === 0) {
       return res.status(404).json({ message: 'User not found' });

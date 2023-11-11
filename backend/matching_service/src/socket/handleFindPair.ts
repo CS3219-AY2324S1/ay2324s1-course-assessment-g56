@@ -22,7 +22,7 @@ type FindPairFunction = (
 const TIMEOUT_DURATION = 30000;
 
 const supabase = createClient(
-  process.env.SUPABASE_URL || '',
+  `https://${process.env.SUPABASE_URL}` || '',
   process.env.SUPABASE_SERVICE_KEY || '',
 );
 
