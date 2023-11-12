@@ -42,7 +42,7 @@ app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
 });
 
 const supabase = createClient(
-  process.env.SUPABASE_URL || '',
+  `https://${process.env.SUPABASE_URL}` || '',
   process.env.SUPABASE_SERVICE_KEY || '',
 );
 

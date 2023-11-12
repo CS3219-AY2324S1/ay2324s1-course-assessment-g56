@@ -1,13 +1,13 @@
-const ws = require('ws');
-const http = require('http');
-const map = require('lib0/map');
-const express = require('express');
-const { RtcTokenBuilder, RtcRole } = require('agora-access-token');
+import { RtcRole, RtcTokenBuilder } from 'agora-access-token';
+import express from 'express';
+import http from 'http';
+import map from 'lib0/map';
+import ws from 'ws';
 
-require('dotenv').config();
+import 'dotenv/config';
 
-const APP_ID = process.env.AGORA_ID;
-const APP_CERTIFICATE = process.env.AGORA_PRIMARY_CERTIFICATE;
+const APP_ID: string = process.env.AGORA_ID || '';
+const APP_CERTIFICATE: string = process.env.AGORA_PRIMARY_CERTIFICATE || '';
 
 const app = express();
 const server = http.createServer(app);
