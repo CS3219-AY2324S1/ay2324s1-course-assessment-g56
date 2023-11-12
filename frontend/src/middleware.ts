@@ -57,9 +57,7 @@ export const config = {
     '/',
     '/home',
     '/question/:id*',
-    '/matching',
     '/account',
-    '/room/:id*',
     '/onboarding',
   ],
 };
