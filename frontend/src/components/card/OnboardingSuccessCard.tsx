@@ -20,8 +20,8 @@ function OnboardingSuccessCard() {
         <Icon as={FaRegCircleCheck} boxSize={32} color="green.500" />
       </CardBody>
       <CardFooter>
-        <Button as={NextLink} href="/matching" colorScheme="blue">
-          Start Matching!
+        <Button as={NextLink} href="/home" colorScheme="blue">
+          Home Page
         </Button>
       </CardFooter>
     </Card>

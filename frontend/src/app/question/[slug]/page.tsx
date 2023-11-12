@@ -43,21 +43,19 @@ async function Page({ params }: { params: { slug: string } }) {
     queryFn: () => getQuestionDataBySlug(slug, session?.access_token ?? ''),
   });
 
-  if (user?.role === 'Maintainer') {
-    return (
-      <HydrationBoundary state={dehydrate(queryClient)}>
-        <EditQuestionForm
-          slug={slug}
-          access_token={session?.access_token ?? ''}
-        />
-      </HydrationBoundary>
-    );
-  }
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <QuestionCard slug={slug} access_token={session?.access_token ?? ''} />
+      <EditQuestionForm
+        slug={slug}
+        access_token={session?.access_token ?? ''}
+      />
     </HydrationBoundary>
   );
+  // return (
+  //   <HydrationBoundary state={dehydrate(queryClient)}>
+  //     <QuestionCard slug={slug} access_token={session?.access_token ?? ''} />
+  //   </HydrationBoundary>
+  // );
 }
 
 export default Page;

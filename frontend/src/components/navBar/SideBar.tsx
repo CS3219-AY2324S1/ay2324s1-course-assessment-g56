@@ -9,7 +9,6 @@ import {
   useColorModeValue,
 } from '@chakra-ui/react';
 import { FiHome, FiSettings } from 'react-icons/fi';
-import { LuUnplug } from 'react-icons/lu';
 import { IconType } from 'react-icons';
 import NextLink from 'next/link';
 import SideBarChild from './SideBarChild';
@@ -26,7 +25,6 @@ interface SideBarProps extends BoxProps {
 
 const LinkItems: LinkWithIconProps[] = [
   { name: 'Home', icon: FiHome, href: '/home' },
-  { name: 'Find Match', icon: LuUnplug, href: '/matching' },
   { name: 'Settings', icon: FiSettings, href: '/account' },
 ];
 

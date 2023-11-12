@@ -55,13 +55,16 @@ export async function protectAdmin(
         .select('*')
         .eq('id', decoded?.sub)
         .single();
-      if (profileData?.role === 'Maintainer') {
-        next();
-      } else {
-        res.status(401).json({
-          errors: [{ msg: 'Not admin authorized, access token failed' }],
-        });
-      }
+      // if (profileData?.role === 'Maintainer') {
+      //   next();
+      // } else {
+      //   res.status(401).json({
+      //     errors: [{ msg: 'Not admin authorized, access token failed' }],
+      //   });
+      // }
+      profileData? next() : res.status(401).json({
+        errors: [{ msg: 'User details do not exist.'}]
+      })
     } catch {
       res.status(401).json({
         errors: [{ msg: 'Not admin authorized, access token failed' }],

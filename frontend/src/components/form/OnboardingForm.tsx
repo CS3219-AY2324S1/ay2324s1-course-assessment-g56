@@ -22,7 +22,7 @@ import OnboardingSuccessCard from '../card/OnboardingSuccessCard';
 const steps = [
   { title: 'Account Info' },
   { title: 'Preferences' },
-  { title: 'Start Matching!' },
+  { title: 'Complete Registration' },
 ];
 
 function OnboardingForm() {
