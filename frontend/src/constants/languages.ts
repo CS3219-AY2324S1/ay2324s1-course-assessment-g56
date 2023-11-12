@@ -1,4 +1,4 @@
-import { Language } from '@/types/code';
+import { Language } from '@/types/language';
 
 const INTERVIEW_LANGUAGES = Object.freeze([
   Language.JAVA,
