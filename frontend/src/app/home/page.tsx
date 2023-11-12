@@ -33,7 +33,7 @@ export default function Page() {
   const toast = useToast();
 
   useEffect(() => {
-    if (profileData === undefined) {
+    if (profileData === undefined || profileData!.role !== 'Maintainer') {
       setColumns(defaultColumns.slice(0, -1));
     } else {
       setColumns(defaultColumns);
@@ -62,7 +62,7 @@ export default function Page() {
           Questions
         </Heading>
         <Spacer />
-        {profileData !== undefined && (
+        {profileData !== undefined && profileData.role === 'Maintainer' && (
           <>
             <Button
               leftIcon={<FiPlus />}
