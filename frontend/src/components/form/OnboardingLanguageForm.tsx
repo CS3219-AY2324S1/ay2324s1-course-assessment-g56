@@ -77,7 +77,7 @@ function OnboardingLanguageForm({
           </option>
           <option value={Language.JAVA}>Java</option>
           <option value={Language.JAVASCRIPT}>Javascript</option>
-          <option value={Language.PYTHON}>Python 3</option>
+          <option value={Language.PYTHON_THREE}>Python 3</option>
         </Select>
       </FormControl>
       <HStack spacing={2} mt={4} w="100%">

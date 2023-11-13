@@ -7,7 +7,7 @@ export default function getLanguageExtension(language: Language | null) {
   switch (language) {
     case Language.JAVA:
       return java();
-    case Language.PYTHON:
+    case Language.PYTHON_THREE:
       return python();
     default:
       return javascript();

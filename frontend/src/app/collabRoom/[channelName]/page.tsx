@@ -12,7 +12,7 @@ import { BasicRoomData } from '@/types/collab';
 import { Database } from '@/types/database.types';
 import { ProfileData } from '@/types/profile';
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
-import { HStack } from '@chakra-ui/react';
+import { Box, Button, HStack, Heading } from '@chakra-ui/react';
 import {
   dehydrate,
   HydrationBoundary,
@@ -20,6 +20,8 @@ import {
 } from '@tanstack/react-query';
 import { cookies } from 'next/headers';
 import { UUID } from 'crypto';
+import { supabaseAnon } from '@/components/supabase/supabase';
+import NextLink from 'next/link';
 
 async function Page({ params }: { params: { channelName: string } }) {
   const { channelName } = params as { channelName: UUID };
@@ -69,6 +71,24 @@ async function Page({ params }: { params: { channelName: string } }) {
       ),
   });
 
+  // Check if room is closed
+  const { is_closed: isClosed } = await supabaseAnon
+    .from('collaborations')
+    .select('is_closed')
+    .eq('room_id', channelName)
+    .single()
+    .then((res) => res.data);
+
+  if (isClosed) {
+    return (
+      <Box textAlign="center" p={5}>
+        <Heading mb={4}>Room not found</Heading>
+        <Button as={NextLink} href="/" colorScheme="green" variant="outline">
+          Go to home page
+        </Button>{' '}
+      </Box>
+    );
+  }
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
       <HStack align="flex-start">

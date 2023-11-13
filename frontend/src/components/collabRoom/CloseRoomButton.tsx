@@ -1,16 +1,13 @@
 import React, { ReactElement, useEffect, useContext } from 'react';
 
 import { Button } from '@chakra-ui/react';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
-import { Database } from '@/types/database.types';
+
 import NextLink from 'next/link';
 
 import { RoomContext } from './RoomContext';
+import { supabaseAnon } from '../supabase/supabase';
 
-const supabase = createClientComponentClient<Database>({
-  supabaseUrl: process.env.SUPABASE_URL,
-  supabaseKey: process.env.SUPABASE_ANON_KEY,
-});
+const supabase = supabaseAnon;
 
 export default function CloseRoomButton(): ReactElement {
   const {
@@ -25,14 +22,14 @@ export default function CloseRoomButton(): ReactElement {
 
   useEffect(() => {
     const updateDatabase = async () => {
-      console.log('room1State and room2State are not null');
-      console.log(room1State);
-      console.log(room2State);
       // export to supabase
-      // TODO add more fields
       const { error } = await supabase
         .from('collaborations')
-        .update({ user1_code: room1State, user2_code: room2State })
+        .update({
+          user1_code: room1State,
+          user2_code: room2State,
+          is_closed: true,
+        })
         .eq('room_id', basicRoomState.roomId);
 
       if (error) {

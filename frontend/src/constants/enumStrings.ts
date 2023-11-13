@@ -1,4 +1,5 @@
-import { KeyBinding, Language } from '../types/code';
+import { KeyBinding } from '../types/code';
+import { Language } from '../types/language';
 
 export const LANGUAGE_TO_STRING = Object.freeze({
   [Language.JAVA]: 'Java',

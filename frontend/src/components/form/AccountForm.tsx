@@ -142,7 +142,7 @@ export default function AccountForm({ session }: { session: Session | null }) {
                 </option>
                 <option value={Language.JAVA}>Java</option>
                 <option value={Language.JAVASCRIPT}>Javascript</option>
-                <option value={Language.PYTHON}>Python 3</option>
+                <option value={Language.PYTHON_THREE}>Python 3</option>
               </Select>
             </Skeleton>
           </FormControl>
