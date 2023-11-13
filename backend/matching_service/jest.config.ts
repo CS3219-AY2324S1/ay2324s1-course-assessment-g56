@@ -14,6 +14,7 @@ const config: Config.InitialOptions = {
     '^structs/(.*)$': '<rootDir>/src/structs/$1',
     '^types/(.*)$': '<rootDir>/src/types/$1',
     '^mockComponents/(.*)$': '<rootDir>/src/mockComponents/$1',
+    '^utils/(.*)$': '<rootDir>/src/utils/$1',
   },
 };
 
