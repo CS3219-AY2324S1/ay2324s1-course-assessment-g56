@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import { createMockRoom } from 'mockComponents/mockApi';
 import { Server, Socket } from 'socket.io';
 import MatchingQueue from 'structs/MatchingQueue';
 import SidToUidMap from 'structs/SidToUidMap';
@@ -101,7 +102,13 @@ const handleFindPair =
     // We found a match!
     const [difficulty, user1, user2] = result;
 
-    const roomId = (await createRoom(user1.uid, user2.uid, difficulty)).room_id;
+    let roomId;
+    if (process.env.NODE_ENV === 'test') {
+      roomId = (await createMockRoom(user1.uid, user2.uid, difficulty)).room_id;
+    } else {
+      roomId = (await createRoom(user1.uid, user2.uid, difficulty)).room_id;
+    }
+
     console.log(
       'Match found at',
       difficulty,
