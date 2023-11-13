@@ -292,7 +292,7 @@ export default function CodeEditor({
     });
 
     newProvider.awareness.on('change', (change) => {
-      if (isUser1) {
+      if (!isUser1) {
         return;
       }
       const { updated } = change;
@@ -325,7 +325,7 @@ export default function CodeEditor({
   }, [element]);
 
   useEffect(() => {
-    if (isUser1 && provider && userQuestionSlug) {
+    if (!isUser1 && provider && userQuestionSlug) {
       provider.awareness.setLocalStateField('user', {
         name: username,
         color: CURSOR_COLOR_TO_SEND_PARTNER.color,
