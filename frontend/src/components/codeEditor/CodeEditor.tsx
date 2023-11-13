@@ -76,6 +76,7 @@ export default function CodeEditor({
   const [view, setView] = useState<EditorView>();
   const [provider, setProvider] = useState<WebrtcProvider>();
   const [ydoc, setYdoc] = useState<Doc>();
+
   const [selectedLanguage, setSelectedLanguage] = useState<Language | null>(
     language,
   );
@@ -87,18 +88,27 @@ export default function CodeEditor({
   const { setRoom1State, setRoom2State } = useContext(RoomContext);
   const { data: roomData } = useRoomData(roomId);
 
-  const setState =
-    roomData?.user1Details.username === username
-      ? setRoom1State
-      : setRoom2State;
-  const userKey =
-    roomData?.user1Details.username === username ? 'user1' : 'user2';
-
   const userQuestionSlug = useRoomStore((state) => state.questionSlug);
   const queryClient = useQueryClient();
+  const isRoom1 = roomData?.user1Details.username === username;
+  const userIsInterviewer = useRoomStore((state) => state.userIsInterviewer);
+
+  const setState = isRoom1 ? setRoom1State : setRoom2State;
+  const userKey = isRoom1 ? 'user1' : 'user2';
 
   // Listen to database changes
   const supabase = supabaseAnon;
+
+  // Initialize state from supabse
+  supabase
+    .from('collaborations')
+    .select('*')
+    .eq('room_id', roomId)
+    .then((res) => {
+      setCodeResult(formatJudge0Message(res.data[0][`${userKey}_result`]));
+      setSelectedLanguage(res.data[0][`${userKey}_language`]);
+      setIsClosed(res.data[0].is_closed);
+    });
 
   supabase
     .channel(roomId)
@@ -111,16 +121,24 @@ export default function CodeEditor({
         filter: `room_id=eq.${roomId}`,
       },
       (payload) => {
-        setState(payload.new.user1_code);
-        setCodeResult(formatJudge0Message(payload.new[`${userKey}_result`]));
-        setSelectedLanguage(payload.new[`${userKey}_language`]);
-        setIsClosed(payload.new.is_closed);
-        console.log(
-          'new language: ',
-          payload.new[`${userKey}_language`],
-          selectedLanguage,
-        );
-        console.log('new code result: ', payload.new[`${userKey}_result`]);
+        const userResult = payload.new[`${userKey}_result`];
+        const userLanguage = payload.new[`${userKey}_language`];
+        const roomIsClosed = payload.new.is_closed;
+
+        console.log('PAYLOAD: ', payload.new);
+
+        // Check if the state is different before updating
+        if (formatJudge0Message(userResult) !== codeResult) {
+          setCodeResult(formatJudge0Message(userResult));
+        }
+
+        if (userLanguage !== selectedLanguage) {
+          setSelectedLanguage(userLanguage);
+        }
+
+        if (roomIsClosed !== isClosed) {
+          setIsClosed(roomIsClosed);
+        }
       },
     )
     .subscribe();
@@ -286,10 +304,9 @@ export default function CodeEditor({
         return;
       }
       if (user.questionSlug !== userQuestionSlug) {
-        const questionSlugKey =
-          roomData?.user1Details.username === username
-            ? 'user1QuestionSlug'
-            : 'user2QuestionSlug';
+        const questionSlugKey = isRoom1
+          ? 'user1QuestionSlug'
+          : 'user2QuestionSlug';
         queryClient.setQueryData(
           [ROOM_QUERY_KEY],
           (oldData: BasicRoomData) => ({
@@ -356,7 +373,11 @@ export default function CodeEditor({
     <Flex direction="column" height="100%" width="100%">
       <Box width="max-content">
         <HStack>
-          <Select value={selectedLanguage} onChange={handleLanguageChange}>
+          <Select
+            value={selectedLanguage}
+            onChange={handleLanguageChange}
+            disabled={userIsInterviewer}
+          >
             {Object.values(Language).map((lang) => (
               <option key={lang} value={lang}>
                 {lang}

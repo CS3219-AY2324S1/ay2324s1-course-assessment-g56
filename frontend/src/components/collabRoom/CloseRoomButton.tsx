@@ -37,10 +37,10 @@ export default function CloseRoomButton(): ReactElement {
       }
     };
 
-    if (room1State && room2State && basicRoomState) {
+    if (!isRoomOpen) {
       updateDatabase();
     }
-  }, [isRoomOpen, room1State, room2State, basicRoomState]);
+  }, [isRoomOpen]);
 
   return (
     <Button

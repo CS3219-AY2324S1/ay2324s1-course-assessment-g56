@@ -95,7 +95,7 @@ function CollabRoomLeft({ roomId, username }: CollabRoomLeftProps) {
             <Heading fontSize="3xl" fontWeight="bold" mb={1}>
               {displayedQuestion?.title}
             </Heading>
-            {!userIsInterviewer && (
+            {userIsInterviewer && (
               <IconButton
                 aria-label="Change question"
                 icon={<VscArrowSwap />}
