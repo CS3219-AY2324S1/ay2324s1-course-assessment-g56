@@ -11,7 +11,7 @@ const config: Config.InitialOptions = {
   moduleNameMapper: {
     '^constants/(.*)$': '<rootDir>/src/constants/$1',
     '^socket/(.*)$': '<rootDir>/src/socket/$1',
-    '^struct/(.*)$': '<rootDir>/src/struct/$1',
+    '^structs/(.*)$': '<rootDir>/src/structs/$1',
     '^types/(.*)$': '<rootDir>/src/types/$1',
     '^mockComponents/(.*)$': '<rootDir>/src/mockComponents/$1',
   },
