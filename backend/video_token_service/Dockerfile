@@ -10,15 +10,9 @@ RUN yarn install --silent
 
 COPY . .
 
-# RUN ncc build /app/src/index.ts
-
 RUN ncc build ./src/index.ts
 
-# RUN yarn build
-
 ENV PATH /app/node_modules/.bin:$PATH
-
-
 
 EXPOSE 8080
 
