@@ -1,6 +1,7 @@
 import { UUID } from 'crypto';
 import { QuestionDifficulty } from './question';
 import { BasicProfileData } from './profile';
+import { Language } from './language';
 
 export interface BasicRoomData {
   roomId: UUID;
@@ -8,6 +9,10 @@ export interface BasicRoomData {
   user2Id: UUID;
   user1QuestionSlug: string;
   user2QuestionSlug: string;
+  user1Language: Language;
+  user2Language: Language;
+  user1Result: JSON;
+  user2Result: JSON;
   user1Details: BasicProfileData;
   user2Details: BasicProfileData;
   difficulty: QuestionDifficulty;

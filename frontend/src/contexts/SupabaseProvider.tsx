@@ -7,13 +7,9 @@ import {
   ReactNode,
   useMemo,
 } from 'react';
-import {
-  Session,
-  SupabaseClient,
-  createClientComponentClient,
-} from '@supabase/auth-helpers-nextjs';
+import { Session, SupabaseClient } from '@supabase/auth-helpers-nextjs';
 import { useRouter } from 'next/navigation';
-import { Database } from '@/types/database.types';
+import { supabaseAnon } from '@/components/supabase/supabase';
 
 type MaybeSession = Session | null;
 
@@ -31,10 +27,7 @@ export default function SupabaseProvider({
   children: ReactNode;
   session: MaybeSession;
 }) {
-  const supabase = createClientComponentClient<Database>({
-    supabaseUrl: process.env.SUPABASE_URL,
-    supabaseKey: process.env.SUPABASE_ANON_KEY,
-  });
+  const supabase = supabaseAnon;
   const router = useRouter();
 
   useEffect(() => {

@@ -20,7 +20,6 @@ import { ProfileData } from '@/types/profile';
 import { UUID } from 'crypto';
 import { RoomProvider } from './RoomContext';
 import CloseRoomButton from './CloseRoomButton';
-import ErrorBoundary from '../errorBoundary/ErrorBoundary';
 import { useRoomStore } from '../../hooks/useRoomStore';
 
 interface Props {
@@ -113,56 +112,54 @@ function CollabRoomRight({ roomId, user }: Props): ReactElement<Props, 'div'> {
   );
 
   return (
-    <ErrorBoundary>
-      <RoomProvider basicRoomState={roomData}>
-        <VStack
-          spacing={2}
-          align="start"
-          maxH="calc(100vh - 112px)"
-          p={4}
-          width="calc(100vw - 412px)"
+    <RoomProvider basicRoomState={roomData}>
+      <VStack
+        spacing={2}
+        align="start"
+        maxH="calc(100vh - 112px)"
+        p={4}
+        width="calc(100vw - 412px)"
+      >
+        <Skeleton
+          isLoaded={!isRoomPending}
+          borderRadius="0.375rem"
+          width="100%"
         >
-          <Skeleton
-            isLoaded={!isRoomPending}
-            borderRadius="0.375rem"
-            width="100%"
-          >
-            <Box width="100%">
-              <Tabs onChange={changeInterviewer}>
-                <TabList>
-                  <Tab>{username1}</Tab>
-                  <Tab>{username2}</Tab>
-                </TabList>
+          <Box width="100%">
+            <Tabs onChange={changeInterviewer}>
+              <TabList>
+                <Tab>{username1}</Tab>
+                <Tab>{username2}</Tab>
+              </TabList>
 
-                <TabPanels>
-                  <TabPanel height="55vh" p={0} pt={4}>
-                    {userCodeEditor}
-                  </TabPanel>
+              <TabPanels>
+                <TabPanel height="55vh" p={0} pt={4}>
+                  {userCodeEditor}
+                </TabPanel>
 
-                  <TabPanel height="55vh" p={0} pt={4}>
-                    {partnerCodeEditor}
-                  </TabPanel>
-                </TabPanels>
-              </Tabs>
-            </Box>
-          </Skeleton>
+                <TabPanel height="55vh" p={0} pt={4}>
+                  {partnerCodeEditor}
+                </TabPanel>
+              </TabPanels>
+            </Tabs>
+          </Box>
+        </Skeleton>
 
-          {/* Bottom Half of room right */}
-          <VStack height="20vh" width="100%">
-            {/* Search bar */}
-            {/* Video Window */}
-            <HStack width="100%" justify="right">
-              {videoCollection}
-            </HStack>
+        {/* Bottom Half of room right */}
+        <VStack height="20vh" width="100%">
+          {/* Search bar */}
+          {/* Video Window */}
+          <HStack width="100%" justify="right">
+            {videoCollection}
+          </HStack>
 
-            {/* Close Room button */}
-            <HStack width="100%" justify="right">
-              <CloseRoomButton />
-            </HStack>
-          </VStack>
+          {/* Close Room button */}
+          <HStack width="100%" justify="right">
+            <CloseRoomButton />
+          </HStack>
         </VStack>
-      </RoomProvider>
-    </ErrorBoundary>
+      </VStack>
+    </RoomProvider>
   );
 }
 

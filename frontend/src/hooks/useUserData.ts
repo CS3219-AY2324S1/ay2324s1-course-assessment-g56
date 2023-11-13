@@ -1,16 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
-import {
-  SupabaseClient,
-  createClientComponentClient,
-} from '@supabase/auth-helpers-nextjs';
+import { SupabaseClient } from '@supabase/auth-helpers-nextjs';
 import { Database } from '@/types/database.types';
 import { USER_QUERY_KEY } from '@/constants/queryKey';
 import { ProfileData } from '@/types/profile';
+import { supabaseAnon } from '@/components/supabase/supabase';
 
-const supabaseInstance = createClientComponentClient<Database>({
-  supabaseUrl: process.env.SUPABASE_URL,
-  supabaseKey: process.env.SUPABASE_ANON_KEY,
-});
+const supabaseInstance = supabaseAnon;
 
 export const getUserData = async (supabase: SupabaseClient<Database>) => {
   const { data } = await supabase.from('profiles').select('*').single();

@@ -14,6 +14,7 @@ import {
   Button,
   Textarea,
   HStack,
+  Heading,
 } from '@chakra-ui/react';
 import { Compartment, EditorState } from '@codemirror/state';
 import { oneDark } from '@codemirror/theme-one-dark';
@@ -33,6 +34,7 @@ import { ROOM_QUERY_KEY } from '@/constants/queryKey';
 import { BasicRoomData } from '@/types/collab';
 import { useRoomData } from '@/hooks/useRoomData';
 import { UUID } from 'crypto';
+import NextLink from 'next/link';
 
 import {
   CURSOR_COLOR_TO_SEND_PARTNER,
@@ -42,6 +44,14 @@ import getLanguageExtension from './languages';
 import { RoomContext } from '../collabRoom/RoomContext';
 
 import './CodeEditor.css';
+import {
+  getLanguageId,
+  formatJudge0Message,
+  getSubmissionResult,
+  tokenUrl,
+  // resultUrl
+} from './CodeResultFunctions';
+import { supabaseAnon } from '../supabase/supabase';
 
 interface Props {
   roomId: UUID;
@@ -50,93 +60,6 @@ interface Props {
   roomSlug: string;
   questionSlug: string;
   isUser1: boolean;
-  // isRoomOpen: boolean;
-  // setState: (state: EditorState) => void;
-}
-
-// setting wait to true does not scale well
-// but i m too lazy to write the polling code
-const tokenUrl = `${process.env.CODE_EXECUTION_PATH}/submissions?base64_encoded=false&wait=true}`;
-
-const resultUrl = (token) =>
-  `${process.env.CODE_EXECUTION_PATH}/submissions/${token}?base64_encoded=false`;
-
-const MAX_ATTEMPTS = 10; // Maximum number of polling attempts
-const POLLING_INTERVAL = 2000; // Delay between polling attempts in milliseconds
-
-const getSubmissionResult = async (token, attempts = 0) => {
-  try {
-    const response = await axios.get(resultUrl(token));
-    const statusId = response.data.status.id;
-
-    if (!(statusId === 1 || statusId === 2)) {
-      return response.data;
-    }
-    if (attempts < MAX_ATTEMPTS) {
-      // If the submission is still being processed, wait and then retry
-      await new Promise((resolve) => {
-        setTimeout(resolve, POLLING_INTERVAL);
-      });
-      return getSubmissionResult(token, attempts + 1);
-    }
-    return 'Time Limit Exceeded';
-  } catch (error) {
-    console.error('Error fetching result:', error);
-    throw error;
-  }
-};
-
-function formatJudge0Message(result) {
-  let message = '';
-
-  // Check if there's a compile error
-  if (result.compile_output) {
-    message += `Compile Error:\n${result.compile_output}\n`;
-  }
-
-  // Check if there's a runtime error
-  if (result.stderr) {
-    message += `Runtime Error:\n${result.stderr}\n`;
-  }
-
-  // Check if the code executed successfully but there's no output
-  if (result.stdout === null && !result.stderr) {
-    message += `No output\n`;
-  }
-
-  // If there's output, display it
-  if (result.stdout) {
-    message += `Output:\n${result.stdout}\n`;
-  }
-
-  // Add time and memory usage
-  message += `Time: ${result.time} seconds\n`;
-  message += `Memory: ${result.memory} KB\n`;
-
-  // Add status message
-  if (result.status && result.status.description) {
-    message += `Status: ${result.status.description}\n`;
-  }
-
-  // Add any additional message
-  if (result.message) {
-    message += `Message: ${result.message}\n`;
-  }
-
-  return message.trim();
-}
-
-function getLanguageId(language: Language) {
-  switch (language) {
-    case Language.PYTHON:
-      return 71;
-    case Language.JAVASCRIPT:
-      return 63;
-    case Language.JAVA:
-      return 62;
-    default:
-      return 71;
-  }
 }
 
 export default function CodeEditor({
@@ -145,9 +68,8 @@ export default function CodeEditor({
   language,
   username,
   questionSlug,
-  isUser1, // isRoomOpen,
-} // setState,
-: Props): ReactElement<Props, 'div'> {
+  isUser1,
+}: Props): ReactElement<Props, 'div'> {
   const { colorMode } = useColorMode();
   const isDark = colorMode === 'dark';
   const [element, setElement] = useState<HTMLElement>();
@@ -158,29 +80,84 @@ export default function CodeEditor({
     language,
   );
   const [codeResult, setCodeResult] = useState('No code result yet');
+  const [isClosed, setIsClosed] = useState(false);
   const [isRunningCode, setIsRunningCode] = useState(false);
   const languageCompartment = useMemo(() => new Compartment(), []);
 
-  const {
-    isRoomOpen,
-    // setIsRoomOpen,
-    // room1State,
-    setRoom1State,
-    // room2State,
-    setRoom2State,
-  } = useContext(RoomContext);
+  const { setRoom1State, setRoom2State } = useContext(RoomContext);
+  const { data: roomData } = useRoomData(roomId);
 
-  const setState = isUser1 ? setRoom1State : setRoom2State;
+  const setState =
+    roomData?.user1Details.username === username
+      ? setRoom1State
+      : setRoom2State;
+  const userKey =
+    roomData?.user1Details.username === username ? 'user1' : 'user2';
+
+  const userQuestionSlug = useRoomStore((state) => state.questionSlug);
+  const queryClient = useQueryClient();
+
+  // Listen to database changes
+  const supabase = supabaseAnon;
+
+  supabase
+    .channel(roomId)
+    .on(
+      'postgres_changes',
+      {
+        event: 'UPDATE',
+        schema: 'public',
+        table: 'collaborations',
+        filter: `room_id=eq.${roomId}`,
+      },
+      (payload) => {
+        setState(payload.new.user1_code);
+        setCodeResult(formatJudge0Message(payload.new[`${userKey}_result`]));
+        setSelectedLanguage(payload.new[`${userKey}_language`]);
+        setIsClosed(payload.new.is_closed);
+        console.log(
+          'new language: ',
+          payload.new[`${userKey}_language`],
+          selectedLanguage,
+        );
+        console.log('new code result: ', payload.new[`${userKey}_result`]);
+      },
+    )
+    .subscribe();
+
+  const updateCodeResult = async (res: JSON) => {
+    // export to supabase
+    const { error } = await supabase
+      .from('collaborations')
+      .update({
+        [`${userKey}_result`]: res,
+      })
+      .eq('room_id', roomId);
+
+    if (error) {
+      console.error('Error updating database:', error);
+    }
+  };
+
+  const updateSelectedLanguage = async () => {
+    // export to supabase
+    const { error } = await supabase
+      .from('collaborations')
+      .update({
+        [`${userKey}_language`]: selectedLanguage,
+      })
+      .eq('room_id', roomId);
+
+    if (error) {
+      console.error('Error updating database:', error);
+    }
+  };
 
   const handleLanguageChange = (
     event: React.ChangeEvent<HTMLSelectElement>,
   ) => {
     setSelectedLanguage(event.target.value as Language);
   };
-
-  const userQuestionSlug = useRoomStore((state) => state.questionSlug);
-  const queryClient = useQueryClient();
-  const { data: roomData } = useRoomData(roomId);
 
   // Evaluate the code
   const runCode = async () => {
@@ -199,6 +176,7 @@ export default function CodeEditor({
 
         const output = await getSubmissionResult(token);
         setCodeResult(formatJudge0Message(output));
+        updateCodeResult(output);
       } catch (error) {
         console.error('Error running code:', error);
         if (error.response) {
@@ -214,6 +192,12 @@ export default function CodeEditor({
       setIsRunningCode(false);
     }
   };
+
+  useEffect(() => {
+    if (selectedLanguage) {
+      updateSelectedLanguage();
+    }
+  }, [selectedLanguage]);
 
   const ref = useCallback((node: HTMLElement | null): void => {
     if (!node) {
@@ -346,7 +330,7 @@ export default function CodeEditor({
 
   // Exports state when room is closed
   useEffect(() => {
-    if (!isRoomOpen && view) {
+    if (isClosed && view) {
       // Set readonly to true
       // readOnly = true;
       // Progapage the export state to the close button
@@ -356,8 +340,18 @@ export default function CodeEditor({
       provider.disconnect();
       ydoc.destroy();
     }
-  }, [isRoomOpen, view]);
+  }, [isClosed, view]);
 
+  if (isClosed) {
+    return (
+      <Box textAlign="center" p={5}>
+        <Heading mb={4}>Room Closed</Heading>
+        <Button as={NextLink} href="/" colorScheme="green" variant="outline">
+          Go to home page
+        </Button>
+      </Box>
+    );
+  }
   return (
     <Flex direction="column" height="100%" width="100%">
       <Box width="max-content">
