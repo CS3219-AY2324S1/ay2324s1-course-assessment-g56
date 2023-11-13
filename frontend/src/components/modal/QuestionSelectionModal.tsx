@@ -12,8 +12,8 @@ import {
 import { FiChevronRight, FiChevronDown } from 'react-icons/fi';
 import { useRoomStore } from '@/hooks/useRoomStore';
 import { BasicRoomData } from '@/types/collab';
+import { useUpdateRoomQuestionsMutation } from '@/hooks/useUpdateRoomMutation';
 import Modal from './Modal';
-import { useUpdateRoomQuestionsMutation } from '../../hooks/useUpdateRoomQuestionsMutation';
 
 interface QuestionSelectionModalProps {
   isOpen: boolean;
@@ -54,15 +54,13 @@ function QuestionSelectionModal({
     roomData.roomId,
   );
 
-  const questionSlugKey =
-    roomData.user1Details.username === username
-      ? 'user1QuestionSlug'
-      : 'user2QuestionSlug';
+  const userKey =
+    roomData.user1Details.username === username ? 'user1' : 'user2';
   const changeQuestion = (value: string) => {
     setQuestionSlug(questionListMap[value].slug);
     setSelectedQuestionTitle(value);
     updateRoomQuestionsMutation.mutate({
-      key: questionSlugKey,
+      key: userKey,
       questionSlug: questionListMap[value].slug,
     });
     onClose();

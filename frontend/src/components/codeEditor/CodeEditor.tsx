@@ -26,6 +26,7 @@ import axios from 'axios';
 import { Language } from '@/types/language';
 
 import { WebrtcProvider } from 'y-webrtc';
+import { IndexeddbPersistence } from 'y-indexeddb';
 import { useRoomStore } from '@/hooks/useRoomStore';
 import { insertTab, indentLess } from '@codemirror/commands';
 
@@ -230,7 +231,7 @@ export default function CodeEditor({
       return undefined;
     }
     const newYdoc = new Doc();
-
+    const persistence = new IndexeddbPersistence(roomSlug, newYdoc);
     const newProvider = new WebrtcProvider(roomSlug, newYdoc, {
       signaling: [
         // Local
@@ -244,44 +245,46 @@ export default function CodeEditor({
 
     const yText = newYdoc.getText(roomSlug);
 
+    persistence.once('synced', () => {
+      setView(
+        new EditorView({
+          state: EditorState.create({
+            doc: yText.toString(),
+            extensions: [
+              languageCompartment.of(getLanguageExtension(language)),
+              EditorView.lineWrapping,
+              // EditorState.readOnly.of(readOnly),
+              yCollab(yText, newProvider.awareness),
+              ...(isDark ? [oneDark] : []),
+              EditorView.theme({}, { dark: isDark }),
+              keymap.of([
+                {
+                  key: 'Tab',
+                  preventDefault: true,
+                  run: insertTab,
+                },
+                {
+                  key: 'Shift-Tab',
+                  preventDefault: true,
+                  run: indentLess,
+                },
+              ]),
+            ],
+          }),
+          parent: element,
+        }),
+      );
+
+      setProvider(newProvider);
+      setYdoc(newYdoc);
+    });
+
     newProvider.awareness.setLocalStateField('user', {
       name: username,
       color: CURSOR_COLOR_TO_SEND_PARTNER.color,
       colorLight: CURSOR_COLOR_TO_SEND_PARTNER.light,
       questionSlug,
     });
-
-    setView(
-      new EditorView({
-        state: EditorState.create({
-          doc: yText.toString(),
-          extensions: [
-            languageCompartment.of(getLanguageExtension(language)),
-            EditorView.lineWrapping,
-            // EditorState.readOnly.of(readOnly),
-            yCollab(yText, newProvider.awareness),
-            ...(isDark ? [oneDark] : []),
-            EditorView.theme({}, { dark: isDark }),
-            keymap.of([
-              {
-                key: 'Tab',
-                preventDefault: true,
-                run: insertTab,
-              },
-              {
-                key: 'Shift-Tab',
-                preventDefault: true,
-                run: indentLess,
-              },
-            ]),
-          ],
-        }),
-        parent: element,
-      }),
-    );
-
-    setProvider(newProvider);
-    setYdoc(newYdoc);
 
     newProvider.on('synced', (synced) => {
       // NOTE: This is only called when a different browser connects to this client

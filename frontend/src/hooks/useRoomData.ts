@@ -18,9 +18,9 @@ export const getRoomData = async (roomId: UUID) => {
     user2Result: room.user2_result,
     user1Language: room.user1_language,
     user2Language: room.user2_language,
-    isClosed: room.is_closed,
     user1Notes: room.user1_notes,
     user2Notes: room.user2_notes,
+    isClosed: room.is_closed,
     user1Code: room.user1_code,
     user2Code: room.user2_code,
     user1Details: {

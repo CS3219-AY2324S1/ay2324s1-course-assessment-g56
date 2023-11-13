@@ -17,7 +17,6 @@ import {
   IconButton,
   Skeleton,
   Tag,
-  Textarea,
   VStack,
   Wrap,
   WrapItem,
@@ -29,7 +28,7 @@ import rehypeKatex from 'rehype-katex';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
 import { VscArrowSwap } from 'react-icons/vsc';
-import { useMemo, useState } from 'react';
+// import { useMemo } from 'react';
 import { useQuestionListData } from '@/hooks/useQuestionListData';
 import { UUID } from 'crypto';
 import code from '../markdown/Code';
@@ -38,6 +37,7 @@ import strong from '../markdown/Strong';
 import style from '../markdown/Style';
 import ul from '../markdown/Ul';
 import QuestionSelectionModal from '../modal/QuestionSelectionModal';
+import InterviewerNotes from '../textarea/InterviewerNotes';
 
 interface CollabRoomLeftProps {
   roomId: UUID;
@@ -50,17 +50,18 @@ function CollabRoomLeft({ roomId, username }: CollabRoomLeftProps) {
   const userIsInterviewer = useRoomStore((state) => state.userIsInterviewer);
   const { data: questionList, isPending: questionListLoading } =
     useQuestionListData(session?.access_token ?? '');
-  const filteredQuestionList = useMemo(
-    () =>
-      questionList?.filter(
-        (question) => question.difficulty === roomData?.difficulty,
-      ),
-    [questionList, roomData?.difficulty],
-  );
-  const [userQuestionSlug, partnerQuestionSlug] =
-    username === roomData?.user1Details?.username
-      ? [roomData?.user1QuestionSlug, roomData?.user2QuestionSlug]
-      : [roomData?.user2QuestionSlug, roomData?.user1QuestionSlug];
+  // const filteredQuestionList = useMemo(
+  //   () =>
+  //     questionList?.filter(
+  //       (question) => question.difficulty === roomData?.difficulty,
+  //     ),
+  //   [questionList, roomData?.difficulty],
+  // );
+  const isUser1 = username === roomData?.user1Details?.username;
+  const userString = isUser1 ? 'user1' : 'user2';
+  const [userQuestionSlug, partnerQuestionSlug] = isUser1
+    ? [roomData?.user1QuestionSlug, roomData?.user2QuestionSlug]
+    : [roomData?.user2QuestionSlug, roomData?.user1QuestionSlug];
   const { data: userQuestion, isPending: userQuestionLoading } =
     useQuestionData(userQuestionSlug ?? '', session?.access_token ?? '');
   const { data: partnerQuestion, isPending: partnerQuestionLoading } =
@@ -74,7 +75,6 @@ function CollabRoomLeft({ roomId, username }: CollabRoomLeftProps) {
   const difficultyColour =
     QuestionDifficultyToColourMap[displayedQuestion?.difficulty];
 
-  const [interviewerNotes, setInterviewerNotes] = useState('');
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   return (
@@ -83,7 +83,7 @@ function CollabRoomLeft({ roomId, username }: CollabRoomLeftProps) {
         bg={useColorModeValue('white', 'gray.900')}
         spacing={4}
         p={4}
-        maxH={userIsInterviewer ? 'calc(60vh - 96px)' : 'calc(100vh - 80px)'}
+        maxH={userIsInterviewer ? 'calc(50vh - 96px)' : 'calc(100vh - 80px)'}
         overflow="auto"
       >
         <Skeleton
@@ -156,13 +156,7 @@ function CollabRoomLeft({ roomId, username }: CollabRoomLeftProps) {
         />
       </VStack>
       {userIsInterviewer && (
-        <Textarea
-          placeholder="Take interview notes here..."
-          value={interviewerNotes}
-          onChange={(e) => setInterviewerNotes(e.target.value)}
-          h="calc(40vh)"
-          mt={4}
-        />
+        <InterviewerNotes roomId={roomId} user={userString} />
       )}
       {!questionListLoading && !isRoomLoading && (
         <QuestionSelectionModal
@@ -171,7 +165,7 @@ function CollabRoomLeft({ roomId, username }: CollabRoomLeftProps) {
           username={username}
           roomData={roomData}
           questionTitle={displayedQuestion?.title}
-          questionList={filteredQuestionList}
+          questionList={questionList}
         />
       )}
     </Box>
