@@ -15,10 +15,6 @@ dotenv.config({
   path: '../src/.env',
 });
 
-console.log(process.env, 'ENVIRONMENT');
-console.log(process.env.apiKey, 'API KEY');
-console.log(process.env.NODE_ENV, 'NODE ENV');
-
 const easyValue = 1;
 const mediumValue = 2;
 const hardValue = 3;
