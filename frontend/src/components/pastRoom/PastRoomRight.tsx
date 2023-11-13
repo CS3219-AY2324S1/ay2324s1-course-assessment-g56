@@ -10,7 +10,7 @@ import {
   Tabs,
   VStack,
   Textarea,
-  // HStack,
+  HStack,
 } from '@chakra-ui/react';
 
 import React, { ReactElement, useMemo } from 'react';
@@ -60,6 +60,8 @@ function PastRoomRight({ roomId, user }: Props): ReactElement<Props, 'div'> {
   //         question2: roomData?.user1QuestionSlug,
   //       };
   console.log('Past room data: ', roomData);
+  const user1Notes =
+    roomData.user1Notes == null ? 'No Notes Found' : roomData.user1Notes;
   const user2Notes =
     roomData.user2Notes == null ? 'No Notes Found' : roomData.user2Notes;
 
@@ -131,17 +133,29 @@ function PastRoomRight({ roomId, user }: Props): ReactElement<Props, 'div'> {
         </Skeleton>
 
         {/* Bottom Half of room right */}
-        <VStack height="20vh" width="100%">
-          {/* Notes: User 2 */}
+        <HStack height="100vh" width="100%">
+          {/* Notes: User 1, User 2 */}
+          <Textarea
+            value={
+              user1Notes !== null ? user1Notes.toString() : 'No Notes Found'
+            }
+            readOnly
+            h="100%"
+            overflowY="auto"
+            resize="none"
+            p={1}
+          />
           <Textarea
             value={
               user2Notes !== null ? user2Notes.toString() : 'No Notes Found'
             }
             readOnly
-            h="calc(40vh)"
-            mt={4}
+            h="100%"
+            overflowY="auto"
+            resize="none"
+            p={1}
           />
-        </VStack>
+        </HStack>
       </VStack>
     </RoomProvider>
   );

@@ -19,6 +19,7 @@ import {
 import { cookies } from 'next/headers';
 import { UUID } from 'crypto';
 import PastRoomRight from '@/components/pastRoom/PastRoomRight';
+import PastRoomLeft from '@/components/pastRoom/PastRoomLeft';
 
 async function Page({ params }: { params: { channelName: string } }) {
   const { channelName } = params as { channelName: UUID };
@@ -71,7 +72,7 @@ async function Page({ params }: { params: { channelName: string } }) {
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
       <HStack align="flex-start">
-        {/* <CollabRoomLeft roomId={channelName} username={user.username} /> */}
+        <PastRoomLeft roomId={channelName} username={user.username} />
         <PastRoomRight roomId={channelName} user={user} />
       </HStack>
     </HydrationBoundary>
