@@ -82,9 +82,7 @@ app.get('/:roomId', async (req, res) => {
   console.log(roomId);
   const { data } = await supabase
     .from('collaborations')
-    .select(
-      'room_id, difficulty, user1_question_slug, user2_question_slug, user1_id, user2_id, user1_result, user2_result',
-    )
+    .select('*')
     .eq('room_id', roomId)
     .single();
 

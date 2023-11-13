@@ -13,6 +13,10 @@ export interface BasicRoomData {
   user2Language: Language;
   user1Result: JSON;
   user2Result: JSON;
+  user1Notes: String;
+  user2Notes: String;
+  user1Code: JSON;
+  user2Code: JSON;
   user1Details: BasicProfileData;
   user2Details: BasicProfileData;
   difficulty: QuestionDifficulty;
