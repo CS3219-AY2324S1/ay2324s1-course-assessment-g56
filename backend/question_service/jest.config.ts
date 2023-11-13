@@ -7,6 +7,12 @@ const config: Config.InitialOptions = {
   transform: {
     '^.+\\.(ts|tsx)$': 'ts-jest',
   },
+  moduleNameMapper: {
+    '^controllers/(.*)$': '<rootDir>/controllers/$1',
+    '^middleware/(.*)$': '<rootDir>/middleware/$1',
+    '^routes/(.*)$': '<rootDir>/routes/$1',
+    '^types/(.*)$': '<rootDir>/types/$1',
+  },
 };
 
 export default config;
