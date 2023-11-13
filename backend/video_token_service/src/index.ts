@@ -14,9 +14,9 @@ const server = http.createServer(app);
 
 const wsReadyStateConnecting = 0;
 const wsReadyStateOpen = 1;
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+// @ts-ignore
 const wsReadyStateClosing = 2;
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+// @ts-ignore
 const wsReadyStateClosed = 3;
 
 /**
