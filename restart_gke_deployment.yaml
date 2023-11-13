@@ -16,5 +16,6 @@ steps:
         kubectl rollout restart deployment/question-service-deployment
         kubectl rollout restart deployment/matching-service-deployment
         kubectl rollout restart deployment/user-service-deployment
+        kubectl rollout restart deployment/video-token-service-deployment
+        kubectl rollout restart deployment/room-service-deployment
         kubectl rollout restart deployment/frontend-deployment
-

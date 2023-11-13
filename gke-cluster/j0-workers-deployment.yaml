@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: judge0-workers-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: judge0-workers
+  template:
+    metadata:
+      labels:
+        app: judge0-workers
+    spec:
+      containers:
+      - name: workers
+        image: judge0/judge0:1.13.0
+        command: ["./scripts/workers"]
+        securityContext:
+          privileged: true
+        envFrom:
+        - configMapRef:
+            name: judge0-db-config
+

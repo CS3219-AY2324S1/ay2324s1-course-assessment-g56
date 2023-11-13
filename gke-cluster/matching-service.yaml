@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: matching-service
-          image: gcr.io/thinking-return-402109/matching_service:latest
+          image: renakitsune/peerprep:matching_service
           imagePullPolicy: Always
           ports:
             - containerPort: 6006
@@ -27,12 +27,17 @@ spec:
             - name: MATCHING_SERVICE_PORT
               valueFrom:
                 configMapKeyRef:
-                  name: main-config
+                  name: backend-config
                   key: MATCHING_SERVICE_PORT
+            - name: ROOM_SERVICE_PATH
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-config
+                  key: ROOM_PATH
             - name: NODE_ENV
               valueFrom:
                 configMapKeyRef:
-                  name: main-config
+                  name: backend-config
                   key: NODE_ENV
 ---
 apiVersion: v1

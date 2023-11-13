@@ -109,6 +109,68 @@ steps:
       - '-c'
       - |
         rm backend/user_service/.env
+#Room Service
+  # Step 1: Create the .env file in backend/room_service/
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        gcloud secrets versions access latest --secret=room_service > backend/room_service/.env
+        # Add any additional steps to modify or process the .env file as needed.
+  # Step 2: Install dependencies
+  - name: 'node:18'
+    entrypoint: 'npm'
+    args:
+      - 'install'
+      - '--prefix'
+      - '.'
+    dir: 'backend/room_service'
+  # Step 3: Build your Docker image in backend/room_service
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/room_service'
+      - ./backend/room_service
+  # Step 4: Delete the .env file
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        rm backend/room_service/.env
+#Video Token Service
+  # Step 1: Create the .env file in backend/video_token_service/
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        gcloud secrets versions access latest --secret=video_token_service > backend/video_token_service/.env
+        # Add any additional steps to modify or process the .env file as needed.
+  # Step 2: Install dependencies
+  - name: 'node:18'
+    entrypoint: 'npm'
+    args:
+      - 'install'
+      - '--prefix'
+      - '.'
+    dir: 'backend/video_token_service'
+  # Step 3: Build your Docker image in backend/video_token_service
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/video_token_service'
+      - ./backend/video_token_service
+  # Step 4: Delete the .env file
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        rm backend/video_token_service/.env
 # Frontend service
   # Step 1: Create the .env file in /frontend
   - name: 'gcr.io/cloud-builders/gcloud'
@@ -149,4 +211,6 @@ images:
   - 'gcr.io/$PROJECT_ID/question_service:latest'
   - 'gcr.io/$PROJECT_ID/matching_service:latest'
   - 'gcr.io/$PROJECT_ID/user_service:latest'
+  - 'gcr.io/$PROJECT_ID/room_service:latest'
+  - 'gcr.io/$PROJECT_ID/video_token_service:latest'
   - 'gcr.io/$PROJECT_ID/frontend_service:latest'

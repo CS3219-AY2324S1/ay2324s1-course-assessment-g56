@@ -1,61 +1,55 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: question-service-deployment
+  name: video-token-service-deployment
   labels:
-    app: question-service
+    app: video-token-service
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: question-service
+      app: video-token-service
   template:
     metadata:
       labels:
-        app: question-service
+        app: video-token-service
     spec:
       containers:
-        - name: question-service
-          image: renakitsune/peerprep:question_service
+        - name: video-token-service
+          image: renakitsune/peerprep:video_token_service
           imagePullPolicy: Always
           ports:
-            - containerPort: 5001
-          envFrom:
-            - secretRef:
-                name: firebase-secret
-            - secretRef:
-                name: supabase-secret
+            - containerPort: 8080
           env:
-            - name: QUESTION_SERVICE_PORT
+            - name: AGORA_PRIMARY_CERTIFICATE
               valueFrom:
                 configMapKeyRef:
                   name: backend-config
-                  key: QUESTION_SERVICE_PORT
-            - name: FRONTEND_SERVICE
+                  key: AGORA_PRIMARY_CERTIFICATE
+            - name: AGORA_ID
               valueFrom:
                 configMapKeyRef:
                   name: backend-config
-                  key: FRONTEND_SERVICE
-            - name: ROOM_SERVICE
+                  key: AGORA_ID
+            - name: VIDEO_TOKEN_SERVICE_PORT
               valueFrom:
                 configMapKeyRef:
                   name: backend-config
-                  key: ROOM_PATH
+                  key: VIDEO_TOKEN_SERVICE_PORT
             - name: NODE_ENV
               valueFrom:
                 configMapKeyRef:
                   name: backend-config
                   key: NODE_ENV
-
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: question-service-service
+  name: video-token-service-service
 spec:
   selector:
-    app: question-service
+    app: video-token-service
   ports:
     - protocol: TCP
-      port: 5001
-      targetPort: 5001
+      port: 8080
+      targetPort: 8080

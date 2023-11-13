@@ -14,6 +14,10 @@ metadata:
     nginx.ingress.kubernetes.io/cors-allow-headers: 'DNT,X-CustomHeader,X-LANG,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,X-Api-Key,X-Device-Id,Access-Control-Allow-Origin'
 spec:
   ingressClassName: "nginx"
+  tls:
+  - hosts:
+    - peerprep.com
+    secretName: peerprep-com-tls
   rules:
     - host: peerprep.com
       http:
@@ -46,3 +50,24 @@ spec:
                 name: matching-service-service
                 port:
                   number: 6006
+          - path: /room-service(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: room-service-service
+                port:
+                  number: 6007
+          - path: /video-token-service(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: video-token-service-service
+                port:
+                  number: 8080
+          - path: /code-execution-service(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: judge0-server-service
+                port:
+                  number: 2358
