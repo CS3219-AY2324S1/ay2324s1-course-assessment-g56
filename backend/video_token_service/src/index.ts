@@ -14,8 +14,10 @@ const server = http.createServer(app);
 
 const wsReadyStateConnecting = 0;
 const wsReadyStateOpen = 1;
-const wsReadyStateClosing = 2; // eslint-disable-line
-const wsReadyStateClosed = 3; // eslint-disable-line
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const wsReadyStateClosing = 2;
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const wsReadyStateClosed = 3;
 
 /**
  * A webrtc Signaling server
