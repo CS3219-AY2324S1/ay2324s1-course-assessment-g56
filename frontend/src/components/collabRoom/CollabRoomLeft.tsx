@@ -89,7 +89,7 @@ function CollabRoomLeft({ roomId, username }: CollabRoomLeftProps) {
     <Box
       minW="380px"
       maxW="380px"
-      maxH="calc(100vh - 80px)"
+      h="calc(100vh - 80px)"
       p={0}
       bg={useColorModeValue('white', 'gray.900')}
     >
