@@ -84,7 +84,11 @@ describe('Integration Tests', () => {
 
     expect(response.status).toBe(400);
     expect(response.type).toBe('application/json');
-    expect(response.body).toHaveProperty('error');
+    expect(response.body).toHaveProperty('errors');
+    expect(response.body.errors[0]).toHaveProperty(
+      'msg',
+      'Question already exists',
+    );
   });
 
   it('POST /questions should add a question with title "Test Question 2"', async () => {
@@ -114,8 +118,9 @@ describe('Integration Tests', () => {
 
     expect(updateQuestionResponse.status).toBe(400);
     expect(updateQuestionResponse.type).toBe('application/json');
-    expect(updateQuestionResponse.body).toHaveProperty(
-      'error',
+    expect(updateQuestionResponse.body).toHaveProperty('errors');
+    expect(updateQuestionResponse.body.errors[0]).toHaveProperty(
+      'msg',
       'Question already exists',
     );
   });
