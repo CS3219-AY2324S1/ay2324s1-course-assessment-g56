@@ -22,7 +22,7 @@ import {
 } from '@tanstack/react-table';
 import { useState } from 'react';
 import NextLink from 'next/link';
-import { QuestionRowData } from '@/types/question';
+import { CollabRowData } from '@/types/collab';
 import { Tr, flexRender } from './TableUtils';
 import TableHeader from './TableHeader';
 import TablePagination from './TablePagination';
@@ -102,12 +102,12 @@ function HistoryTable<T extends object>({
           {table.getRowModel().rows.map((row) => (
             <Tr key={row.id} h="40px">
               {row.getVisibleCells().map((cell) =>
-                cell.column.id === 'title' ? (
+                cell.column.id === 'partner' ? (
                   <LinkBox as={Td} key={cell.id}>
                     <LinkOverlay
                       as={NextLink}
-                      href={`/question/${
-                        (row.original as QuestionRowData).slug
+                      href={`/pastRoom/${
+                        (row.original as CollabRowData).collabId
                       }`}
                     >
                       {flexRender(
