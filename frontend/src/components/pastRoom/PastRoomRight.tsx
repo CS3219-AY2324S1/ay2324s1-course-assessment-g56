@@ -49,17 +49,8 @@ function PastRoomRight({ roomId, user }: Props): ReactElement<Props, 'div'> {
           language2: roomData?.user1Language,
         };
 
-  // const { question1, question2 } =
-  //   user?.username === roomData?.user1Details?.username
-  //     ? {
-  //         question1: roomData?.user1QuestionSlug,
-  //         question2: roomData?.user2QuestionSlug,
-  //       }
-  //     : {
-  //         question1: roomData?.user2QuestionSlug,
-  //         question2: roomData?.user1QuestionSlug,
-  //       };
   console.log('Past room data: ', roomData);
+
   const user1Notes =
     roomData.user1Notes == null ? 'No Notes Found' : roomData.user1Notes;
   const user2Notes =

@@ -1,3 +1,5 @@
+'use client';
+
 // ErrorBoundary.tsx
 import React, { Component, ReactNode } from 'react';
 import { Button, Heading, Box } from '@chakra-ui/react';
