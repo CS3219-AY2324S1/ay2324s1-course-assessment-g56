@@ -19,6 +19,7 @@ import { FiVideo, FiVideoOff } from 'react-icons/fi';
 import { HStack, IconButton, Text, useToast } from '@chakra-ui/react';
 import { getVideoAccessToken } from '@/lib/video_token';
 import { UUID } from 'crypto';
+import { useRoomStore } from '@/hooks/useRoomStore';
 
 const config: ClientConfig = {
   mode: 'rtc',
@@ -115,6 +116,7 @@ function VideoCollection({
   const [users, setUsers] = useState<IAgoraRTCRemoteUser[]>([]);
   const [start, setStart] = useState<boolean>(false);
   const [hasInitialised, setHasInitialised] = useState<boolean>(false);
+  const isClosed = useRoomStore((state) => state.isClosed);
   const client = useClient();
   const toast = useToast();
   const { ready, tracks } = useMicrophoneAndCameraTracks();
@@ -175,6 +177,14 @@ function VideoCollection({
       init(roomId);
     }
   }, [roomId, client, ready, tracks, hasInitialised]);
+
+  useEffect(() => {
+    if (isClosed) {
+      setInCall(false);
+      setStart(false);
+      client.leave();
+    }
+  }, [client, isClosed]);
 
   // if (!client || !userProfile) {
   //   return null;

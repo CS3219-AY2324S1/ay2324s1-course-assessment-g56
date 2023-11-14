@@ -7925,6 +7925,7 @@ __metadata:
     typescript: 5.2.2
     y-codemirror: ^3.0.1
     y-codemirror.next: ^0.3.2
+    y-indexeddb: ^9.0.12
     y-protocols: ^1.0.6
     y-webrtc: ^10.2.5
     yjs: ^13.6.8
@@ -15256,6 +15257,17 @@ __metadata:
     codemirror: ^5.52.2
     yjs: ^13.5.17
   checksum: 7d24ba482a1ce8f36b0d711946e19394aab96c76f5fdd8702a0196252947b9672524ca3bc670de96580f8b6fc6d981b28a8a7be4461accd847cf400cd6f3bde6
+  languageName: node
+  linkType: hard
+
+"y-indexeddb@npm:^9.0.12":
+  version: 9.0.12
+  resolution: "y-indexeddb@npm:9.0.12"
+  dependencies:
+    lib0: ^0.2.74
+  peerDependencies:
+    yjs: ^13.0.0
+  checksum: 0bc53723f91d322873ba44dade45dac127cc1a1be563437c7079d4c29a467c6854346d397761cf67c53e118b285e969fa284b9287f3c2bddbfff05c101b2f153
   languageName: node
   linkType: hard
 

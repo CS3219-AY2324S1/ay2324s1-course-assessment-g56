@@ -15,6 +15,7 @@ import {
   Textarea,
   HStack,
   Heading,
+  Spinner,
 } from '@chakra-ui/react';
 import { Compartment, EditorState } from '@codemirror/state';
 import { oneDark } from '@codemirror/theme-one-dark';
@@ -26,6 +27,7 @@ import axios from 'axios';
 import { Language } from '@/types/language';
 
 import { WebrtcProvider } from 'y-webrtc';
+import { IndexeddbPersistence } from 'y-indexeddb';
 import { useRoomStore } from '@/hooks/useRoomStore';
 import { insertTab, indentLess } from '@codemirror/commands';
 
@@ -80,6 +82,7 @@ export default function CodeEditor({
   const [selectedLanguage, setSelectedLanguage] = useState<Language | null>(
     language,
   );
+  const [isLanguageChanging, setIsLanguageChanging] = useState(false);
   const [codeResult, setCodeResult] = useState('No code result yet');
   const [isClosed, setIsClosed] = useState(false);
   const [isRunningCode, setIsRunningCode] = useState(false);
@@ -100,15 +103,17 @@ export default function CodeEditor({
   const supabase = supabaseAnon;
 
   // Initialize state from supabse
-  supabase
-    .from('collaborations')
-    .select('*')
-    .eq('room_id', roomId)
-    .then((res) => {
-      setCodeResult(formatJudge0Message(res.data[0][`${userKey}_result`]));
-      setSelectedLanguage(res.data[0][`${userKey}_language`]);
-      setIsClosed(res.data[0].is_closed);
-    });
+  useEffect(() => {
+    supabase
+      .from('collaborations')
+      .select('*')
+      .eq('room_id', roomId)
+      .then((res) => {
+        setCodeResult(formatJudge0Message(res.data[0][`${userKey}_result`]));
+        setSelectedLanguage(res.data[0][`${userKey}_language`]);
+        setIsClosed(res.data[0].is_closed);
+      });
+  }, []);
 
   supabase
     .channel(roomId)
@@ -132,7 +137,7 @@ export default function CodeEditor({
           setCodeResult(formatJudge0Message(userResult));
         }
 
-        if (userLanguage !== selectedLanguage) {
+        if (userIsInterviewer && userLanguage !== selectedLanguage) {
           setSelectedLanguage(userLanguage);
         }
 
@@ -158,6 +163,7 @@ export default function CodeEditor({
   };
 
   const updateSelectedLanguage = async () => {
+    setIsLanguageChanging(true);
     // export to supabase
     const { error } = await supabase
       .from('collaborations')
@@ -169,6 +175,8 @@ export default function CodeEditor({
     if (error) {
       console.error('Error updating database:', error);
     }
+
+    setIsLanguageChanging(false);
   };
 
   const handleLanguageChange = (
@@ -212,7 +220,7 @@ export default function CodeEditor({
   };
 
   useEffect(() => {
-    if (selectedLanguage) {
+    if (selectedLanguage && !userIsInterviewer) {
       updateSelectedLanguage();
     }
   }, [selectedLanguage]);
@@ -230,7 +238,7 @@ export default function CodeEditor({
       return undefined;
     }
     const newYdoc = new Doc();
-
+    const persistence = new IndexeddbPersistence(roomSlug, newYdoc);
     const newProvider = new WebrtcProvider(roomSlug, newYdoc, {
       signaling: [
         // Local
@@ -244,44 +252,46 @@ export default function CodeEditor({
 
     const yText = newYdoc.getText(roomSlug);
 
+    persistence.once('synced', () => {
+      setView(
+        new EditorView({
+          state: EditorState.create({
+            doc: yText.toString(),
+            extensions: [
+              languageCompartment.of(getLanguageExtension(language)),
+              EditorView.lineWrapping,
+              // EditorState.readOnly.of(readOnly),
+              yCollab(yText, newProvider.awareness),
+              ...(isDark ? [oneDark] : []),
+              EditorView.theme({}, { dark: isDark }),
+              keymap.of([
+                {
+                  key: 'Tab',
+                  preventDefault: true,
+                  run: insertTab,
+                },
+                {
+                  key: 'Shift-Tab',
+                  preventDefault: true,
+                  run: indentLess,
+                },
+              ]),
+            ],
+          }),
+          parent: element,
+        }),
+      );
+
+      setProvider(newProvider);
+      setYdoc(newYdoc);
+    });
+
     newProvider.awareness.setLocalStateField('user', {
       name: username,
       color: CURSOR_COLOR_TO_SEND_PARTNER.color,
       colorLight: CURSOR_COLOR_TO_SEND_PARTNER.light,
       questionSlug,
     });
-
-    setView(
-      new EditorView({
-        state: EditorState.create({
-          doc: yText.toString(),
-          extensions: [
-            languageCompartment.of(getLanguageExtension(language)),
-            EditorView.lineWrapping,
-            // EditorState.readOnly.of(readOnly),
-            yCollab(yText, newProvider.awareness),
-            ...(isDark ? [oneDark] : []),
-            EditorView.theme({}, { dark: isDark }),
-            keymap.of([
-              {
-                key: 'Tab',
-                preventDefault: true,
-                run: insertTab,
-              },
-              {
-                key: 'Shift-Tab',
-                preventDefault: true,
-                run: indentLess,
-              },
-            ]),
-          ],
-        }),
-        parent: element,
-      }),
-    );
-
-    setProvider(newProvider);
-    setYdoc(newYdoc);
 
     newProvider.on('synced', (synced) => {
       // NOTE: This is only called when a different browser connects to this client
@@ -373,10 +383,11 @@ export default function CodeEditor({
     <Flex direction="column" height="100%" width="100%">
       <Box width="max-content">
         <HStack>
+          {isLanguageChanging && <Spinner h="25px" w="40px" />}
           <Select
             value={selectedLanguage}
             onChange={handleLanguageChange}
-            disabled={userIsInterviewer}
+            disabled={userIsInterviewer || isLanguageChanging}
           >
             {Object.values(Language).map((lang) => (
               <option key={lang} value={lang}>
