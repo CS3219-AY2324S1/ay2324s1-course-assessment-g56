@@ -6,7 +6,7 @@ import { Select } from '@chakra-ui/react';
 import { useRoomStore } from '@/hooks/useRoomStore';
 import { BasicRoomData } from '@/types/collab';
 import { Language } from '@/types/language';
-import { useUpdateRoomLanguagesMutation } from '../../hooks/useUpdateRoomMutation';
+import { useUpdateRoomLanguagesMutation } from '@/hooks/useUpdateRoomMutation';
 
 interface LanguageSelectProps {
   username: string;
