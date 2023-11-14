@@ -2640,7 +2640,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/commands@npm:^6.0.0, @codemirror/commands@npm:^6.3.0":
+"@codemirror/commands@npm:^6.3.0":
   version: 6.3.0
   resolution: "@codemirror/commands@npm:6.3.0"
   dependencies:
@@ -2710,17 +2710,6 @@ __metadata:
     "@codemirror/view": ^6.0.0
     crelt: ^1.0.5
   checksum: 5e699960c1b28dbaa584fe091a3201978907bf4b9e52810fb15d3ceaf310e38053435e0b594da0985266ae812039a5cd6c36023284a6f8568664bdca04db137f
-  languageName: node
-  linkType: hard
-
-"@codemirror/search@npm:^6.0.0":
-  version: 6.5.4
-  resolution: "@codemirror/search@npm:6.5.4"
-  dependencies:
-    "@codemirror/state": ^6.0.0
-    "@codemirror/view": ^6.0.0
-    crelt: ^1.0.5
-  checksum: 32a68e40486730949ee79f54b9fcc6c744559aef188d3c5bf82881f62e5fc9468fa21cf227507638160043c797eb054205802a649cf4a2350928fc161d5aac40
   languageName: node
   linkType: hard
 
@@ -6132,21 +6121,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"codemirror@npm:^6.0.1":
-  version: 6.0.1
-  resolution: "codemirror@npm:6.0.1"
-  dependencies:
-    "@codemirror/autocomplete": ^6.0.0
-    "@codemirror/commands": ^6.0.0
-    "@codemirror/language": ^6.0.0
-    "@codemirror/lint": ^6.0.0
-    "@codemirror/search": ^6.0.0
-    "@codemirror/state": ^6.0.0
-    "@codemirror/view": ^6.0.0
-  checksum: 1a78f7077ac5801bdbff162aa0c61bf2b974603c7e9a477198c3ce50c789af674a061d7c293c58b73807eda345c2b5228c38ad2aabb9319d552d5486f785cbef
-  languageName: node
-  linkType: hard
-
 "collect-v8-coverage@npm:^1.0.0":
   version: 1.0.2
   resolution: "collect-v8-coverage@npm:1.0.2"
@@ -6720,6 +6694,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"duration@npm:^0.2.2":
+  version: 0.2.2
+  resolution: "duration@npm:0.2.2"
+  dependencies:
+    d: 1
+    es5-ext: ~0.10.46
+  checksum: 907f4fdb2d5304744b419466846b41076bb0b2f5cde4ca02e78dd8d679b3ae14c29350d3f3a852006f5b6df0c6848efb7b38a6e4ae1b5dbadab5c46a2af22f91
+  languageName: node
+  linkType: hard
+
 "dynamic-dedupe@npm:^0.3.0":
   version: 0.3.0
   resolution: "dynamic-dedupe@npm:0.3.0"
@@ -6988,7 +6972,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"es5-ext@npm:^0.10.35, es5-ext@npm:^0.10.50":
+"es5-ext@npm:^0.10.35, es5-ext@npm:^0.10.50, es5-ext@npm:~0.10.46":
   version: 0.10.62
   resolution: "es5-ext@npm:0.10.62"
   dependencies:
@@ -12217,18 +12201,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "peerprep@workspace:."
   dependencies:
-    "@codemirror/lang-javascript": ^6.2.1
-    "@codemirror/lang-python": ^6.1.3
-    "@codemirror/state": ^6.3.0
-    "@codemirror/theme-one-dark": ^6.1.2
-    "@codemirror/view": ^6.21.3
     "@types/eslint": ^8.44.2
     "@types/prettier": ^3.0.0
     "@typescript-eslint/eslint-plugin": ^6.7.0
     "@typescript-eslint/parser": ^6.7.0
-    agora-rtc-react: ^1.1.3
-    agora-rtc-sdk-ng: ^4.19.1
-    codemirror: ^6.0.1
     eslint: ^8.49.0
     eslint-config-airbnb: ^19.0.4
     eslint-config-airbnb-typescript: ^17.1.0
@@ -12241,14 +12217,10 @@ __metadata:
     eslint-plugin-react-hooks: ^4.6.0
     eslint-plugin-simple-import-sort: ^10.0.0
     husky: ^8.0.3
-    lib0: ^0.2.86
     lint-staged: ^14.0.1
     markdownlint-cli: ^0.36.0
     prettier: ^3.0.3
     typescript: ^5.2.2
-    y-codemirror.next: ^0.3.2
-    y-protocols: ^1.0.6
-    yjs: ^13.6.8
   languageName: unknown
   linkType: soft
 
@@ -13279,7 +13251,9 @@ __metadata:
     body-parser: ^1.20.2
     cors: ^2.8.5
     cross-env: ^7.0.3
+    dayjs: ^1.11.10
     dotenv: ^16.3.1
+    duration: ^0.2.2
     express: ^4.18.2
     jsonwebtoken: ^9.0.2
     morgan: ^1.10.0

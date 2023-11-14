@@ -13,7 +13,7 @@ export default function Page() {
     data: collabList,
     isPending: collabListLoading,
     isError,
-  } = useCollabListData(session?.user.id);
+  } = useCollabListData(session?.access_token ?? '');
 
   const toast = useToast();
 
