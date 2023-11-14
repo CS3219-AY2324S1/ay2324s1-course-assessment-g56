@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: room-service
-          image: renakitsune/peerprep:room_service
+          image: gcr.io/thinking-return-402109/room_service:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 6007

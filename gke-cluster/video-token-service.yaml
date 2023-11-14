@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: video-token-service
-          image: renakitsune/peerprep:video_token_service
+          image: gcr.io/thinking-return-402109/video_token_service:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 8080

@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: question-service
-          image: renakitsune/peerprep:question_service
+          image: gcr.io/thinking-return-402109/question_service:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 5001

@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: user-service
-          image: renakitsune/peerprep:user_service
+          image: gcr.io/thinking-return-402109/user_service:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 5005

@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: matching-service
-          image: renakitsune/peerprep:matching_service
+          image: gcr.io/thinking-return-402109/matching_service:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 6006
