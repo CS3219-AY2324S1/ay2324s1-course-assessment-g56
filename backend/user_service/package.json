@@ -7,7 +7,7 @@
   "scripts": {
     "build:prepare": "tsc --build --clean",
     "build": "yarn build:prepare && set debug=* && tsc --project tsconfig.json",
-    "test": "jest",
+    "test": "cross-env NODE_ENV=test jest",
     "start": "cross-env NODE_ENV=development ts-node-dev --exit-child --respawn --transpile-only -r tsconfig-paths/register ./src/app.ts"
   },
   "keywords": [],

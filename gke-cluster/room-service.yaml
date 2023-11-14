@@ -1,39 +1,49 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: user-service-deployment
+  name: room-service-deployment
   labels:
-    app: user-service
+    app: room-service
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: user-service
+      app: room-service
   template:
     metadata:
       labels:
-        app: user-service
+        app: room-service
     spec:
       containers:
-        - name: user-service
-          image: gcr.io/thinking-return-402109/user_service:latest
+        - name: room-service
+          image: gcr.io/thinking-return-402109/room_service:latest
           imagePullPolicy: Always
           ports:
-            - containerPort: 5005
+            - containerPort: 6007
           envFrom:
             - secretRef:
                 name: supabase-secret
           env:
-            - name: USER_SERVICE_PORT
+            - name: ROOM_SERVICE_PORT
               valueFrom:
                 configMapKeyRef:
                   name: backend-config
-                  key: USER_SERVICE_PORT
+                  key: ROOM_SERVICE_PORT
             - name: FRONTEND_SERVICE
               valueFrom:
                 configMapKeyRef:
                   name: backend-config
                   key: FRONTEND_SERVICE
+            - name: MATCHING_SERVICE
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-config
+                  key: MATCHING_PATH
+            - name: QUESTION_SERVICE
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-config
+                  key: QUESTION_PATH
             - name: NODE_ENV
               valueFrom:
                 configMapKeyRef:
@@ -43,11 +53,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: user-service-service
+  name: room-service-service
 spec:
   selector:
-    app: user-service
+    app: room-service
   ports:
     - protocol: TCP
-      port: 5005
-      targetPort: 5005
+      port: 6007
+      targetPort: 6007

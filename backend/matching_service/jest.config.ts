@@ -1,7 +1,4 @@
 import type { Config } from '@jest/types';
-import { pathsToModuleNameMapper } from 'ts-jest';
-
-import { compilerOptions } from './tsconfig.json';
 
 const config: Config.InitialOptions = {
   preset: 'ts-jest',
@@ -11,9 +8,14 @@ const config: Config.InitialOptions = {
     '^.+\\.(ts|tsx)$': 'ts-jest',
   },
   testMatch: ['**/*.test.ts'],
-  moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, {
-    prefix: '<rootDir>/src',
-  }),
+  moduleNameMapper: {
+    '^constants/(.*)$': '<rootDir>/src/constants/$1',
+    '^socket/(.*)$': '<rootDir>/src/socket/$1',
+    '^structs/(.*)$': '<rootDir>/src/structs/$1',
+    '^types/(.*)$': '<rootDir>/src/types/$1',
+    '^mockComponents/(.*)$': '<rootDir>/src/mockComponents/$1',
+    '^utils/(.*)$': '<rootDir>/src/utils/$1',
+  },
 };
 
 export default config;
