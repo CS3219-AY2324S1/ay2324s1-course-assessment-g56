@@ -5,6 +5,7 @@ import { UUID } from 'crypto';
 import { useUpdateRoomNotesMutation } from '@/hooks/useUpdateRoomMutation';
 import { BsCloudCheck } from 'react-icons/bs';
 import { PiArrowsClockwiseLight } from 'react-icons/pi';
+import { useRoomData } from '@/hooks/useRoomData';
 
 interface InterviewerNotesProps {
   roomId: UUID;
@@ -13,13 +14,16 @@ interface InterviewerNotesProps {
 
 function InterviewerNotes({ roomId, user }: InterviewerNotesProps) {
   const [interviewerNotes, setInterviewerNotes] = useState<string>('');
+  const { data: roomData } = useRoomData(roomId);
   const debouncedNotes = useDebounce(interviewerNotes, 1000);
   const updateRoomNotesMutation = useUpdateRoomNotesMutation(roomId);
   const saving =
     updateRoomNotesMutation.isPending || interviewerNotes !== debouncedNotes;
 
   useEffect(() => {
-    updateRoomNotesMutation.mutate({ key: user, notes: debouncedNotes });
+    if (roomData?.[`${user}Notes`] !== debouncedNotes) {
+      updateRoomNotesMutation.mutate({ key: user, notes: debouncedNotes });
+    }
   }, [debouncedNotes]);
 
   useEffect(() => {
@@ -37,7 +41,7 @@ function InterviewerNotes({ roomId, user }: InterviewerNotesProps) {
 
   return (
     <>
-      <HStack align="end" mb={1} mt={4}>
+      <HStack align="end" mb={1} mt={1}>
         <Icon
           as={saving ? PiArrowsClockwiseLight : BsCloudCheck}
           ml={1}
@@ -51,8 +55,8 @@ function InterviewerNotes({ roomId, user }: InterviewerNotesProps) {
         placeholder="Take interview notes here..."
         value={interviewerNotes}
         onChange={(e) => setInterviewerNotes(e.target.value)}
-        h="calc(50vh - 25px)"
-        maxH="calc(50vh - 25px)"
+        h="calc(50vh - 14px)"
+        maxH="calc(50vh - 14px)"
       />
     </>
   );

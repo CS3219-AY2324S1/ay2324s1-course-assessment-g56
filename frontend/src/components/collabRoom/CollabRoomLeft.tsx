@@ -12,6 +12,7 @@ import {
   Box,
   Card,
   CardBody,
+  Divider,
   HStack,
   Heading,
   IconButton,
@@ -85,9 +86,14 @@ function CollabRoomLeft({ roomId, username }: CollabRoomLeftProps) {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   return (
-    <Box minW="380px" maxW="380px" maxH="calc(100vh - 80px)" p={0}>
+    <Box
+      minW="380px"
+      maxW="380px"
+      maxH="calc(100vh - 80px)"
+      p={0}
+      bg={useColorModeValue('white', 'gray.900')}
+    >
       <VStack
-        bg={useColorModeValue('white', 'gray.900')}
         spacing={4}
         p={4}
         maxH={userIsInterviewer ? 'calc(50vh - 96px)' : 'calc(100vh - 80px)'}
@@ -163,7 +169,10 @@ function CollabRoomLeft({ roomId, username }: CollabRoomLeftProps) {
         />
       </VStack>
       {userIsInterviewer && (
-        <InterviewerNotes roomId={roomId} user={userString} />
+        <>
+          <Divider />
+          <InterviewerNotes roomId={roomId} user={userString} />
+        </>
       )}
       {!questionListLoading && !isRoomLoading && (
         <QuestionSelectionModal
