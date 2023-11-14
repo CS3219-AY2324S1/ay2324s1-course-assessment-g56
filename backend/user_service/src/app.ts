@@ -56,6 +56,21 @@ app.get('/user', async (_req, res) => {
   }
 });
 
+app.get('/users', async (_req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('*');
+    if (error) throw error;
+    if (data.length === 0) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    res.json(data);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 /**
  * Deletes a user
  *

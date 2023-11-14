@@ -33,6 +33,7 @@ import QuestionRangeSlider from '@/components/slider/QuestionRangeSlider';
 import useTimer from '@/hooks/useTimer';
 import useSocket from '@/hooks/useSocket';
 import MatchFoundModal from '@/components/modal/MatchFoundModal';
+import { UUID } from 'crypto';
 
 function Page() {
   const [lowerBoundDifficulty, setLowerBoundDifficulty] =
@@ -44,7 +45,7 @@ function Page() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isCancelling, setIsCancelling] = useState(false);
   const [matchedUser, setMatchedUser] = useState<BasicProfileData | null>(null);
-  const [roomId, setRoomId] = useState('');
+  const [roomId, setRoomId] = useState<UUID>(null);
   const [difficulty, setDifficulty] = useState<QuestionDifficulty | null>(null);
 
   const {
@@ -115,7 +116,7 @@ function Page() {
         difficulty: newDifficulty,
       }: {
         matchedUser: BasicProfileData;
-        roomId: string;
+        roomId: UUID;
         difficulty: QuestionDifficulty;
       }) => {
         doneMatching();

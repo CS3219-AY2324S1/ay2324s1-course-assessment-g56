@@ -66,3 +66,23 @@ export interface DatabaseQuestion {
   difficulty: 1 | 2 | 3;
   link: string;
 }
+
+export interface DatabaseCollab {
+  room_id: string;
+  created_at: Date;
+  user1_id: string;
+  user2_id: string;
+  difficulty: 1 | 2 | 3;
+  user1_code?: JSON;
+  user2_code?: JSON;
+  user1_notes?: JSON;
+  user2_notes?: JSON;
+  user1_language?: string;
+  user2_language?: string;
+  completed_time?: Date;
+  user1_question_slug?: string;
+  user2_question_slug?: string;
+  user1_result?: JSON;
+  user2_result?: JSON;
+  is_closed?: boolean;
+}

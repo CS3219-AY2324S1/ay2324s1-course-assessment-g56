@@ -9,7 +9,7 @@ import {
   useColorModeValue,
 } from '@chakra-ui/react';
 import { FiHome, FiSettings } from 'react-icons/fi';
-import { LuUnplug } from 'react-icons/lu';
+import { LuUnplug, LuHistory } from 'react-icons/lu';
 import { IconType } from 'react-icons';
 import NextLink from 'next/link';
 import SideBarChild from './SideBarChild';
@@ -22,15 +22,17 @@ interface LinkWithIconProps {
 
 interface SideBarProps extends BoxProps {
   onClose: () => void;
+  isDrawer?: boolean;
 }
 
 const LinkItems: LinkWithIconProps[] = [
   { name: 'Home', icon: FiHome, href: '/home' },
   { name: 'Find Match', icon: LuUnplug, href: '/matching' },
+  { name: 'History', icon: LuHistory, href: '/history'},
   { name: 'Settings', icon: FiSettings, href: '/account' },
 ];
 
-function SideBar({ onClose, ...rest }: SideBarProps) {
+function SideBar({ onClose, isDrawer = false, ...rest }: SideBarProps) {
   return (
     <Box
       bg={useColorModeValue('white', 'gray.900')}
@@ -51,7 +53,10 @@ function SideBar({ onClose, ...rest }: SideBarProps) {
         >
           PeerPrep
         </Text>
-        <CloseButton display={{ base: 'flex', md: 'none' }} onClick={onClose} />
+        <CloseButton
+          display={{ base: 'flex', md: isDrawer ? 'flex' : 'none' }}
+          onClick={onClose}
+        />
       </Flex>
       {LinkItems.map((link) => (
         <SideBarChild

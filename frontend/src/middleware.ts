@@ -56,10 +56,10 @@ export const config = {
   matcher: [
     '/',
     '/home',
-    '/question/:id*',
+    '/question/:slug*',
     '/matching',
     '/account',
-    '/room/:id*',
+    '/collabRoom/:channelName*',
     '/onboarding',
   ],
 };

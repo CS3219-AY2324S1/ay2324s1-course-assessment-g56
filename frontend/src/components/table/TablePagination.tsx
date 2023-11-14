@@ -65,8 +65,14 @@ function TablePagination<T extends object>({ table }: TablePaginationProps<T>) {
         </Tooltip>
       </Flex>
 
-      <Flex alignItems="center">
-        <Text fontSize="sm" flexShrink="0" marginRight={8}>
+      <Flex alignItems="center" mx={3}>
+        <Text
+          fontSize="sm"
+          flexShrink="0"
+          width={{ base: '100%', md: 'fit-content' }}
+          marginRight={8}
+          textAlign="center"
+        >
           {'Page '}
           <Text fontSize="sm" fontWeight="bold" as="span">
             {pageIndex + 1}
@@ -77,7 +83,11 @@ function TablePagination<T extends object>({ table }: TablePaginationProps<T>) {
           </Text>
         </Text>
 
-        <Text fontSize="sm" flexShrink="0">
+        <Text
+          fontSize="sm"
+          flexShrink="0"
+          display={{ base: 'none', md: 'block' }}
+        >
           {'Go to page: '}
         </Text>
         <NumberInput
@@ -93,6 +103,7 @@ function TablePagination<T extends object>({ table }: TablePaginationProps<T>) {
             }
           }}
           value={pageIndex + 1}
+          display={{ base: 'none', md: 'block' }}
         >
           <NumberInputField />
           <NumberInputStepper>
@@ -108,6 +119,7 @@ function TablePagination<T extends object>({ table }: TablePaginationProps<T>) {
           onChange={(e) => {
             setPageSize(Number(e.target.value));
           }}
+          display={{ base: 'none', md: 'block' }}
         >
           {numEntriesPerPageOptions.map((number) => (
             <option key={number} value={number}>
