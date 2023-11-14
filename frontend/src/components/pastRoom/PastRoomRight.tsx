@@ -19,10 +19,10 @@ import React, { ReactElement, useMemo } from 'react';
 import { useRoomData } from '@/hooks/useRoomData';
 import { ProfileData } from '@/types/profile';
 import { UUID } from 'crypto';
-import { RoomProvider } from './RoomContext';
 import { useRoomStore } from '../../hooks/useRoomStore';
 import CodeViewer from '../codeEditor/CodeViewer';
 import { formatJudge0Message } from '../codeEditor/CodeResultFunctions';
+import { RoomProvider } from '../collabRoom/RoomContext';
 
 interface Props {
   roomId: UUID;

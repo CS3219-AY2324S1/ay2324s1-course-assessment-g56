@@ -3,6 +3,7 @@ import React, { ReactElement, useEffect, useContext } from 'react';
 import { Button } from '@chakra-ui/react';
 
 import NextLink from 'next/link';
+import { useRoomStore } from '@/hooks/useRoomStore';
 
 import { RoomContext } from './RoomContext';
 import { supabaseAnon } from '../supabase/supabase';
@@ -19,6 +20,10 @@ export default function CloseRoomButton(): ReactElement {
     // setRoom2State,
     basicRoomState,
   } = useContext(RoomContext);
+
+  const { closeRoom } = useRoomStore((state) => ({
+    closeRoom: state.closeRoom,
+  }));
 
   useEffect(() => {
     const updateDatabase = async () => {
@@ -39,6 +44,7 @@ export default function CloseRoomButton(): ReactElement {
 
     if (!isRoomOpen) {
       updateDatabase();
+      closeRoom();
     }
   }, [isRoomOpen]);
 
