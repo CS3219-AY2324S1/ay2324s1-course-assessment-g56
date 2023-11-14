@@ -32,6 +32,10 @@ Create a .env file in the `frontend` directory, then copy and paste the contents
 
 cd frontend
 
+npm install
+
+npm run build
+
 npm start
 
 ```

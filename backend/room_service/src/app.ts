@@ -82,9 +82,7 @@ app.get('/:roomId', async (req, res) => {
   console.log(roomId);
   const { data } = await supabase
     .from('collaborations')
-    .select(
-      'room_id, difficulty, user1_question_slug, user2_question_slug, user1_id, user2_id, user1_result, user2_result',
-    )
+    .select('*')
     .eq('room_id', roomId)
     .single();
 
@@ -105,6 +103,13 @@ app.get('/:roomId', async (req, res) => {
     .single();
   return res.status(200).json({ ...data, user1Details, user2Details });
 });
+
+app.get('/', async (req, res) => {
+  const { user } = req.query;
+  const userQuery = `user1_id.eq.${user},user2_id.eq.${user}`;
+  const { data } = await supabase.from('collaborations').select().or(userQuery);
+  return res.status(200).json(data);
+})
 
 const server = app.listen(process.env.ROOM_SERVICE_PORT, () => {
   console.log(`> Ready on port:${process.env.ROOM_SERVICE_PORT}`);

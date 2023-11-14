@@ -17,7 +17,6 @@ import {
   IconButton,
   Skeleton,
   Tag,
-  Textarea,
   VStack,
   Wrap,
   WrapItem,
@@ -29,34 +28,23 @@ import rehypeKatex from 'rehype-katex';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
 import { VscArrowSwap } from 'react-icons/vsc';
-import { useMemo, useState } from 'react';
-import { useQuestionListData } from '@/hooks/useQuestionListData';
 import { UUID } from 'crypto';
 import code from '../markdown/Code';
 import pre from '../markdown/Pre';
 import strong from '../markdown/Strong';
 import style from '../markdown/Style';
 import ul from '../markdown/Ul';
-import QuestionSelectionModal from '../modal/QuestionSelectionModal';
 
 interface CollabRoomLeftProps {
   roomId: UUID;
   username: string;
 }
 
-function CollabRoomLeft({ roomId, username }: CollabRoomLeftProps) {
-  const { data: roomData, isPending: isRoomLoading } = useRoomData(roomId);
+function PastRoomLeft({ roomId, username }: CollabRoomLeftProps) {
+  const { data: roomData } = useRoomData(roomId);
   const session = useSession();
   const userIsInterviewer = useRoomStore((state) => state.userIsInterviewer);
-  const { data: questionList, isPending: questionListLoading } =
-    useQuestionListData(session?.access_token ?? '');
-  const filteredQuestionList = useMemo(
-    () =>
-      questionList?.filter(
-        (question) => question.difficulty === roomData?.difficulty,
-      ),
-    [questionList, roomData?.difficulty],
-  );
+
   const [userQuestionSlug, partnerQuestionSlug] =
     username === roomData?.user1Details?.username
       ? [roomData?.user1QuestionSlug, roomData?.user2QuestionSlug]
@@ -74,8 +62,7 @@ function CollabRoomLeft({ roomId, username }: CollabRoomLeftProps) {
   const difficultyColour =
     QuestionDifficultyToColourMap[displayedQuestion?.difficulty];
 
-  const [interviewerNotes, setInterviewerNotes] = useState('');
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { onOpen } = useDisclosure();
 
   return (
     <Box minW="380px" maxW="380px" maxH="calc(100vh - 80px)" p={0}>
@@ -155,27 +142,8 @@ function CollabRoomLeft({ roomId, username }: CollabRoomLeftProps) {
           href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"
         />
       </VStack>
-      {userIsInterviewer && (
-        <Textarea
-          placeholder="Take interview notes here..."
-          value={interviewerNotes}
-          onChange={(e) => setInterviewerNotes(e.target.value)}
-          h="calc(40vh)"
-          mt={4}
-        />
-      )}
-      {!questionListLoading && !isRoomLoading && (
-        <QuestionSelectionModal
-          isOpen={isOpen}
-          onClose={onClose}
-          username={username}
-          roomData={roomData}
-          questionTitle={displayedQuestion?.title}
-          questionList={filteredQuestionList}
-        />
-      )}
     </Box>
   );
 }
 
-export default CollabRoomLeft;
+export default PastRoomLeft;
