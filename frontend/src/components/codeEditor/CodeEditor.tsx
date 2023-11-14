@@ -425,6 +425,8 @@ export default function CodeEditor({
             readOnly
             variant="filled"
             height="100%"
+            width="50%"
+            maxH="100%"
           />
         </HStack>
       </Box>
