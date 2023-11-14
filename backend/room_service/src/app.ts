@@ -104,6 +104,13 @@ app.get('/:roomId', async (req, res) => {
   return res.status(200).json({ ...data, user1Details, user2Details });
 });
 
+app.get('/', async (req, res) => {
+  const { user } = req.query;
+  const userQuery = `user1_id.eq.${user},user2_id.eq.${user}`;
+  const { data } = await supabase.from('collaborations').select().or(userQuery);
+  return res.status(200).json(data);
+})
+
 const server = app.listen(process.env.ROOM_SERVICE_PORT, () => {
   console.log(`> Ready on port:${process.env.ROOM_SERVICE_PORT}`);
 });
