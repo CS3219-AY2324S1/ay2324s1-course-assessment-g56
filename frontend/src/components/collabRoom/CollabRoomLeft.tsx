@@ -57,11 +57,18 @@ function CollabRoomLeft({ roomId, username }: CollabRoomLeftProps) {
       ),
     [questionList, roomData?.difficulty],
   );
-  const isUser1 = username === roomData?.user1Details?.username;
+  const isUser1 = useMemo(
+    () => username === roomData?.user1Details?.username,
+    [roomData?.user1Details?.username, username],
+  );
   const userString = isUser1 ? 'user1' : 'user2';
-  const [userQuestionSlug, partnerQuestionSlug] = isUser1
-    ? [roomData?.user1QuestionSlug, roomData?.user2QuestionSlug]
-    : [roomData?.user2QuestionSlug, roomData?.user1QuestionSlug];
+  const [userQuestionSlug, partnerQuestionSlug] = useMemo(
+    () =>
+      isUser1
+        ? [roomData?.user1QuestionSlug, roomData?.user2QuestionSlug]
+        : [roomData?.user2QuestionSlug, roomData?.user1QuestionSlug],
+    [isUser1, roomData?.user1QuestionSlug, roomData?.user2QuestionSlug],
+  );
   const { data: userQuestion, isPending: userQuestionLoading } =
     useQuestionData(userQuestionSlug ?? '', session?.access_token ?? '');
   const { data: partnerQuestion, isPending: partnerQuestionLoading } =
