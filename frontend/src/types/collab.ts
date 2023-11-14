@@ -1,6 +1,6 @@
 import { UUID } from 'crypto';
 import { QuestionDifficulty } from './question';
-import { BasicProfileData } from './profile';
+import { BasicProfileData, ProfileData } from './profile';
 import { Language } from './language';
 
 export interface BasicRoomData {
@@ -31,4 +31,12 @@ export interface FullRoomData extends BasicRoomData {
   user2_qns_id: UUID;
   // Will be automatically updated by sql trigger
   completed_time: Date;
+}
+
+export interface CollabRowData {
+  collabId: string;
+  partner: ProfileData;
+  completedTime: string;
+  duration: string;
+  language: Language;
 }
