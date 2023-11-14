@@ -28,7 +28,7 @@ import rehypeKatex from 'rehype-katex';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
 import { VscArrowSwap } from 'react-icons/vsc';
-// import { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useQuestionListData } from '@/hooks/useQuestionListData';
 import { UUID } from 'crypto';
 import code from '../markdown/Code';
@@ -50,13 +50,13 @@ function CollabRoomLeft({ roomId, username }: CollabRoomLeftProps) {
   const userIsInterviewer = useRoomStore((state) => state.userIsInterviewer);
   const { data: questionList, isPending: questionListLoading } =
     useQuestionListData(session?.access_token ?? '');
-  // const filteredQuestionList = useMemo(
-  //   () =>
-  //     questionList?.filter(
-  //       (question) => question.difficulty === roomData?.difficulty,
-  //     ),
-  //   [questionList, roomData?.difficulty],
-  // );
+  const filteredQuestionList = useMemo(
+    () =>
+      questionList?.filter(
+        (question) => question.difficulty === roomData?.difficulty,
+      ),
+    [questionList, roomData?.difficulty],
+  );
   const isUser1 = username === roomData?.user1Details?.username;
   const userString = isUser1 ? 'user1' : 'user2';
   const [userQuestionSlug, partnerQuestionSlug] = isUser1
@@ -165,7 +165,7 @@ function CollabRoomLeft({ roomId, username }: CollabRoomLeftProps) {
           username={username}
           roomData={roomData}
           questionTitle={displayedQuestion?.title}
-          questionList={questionList}
+          questionList={filteredQuestionList}
         />
       )}
     </Box>
