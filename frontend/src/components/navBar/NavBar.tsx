@@ -21,7 +21,8 @@ function Navbar({ children, showSideBar = true }: NavBarProps) {
   return (
     <Box
       minH="100vh"
-      minW="100vw"
+      minW="100%"
+      display="inline-table"
       bg={useColorModeValue('gray.100', 'gray.800')}
     >
       {showSideBar && (
