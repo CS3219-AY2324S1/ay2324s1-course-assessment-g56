@@ -1,11 +1,15 @@
 import { createClient } from '@supabase/supabase-js';
 import * as bodyParser from 'body-parser';
 import cors from 'cors';
+import dayjs from 'dayjs';
+import duration from 'dayjs/plugin/duration';
 import express, { NextFunction, Request, Response } from 'express';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import morgan from 'morgan';
 
 import 'dotenv/config';
+
+import { verifyAccessToken } from './middleware/authMiddleware';
 
 const app = express();
 const allowedOrigins = [
@@ -42,9 +46,11 @@ app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
 });
 
 const supabase = createClient(
-  process.env.SUPABASE_URL || '',
+  `https://${process.env.SUPABASE_URL}` || '',
   process.env.SUPABASE_SERVICE_KEY || '',
 );
+
+dayjs.extend(duration);
 
 app.post(
   '/create',
@@ -104,12 +110,57 @@ app.get('/:roomId', async (req, res) => {
   return res.status(200).json({ ...data, user1Details, user2Details });
 });
 
-app.get('/', async (req, res) => {
-  const { user } = req.query;
+app.get('/', verifyAccessToken, async (_req, res) => {
+  const { user } = res.locals;
   const userQuery = `user1_id.eq.${user},user2_id.eq.${user}`;
-  const { data } = await supabase.from('collaborations').select().or(userQuery);
-  return res.status(200).json(data);
-})
+
+  const { data, error } = await supabase
+    .from('collaborations')
+    .select()
+    .or(userQuery)
+    .eq('is_closed', true);
+  if (error) {
+    return res.status(500).json(error);
+  }
+  if (!data) {
+    return res.status(200).json([]);
+  }
+
+  const getPartnerId = (collab: any) =>
+    collab.user1_id === user ? collab.user2_id : collab.user1_id;
+  const { data: usersData, error: usersError } = await supabase
+    .from('profiles')
+    .select()
+    .in(
+      'id',
+      data.map((collab) => getPartnerId(collab)),
+    );
+  if (usersError) {
+    return res.status(500).json(usersError);
+  }
+
+  const getUserWithId = (id: string) => {
+    const user = usersData.find((profile) => profile.id === id);
+    return {
+      id: user?.id,
+      username: user?.username,
+      avatarUrl: user?.avatar_url,
+      preferredInterviewLanguage: user?.preferred_interview_language,
+    };
+  };
+  const collabList = data.map((collab) => ({
+    collabId: collab.room_id,
+    partner: getUserWithId(getPartnerId(collab)),
+    completedTime: dayjs(collab.completed_time).format('MMM DD, YYYY'),
+    duration: dayjs
+      .duration(dayjs(collab.completed_time).diff(dayjs(collab.created_at)))
+      .format('HH:mm:ss'),
+    language:
+      collab.user1_id === user ? collab.user1_language : collab.user2_language,
+  }));
+
+  return res.status(200).json(collabList);
+});
 
 const server = app.listen(process.env.ROOM_SERVICE_PORT, () => {
   console.log(`> Ready on port:${process.env.ROOM_SERVICE_PORT}`);

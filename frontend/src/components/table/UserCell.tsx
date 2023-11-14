@@ -18,7 +18,7 @@ function UserCell({ row }: CellContext<CollabRowData, any>) {
         display={{ base: 'none', md: 'flex' }}
         alignItems="flex-start"
         spacing="1px"
-        ml="2"
+        ml={1}
       >
         <Text fontSize="sm">{profileData.username}</Text>
       </VStack>

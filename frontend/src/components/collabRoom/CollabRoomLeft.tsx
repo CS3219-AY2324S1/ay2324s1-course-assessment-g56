@@ -12,12 +12,12 @@ import {
   Box,
   Card,
   CardBody,
+  Divider,
   HStack,
   Heading,
   IconButton,
   Skeleton,
   Tag,
-  Textarea,
   VStack,
   Wrap,
   WrapItem,
@@ -29,7 +29,7 @@ import rehypeKatex from 'rehype-katex';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
 import { VscArrowSwap } from 'react-icons/vsc';
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { useQuestionListData } from '@/hooks/useQuestionListData';
 import { UUID } from 'crypto';
 import code from '../markdown/Code';
@@ -38,6 +38,7 @@ import strong from '../markdown/Strong';
 import style from '../markdown/Style';
 import ul from '../markdown/Ul';
 import QuestionSelectionModal from '../modal/QuestionSelectionModal';
+import InterviewerNotes from '../textarea/InterviewerNotes';
 
 interface CollabRoomLeftProps {
   roomId: UUID;
@@ -57,10 +58,18 @@ function CollabRoomLeft({ roomId, username }: CollabRoomLeftProps) {
       ),
     [questionList, roomData?.difficulty],
   );
-  const [userQuestionSlug, partnerQuestionSlug] =
-    username === roomData?.user1Details?.username
-      ? [roomData?.user1QuestionSlug, roomData?.user2QuestionSlug]
-      : [roomData?.user2QuestionSlug, roomData?.user1QuestionSlug];
+  const isUser1 = useMemo(
+    () => username === roomData?.user1Details?.username,
+    [roomData?.user1Details?.username, username],
+  );
+  const userString = isUser1 ? 'user1' : 'user2';
+  const [userQuestionSlug, partnerQuestionSlug] = useMemo(
+    () =>
+      isUser1
+        ? [roomData?.user1QuestionSlug, roomData?.user2QuestionSlug]
+        : [roomData?.user2QuestionSlug, roomData?.user1QuestionSlug],
+    [isUser1, roomData?.user1QuestionSlug, roomData?.user2QuestionSlug],
+  );
   const { data: userQuestion, isPending: userQuestionLoading } =
     useQuestionData(userQuestionSlug ?? '', session?.access_token ?? '');
   const { data: partnerQuestion, isPending: partnerQuestionLoading } =
@@ -74,16 +83,20 @@ function CollabRoomLeft({ roomId, username }: CollabRoomLeftProps) {
   const difficultyColour =
     QuestionDifficultyToColourMap[displayedQuestion?.difficulty];
 
-  const [interviewerNotes, setInterviewerNotes] = useState('');
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   return (
-    <Box minW="380px" maxW="380px" maxH="calc(100vh - 80px)" p={0}>
+    <Box
+      minW="380px"
+      maxW="380px"
+      h="calc(100vh - 80px)"
+      p={0}
+      bg={useColorModeValue('white', 'gray.900')}
+    >
       <VStack
-        bg={useColorModeValue('white', 'gray.900')}
         spacing={4}
         p={4}
-        maxH={userIsInterviewer ? 'calc(60vh - 96px)' : 'calc(100vh - 80px)'}
+        maxH={userIsInterviewer ? 'calc(50vh - 96px)' : 'calc(100vh - 80px)'}
         overflow="auto"
       >
         <Skeleton
@@ -156,13 +169,10 @@ function CollabRoomLeft({ roomId, username }: CollabRoomLeftProps) {
         />
       </VStack>
       {userIsInterviewer && (
-        <Textarea
-          placeholder="Take interview notes here..."
-          value={interviewerNotes}
-          onChange={(e) => setInterviewerNotes(e.target.value)}
-          h="calc(40vh)"
-          mt={4}
-        />
+        <>
+          <Divider />
+          <InterviewerNotes roomId={roomId} user={userString} />
+        </>
       )}
       {!questionListLoading && !isRoomLoading && (
         <QuestionSelectionModal

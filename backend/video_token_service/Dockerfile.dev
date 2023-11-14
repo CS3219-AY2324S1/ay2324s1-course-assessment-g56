@@ -1,11 +1,10 @@
-FROM node:14.17-alpine
+FROM node:18-alpine
 
 RUN mkdir -p /home/node/app
 
 WORKDIR /home/node/app/video
 
 COPY package.json .
-COPY yarn.lock .
 
 RUN yarn install
 

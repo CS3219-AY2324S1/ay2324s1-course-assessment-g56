@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-config
+data:
+  AGORA_PRIMARY_CERTIFICATE: 88bc437cd09046e1a533ba16d631d794
+  AGORA_ID: eb3028f5f8ee424e91bca93cf564dc39
+  FRONTEND_SERVICE: https://peerprep.com
+  QUESTION_PATH: http://question-service-service:5001
+  USER_PATH: http://user-service-service:5005
+  MATCHING_PATH: http://matching-service-service:6006
+  ROOM_PATH: http://room-service-service:6007
+  VIDEO_TOKEN_PATH: http://video-token-service-service:8080
+  QUESTION_SERVICE_PORT: "5001"
+  USER_SERVICE_PORT: "5005"
+  MATCHING_SERVICE_PORT: "6006"
+  ROOM_SERVICE_PORT: "6007"
+  VIDEO_TOKEN_SERVICE_PORT: "8080"
+  NODE_ENV: "production"
