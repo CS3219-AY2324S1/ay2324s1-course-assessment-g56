@@ -15,6 +15,7 @@ import {
   Textarea,
   HStack,
   Heading,
+  Spinner,
 } from '@chakra-ui/react';
 import { Compartment, EditorState } from '@codemirror/state';
 import { oneDark } from '@codemirror/theme-one-dark';
@@ -81,6 +82,7 @@ export default function CodeEditor({
   const [selectedLanguage, setSelectedLanguage] = useState<Language | null>(
     language,
   );
+  const [isLanguageChanging, setIsLanguageChanging] = useState(false);
   const [codeResult, setCodeResult] = useState('No code result yet');
   const [isClosed, setIsClosed] = useState(false);
   const [isRunningCode, setIsRunningCode] = useState(false);
@@ -161,6 +163,7 @@ export default function CodeEditor({
   };
 
   const updateSelectedLanguage = async () => {
+    setIsLanguageChanging(true);
     // export to supabase
     const { error } = await supabase
       .from('collaborations')
@@ -172,6 +175,8 @@ export default function CodeEditor({
     if (error) {
       console.error('Error updating database:', error);
     }
+
+    setIsLanguageChanging(false);
   };
 
   const handleLanguageChange = (
@@ -215,7 +220,7 @@ export default function CodeEditor({
   };
 
   useEffect(() => {
-    if (selectedLanguage) {
+    if (selectedLanguage && !userIsInterviewer) {
       updateSelectedLanguage();
     }
   }, [selectedLanguage]);
@@ -378,10 +383,11 @@ export default function CodeEditor({
     <Flex direction="column" height="100%" width="100%">
       <Box width="max-content">
         <HStack>
+          {isLanguageChanging && <Spinner h="25px" w="40px" />}
           <Select
             value={selectedLanguage}
             onChange={handleLanguageChange}
-            disabled={userIsInterviewer}
+            disabled={userIsInterviewer || isLanguageChanging}
           >
             {Object.values(Language).map((lang) => (
               <option key={lang} value={lang}>
