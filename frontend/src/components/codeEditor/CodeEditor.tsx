@@ -101,15 +101,17 @@ export default function CodeEditor({
   const supabase = supabaseAnon;
 
   // Initialize state from supabse
-  supabase
-    .from('collaborations')
-    .select('*')
-    .eq('room_id', roomId)
-    .then((res) => {
-      setCodeResult(formatJudge0Message(res.data[0][`${userKey}_result`]));
-      setSelectedLanguage(res.data[0][`${userKey}_language`]);
-      setIsClosed(res.data[0].is_closed);
-    });
+  useEffect(() => {
+    supabase
+      .from('collaborations')
+      .select('*')
+      .eq('room_id', roomId)
+      .then((res) => {
+        setCodeResult(formatJudge0Message(res.data[0][`${userKey}_result`]));
+        setSelectedLanguage(res.data[0][`${userKey}_language`]);
+        setIsClosed(res.data[0].is_closed);
+      });
+  }, []);
 
   supabase
     .channel(roomId)
@@ -133,7 +135,7 @@ export default function CodeEditor({
           setCodeResult(formatJudge0Message(userResult));
         }
 
-        if (userLanguage !== selectedLanguage) {
+        if (userIsInterviewer && userLanguage !== selectedLanguage) {
           setSelectedLanguage(userLanguage);
         }
 

@@ -20,7 +20,6 @@ import {
 } from '@tanstack/react-query';
 import { cookies } from 'next/headers';
 import { UUID } from 'crypto';
-import { supabaseAnon } from '@/components/supabase/supabase';
 import NextLink from 'next/link';
 
 async function Page({ params }: { params: { channelName: string } }) {
@@ -72,14 +71,13 @@ async function Page({ params }: { params: { channelName: string } }) {
   });
 
   // Check if room is closed
-  const { is_closed: isClosed } = await supabaseAnon
+  const { data: queryData } = await supabase
     .from('collaborations')
     .select('is_closed')
     .eq('room_id', channelName)
-    .single()
-    .then((res) => res.data);
+    .single();
 
-  if (isClosed) {
+  if (!queryData || queryData.is_closed) {
     return (
       <Box textAlign="center" p={5}>
         <Heading mb={4}>Room not found</Heading>
