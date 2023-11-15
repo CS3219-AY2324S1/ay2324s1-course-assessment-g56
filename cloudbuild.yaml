@@ -187,8 +187,6 @@ steps:
       - '-t'
       - 'gcr.io/$PROJECT_ID/frontend_service'
       - ./frontend
-    # Add any other Docker build options as needed.
-
   # Step 3: Delete the .env file
   - name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: 'bash'
@@ -196,7 +194,14 @@ steps:
       - '-c'
       - |
         rm frontend/.env
-  # Trigger update of images in deployed to GKE
+  # Trigger update of images used in deployment to GKE
+  images:
+    - 'gcr.io/$PROJECT_ID/question_service:latest'
+    - 'gcr.io/$PROJECT_ID/matching_service:latest'
+    - 'gcr.io/$PROJECT_ID/user_service:latest'
+    - 'gcr.io/$PROJECT_ID/room_service:latest'
+    - 'gcr.io/$PROJECT_ID/video_token_service:latest'
+    - 'gcr.io/$PROJECT_ID/frontend_service:latest'
   - name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: 'bash'
     args:
@@ -207,10 +212,3 @@ steps:
         else
           echo "Build steps failed, not publishing Pub/Sub message."
         fi
-images:
-  - 'gcr.io/$PROJECT_ID/question_service:latest'
-  - 'gcr.io/$PROJECT_ID/matching_service:latest'
-  - 'gcr.io/$PROJECT_ID/user_service:latest'
-  - 'gcr.io/$PROJECT_ID/room_service:latest'
-  - 'gcr.io/$PROJECT_ID/video_token_service:latest'
-  - 'gcr.io/$PROJECT_ID/frontend_service:latest'
