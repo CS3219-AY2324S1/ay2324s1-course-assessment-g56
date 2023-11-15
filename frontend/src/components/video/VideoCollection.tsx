@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/interactive-supports-focus */
-import { ReactElement, useEffect, useState } from 'react';
+import { ReactElement, useEffect, useState, useContext } from 'react';
 import {
   AgoraVideoPlayer,
   createClient,
@@ -19,7 +19,8 @@ import { FiVideo, FiVideoOff } from 'react-icons/fi';
 import { HStack, IconButton, Text, useToast } from '@chakra-ui/react';
 import { getVideoAccessToken } from '@/lib/video_token';
 import { UUID } from 'crypto';
-import { useRoomStore } from '@/hooks/useRoomStore';
+import { RoomContext } from '../collabRoom/RoomContext';
+// import { useRoomStore } from '@/hooks/useRoomStore';
 
 const config: ClientConfig = {
   mode: 'rtc',
@@ -116,7 +117,7 @@ function VideoCollection({
   const [users, setUsers] = useState<IAgoraRTCRemoteUser[]>([]);
   const [start, setStart] = useState<boolean>(false);
   const [hasInitialised, setHasInitialised] = useState<boolean>(false);
-  const isClosed = useRoomStore((state) => state.isClosed);
+  const { isRoomOpen } = useContext(RoomContext);
   const client = useClient();
   const toast = useToast();
   const { ready, tracks } = useMicrophoneAndCameraTracks();
@@ -179,12 +180,13 @@ function VideoCollection({
   }, [roomId, client, ready, tracks, hasInitialised]);
 
   useEffect(() => {
-    if (isClosed) {
+    if (!isRoomOpen) {
+      console.log('closing agora...');
       setInCall(false);
       setStart(false);
       client.leave();
     }
-  }, [client, isClosed]);
+  }, [client, isRoomOpen]);
 
   // if (!client || !userProfile) {
   //   return null;

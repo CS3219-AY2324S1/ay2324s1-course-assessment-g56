@@ -18,8 +18,15 @@ import {
 } from '@tanstack/react-query';
 import { cookies } from 'next/headers';
 import { UUID } from 'crypto';
+import dynamic from 'next/dynamic';
+
 import PastRoomRight from '@/components/pastRoom/PastRoomRight';
 import PastRoomLeft from '@/components/pastRoom/PastRoomLeft';
+
+const ErrorBoundary = dynamic(
+  () => import('@/components/errorBoundary/ErrorBoundary'),
+  { ssr: false }, // Disable server-side rendering for this component
+);
 
 async function Page({ params }: { params: { channelName: string } }) {
   const { channelName } = params as { channelName: UUID };
@@ -70,12 +77,14 @@ async function Page({ params }: { params: { channelName: string } }) {
   });
 
   return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
-      <HStack align="flex-start">
-        <PastRoomLeft roomId={channelName} username={user.username} />
-        <PastRoomRight roomId={channelName} user={user} />
-      </HStack>
-    </HydrationBoundary>
+    <ErrorBoundary>
+      <HydrationBoundary state={dehydrate(queryClient)}>
+        <HStack align="flex-start">
+          <PastRoomLeft roomId={channelName} username={user.username} />
+          <PastRoomRight roomId={channelName} user={user} />
+        </HStack>
+      </HydrationBoundary>
+    </ErrorBoundary>
   );
 }
 
