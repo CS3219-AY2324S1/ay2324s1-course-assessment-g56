@@ -196,6 +196,17 @@ steps:
       - '-c'
       - |
         rm frontend/.env
+  # Push all images
+  steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'gcr.io/$PROJECT_ID/question_service:latest'
+      - 'gcr.io/$PROJECT_ID/matching_service:latest'
+      - 'gcr.io/$PROJECT_ID/user_service:latest'
+      - 'gcr.io/$PROJECT_ID/room_service:latest'
+      - 'gcr.io/$PROJECT_ID/video_token_service:latest'
+      - 'gcr.io/$PROJECT_ID/frontend_service:latest'
   # Trigger update of images in deployed to GKE
   - name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: 'bash'
@@ -207,10 +218,10 @@ steps:
         else
           echo "Build steps failed, not publishing Pub/Sub message."
         fi
-images:
-  - 'gcr.io/$PROJECT_ID/question_service:latest'
-  - 'gcr.io/$PROJECT_ID/matching_service:latest'
-  - 'gcr.io/$PROJECT_ID/user_service:latest'
-  - 'gcr.io/$PROJECT_ID/room_service:latest'
-  - 'gcr.io/$PROJECT_ID/video_token_service:latest'
-  - 'gcr.io/$PROJECT_ID/frontend_service:latest'
+# images:
+#   - 'gcr.io/$PROJECT_ID/question_service:latest'
+#   - 'gcr.io/$PROJECT_ID/matching_service:latest'
+#   - 'gcr.io/$PROJECT_ID/user_service:latest'
+#   - 'gcr.io/$PROJECT_ID/room_service:latest'
+#   - 'gcr.io/$PROJECT_ID/video_token_service:latest'
+#   - 'gcr.io/$PROJECT_ID/frontend_service:latest'
