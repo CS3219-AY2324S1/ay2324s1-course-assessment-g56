@@ -26,11 +26,6 @@ spec:
             name: judge0-db-config
         ports:
         - containerPort: 5432
-        resources:
-          requests:
-            cpu: "250m" # This is the amount of CPU the application requests
-          limits:
-            cpu: "750m" # This is the maximum amount of CPU the application can use
         volumeMounts:
         - name: postgres-data
           mountPath: /var/lib/postgresql/data

@@ -8,5 +8,5 @@ spec:
     kind: Deployment
     name: video-token-service-deployment
   minReplicas: 1
-  maxReplicas: 10
+  maxReplicas: 2
   targetCPUUtilizationPercentage: 70

@@ -20,11 +20,6 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
-          resources:
-            requests:
-              cpu: "100m" # This is the amount of CPU the application requests
-            limits:
-              cpu: "500m" # This is the maximum amount of CPU the application can use
           env:
             - name: AGORA_PRIMARY_CERTIFICATE
               valueFrom:
