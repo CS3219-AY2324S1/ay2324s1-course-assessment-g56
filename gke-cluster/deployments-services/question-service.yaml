@@ -20,11 +20,6 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: 5001
-          resources:
-            requests:
-              cpu: "100m" # This is the amount of CPU the application requests
-            limits:
-              cpu: "500m" # This is the maximum amount of CPU the application can use
           envFrom:
             - secretRef:
                 name: firebase-secret

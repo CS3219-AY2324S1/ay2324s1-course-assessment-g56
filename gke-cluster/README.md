@@ -86,7 +86,7 @@ cd cs3219-gke
 
 gcloud container node-pools update default-pool --location=us-central1-c --cluster=cluster-1 --system-config-from-file=c_group_mode.yaml
 
-gcloud container clusters update cluster-1 --gateway-api=standard --location=us-central1-c
+gcloud container clusters update cluster-1 --gateway-api=standard --location=us-central1-a
 
 chmod +x deploy.sh
 
