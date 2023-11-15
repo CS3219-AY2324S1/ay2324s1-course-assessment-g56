@@ -15,7 +15,7 @@ sudo vim /etc/hosts
 
 Add the following line to the file opened in vim
 
-34.69.86.85     peerprep.com
+35.224.195.140     peerprep.com
 ```
 
 ### For Windows
@@ -31,7 +31,7 @@ Add the following line to the file opened in vim
 **Step 1e:** Add the following line to the file
 
 ```bash
-34.69.86.85     peerprep.com
+35.224.195.140    peerprep.com
 ```
 
 **Step 2:** Open your browser and go to peerprep.com

@@ -7,9 +7,9 @@ steps:
       - |
         # Authenticate and set the cluster context
         gcloud auth configure-docker gcr.io
-        gcloud container clusters get-credentials cluster-1 --location=us-central1-c --project thinking-return-402109
+        gcloud container clusters get-credentials cluster-1 --location=us-central1-a --project thinking-return-402109
         # Set environment variables for the Kubernetes cluster
-        # export CLOUDSDK_COMPUTE_REGION=us-central1-c
+        # export CLOUDSDK_COMPUTE_REGION=us-central1-a
         # export CLOUDSDK_CONTAINER_CLUSTER=cluster-1
         # export KUBECTL_VERSION=1.27
         # Update question-service and other services
