@@ -1,0 +1,21 @@
+steps:
+  # Authenticate with Service Account and set Kubernetes context, then update deployment
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        # Authenticate and set the cluster context
+        gcloud auth configure-docker gcr.io
+        gcloud container clusters get-credentials cluster-1 --location=us-central1-a --project thinking-return-402109
+        # Set environment variables for the Kubernetes cluster
+        # export CLOUDSDK_COMPUTE_REGION=us-central1-a
+        # export CLOUDSDK_CONTAINER_CLUSTER=cluster-1
+        # export KUBECTL_VERSION=1.27
+        # Update question-service and other services
+        kubectl rollout restart deployment/question-service-deployment
+        kubectl rollout restart deployment/matching-service-deployment
+        kubectl rollout restart deployment/user-service-deployment
+        kubectl rollout restart deployment/video-token-service-deployment
+        kubectl rollout restart deployment/room-service-deployment
+        kubectl rollout restart deployment/frontend-deployment

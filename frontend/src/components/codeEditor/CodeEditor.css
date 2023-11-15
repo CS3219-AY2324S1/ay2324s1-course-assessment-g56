@@ -1,0 +1,32 @@
+.cm-editor {
+  height: 100%;
+  width: 100%;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.cm-scroller {
+  overflow: auto;
+}
+
+.cm-scroller,
+.cm-tooltip.cm-tooltip-autocomplete > ul {
+  font-family: 'Fira Code', monospace !important;
+  font-variant-ligatures: contextual;
+}
+
+.cm-completionIcon {
+  width: 1rem !important;
+}
+
+.cm-lineWrapping {
+  word-break: break-all !important;
+}
+
+.cm-editor.cm-focused {
+  outline: none !important;
+}
+
+.cm-ySelectionInfo {
+  font-family: inherit !important;
+}

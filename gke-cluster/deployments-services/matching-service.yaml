@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: matching-service-deployment
+  labels:
+    app: matching-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: matching-service
+  template:
+    metadata:
+      labels:
+        app: matching-service
+    spec:
+      containers:
+        - name: matching-service
+          image: gcr.io/thinking-return-402109/matching_service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 6006
+          envFrom:
+            - secretRef:
+                name: supabase-secret
+          env:
+            - name: MATCHING_SERVICE_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-config
+                  key: MATCHING_SERVICE_PORT
+            - name: ROOM_SERVICE_PATH
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-config
+                  key: ROOM_PATH
+            - name: NODE_ENV
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-config
+                  key: NODE_ENV
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: matching-service-service
+spec:
+  selector:
+    app: matching-service
+  ports:
+    - protocol: TCP
+      port: 6006
+      targetPort: 6006

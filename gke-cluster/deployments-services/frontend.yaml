@@ -1,0 +1,95 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-deployment
+  labels:
+    app: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+        - name: frontend
+          image: gcr.io/thinking-return-402109/frontend_service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+          resources:
+            requests:
+              cpu: "200m" # This is the amount of CPU the application requests
+            limits:
+              cpu: "500m" # This is the maximum amount of CPU the application can use
+          env:
+            - name: RUNTIME_FRONTEND_SERVICE
+              valueFrom:
+                configMapKeyRef:
+                  name: frontend-config
+                  key: FRONTEND_SERVICE
+            - name: RUNTIME_QUESTION_PATH
+              valueFrom:
+                configMapKeyRef:
+                  name: frontend-config
+                  key: QUESTION_PATH
+            - name: RUNTIME_USER_PATH
+              valueFrom:
+                configMapKeyRef:
+                  name: frontend-config
+                  key: USER_PATH
+            - name: RUNTIME_MATCHING_PATH
+              valueFrom:
+                configMapKeyRef:
+                  name: frontend-config
+                  key: MATCHING_PATH
+            - name: RUNTIME_SUPABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: supabase-secret
+                  key: SUPABASE_URL
+            - name: RUNTIME_SUPABASE_ANON_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: supabase-secret
+                  key: SUPABASE_ANON_KEY
+            - name: RUNTIME_ROOM_PATH
+              valueFrom:
+                configMapKeyRef:
+                  name: frontend-config
+                  key: ROOM_PATH
+            - name: RUNTIME_SIGNALING_PATH
+              valueFrom:
+                configMapKeyRef:
+                  name: frontend-config
+                  key: SIGNALING_PATH
+            - name: RUNTIME_VIDEO_PATH
+              valueFrom:
+                configMapKeyRef:
+                  name: frontend-config
+                  key: VIDEO_PATH
+            - name: RUNTIME_CODE_EXECUTION_PATH
+              valueFrom:
+                configMapKeyRef:
+                  name: frontend-config
+                  key: CODE_EXECUTION_PATH
+            - name: RUNTIME_AGORA_ID
+              valueFrom:
+                configMapKeyRef:
+                  name: frontend-config
+                  key: AGORA_ID
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-service
+spec:
+  selector:
+    app: frontend
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000

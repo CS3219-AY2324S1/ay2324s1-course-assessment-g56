@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "lib": ["ES6"],
+    "noEmit": true,
+    "types": ["@types/node"]
+  },
+  "extends": "./tsconfig.base.json",
+  "include": [
+    ".eslintrc.js",
+    "**/*js"
+  ]
+}

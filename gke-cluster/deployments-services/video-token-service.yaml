@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: video-token-service-deployment
+  labels:
+    app: video-token-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: video-token-service
+  template:
+    metadata:
+      labels:
+        app: video-token-service
+    spec:
+      containers:
+        - name: video-token-service
+          image: gcr.io/thinking-return-402109/video_token_service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          env:
+            - name: AGORA_PRIMARY_CERTIFICATE
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-config
+                  key: AGORA_PRIMARY_CERTIFICATE
+            - name: AGORA_ID
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-config
+                  key: AGORA_ID
+            - name: VIDEO_TOKEN_SERVICE_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-config
+                  key: VIDEO_TOKEN_SERVICE_PORT
+            - name: NODE_ENV
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-config
+                  key: NODE_ENV
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: video-token-service-service
+spec:
+  selector:
+    app: video-token-service
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
