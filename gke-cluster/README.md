@@ -12,7 +12,7 @@ Step 1: Install Minikube on your machine
 
 Step 2: Go to command line and run
 
-```bash
+```
 sudo vim /etc/hosts
 
 #Add the following line to the file opened in vim
@@ -27,7 +27,7 @@ After adding the line, your file should look similar to this. Minikube has its o
 
 Step 3: Go to command line and run
 
-```bash
+```
 minikube start
 
 minikube addons enable ingress
@@ -49,7 +49,7 @@ Step 4: Go to peerprep.com to test
 
 Step 5: When you are done run
 
-```bash
+```
 ./cleanup
 
 minikube stop
@@ -59,7 +59,7 @@ minikube stop
 
 To view your pod logs
 
-```bash
+```
 kubectl get all
 
 kubectl logs [copy paste the pod name]
@@ -67,31 +67,36 @@ kubectl logs [copy paste the pod name]
 #Got a bunch of other useful kubectl commands also
 ```
 
+
+
 ---
 
 For deployment on GKE:
 
 On cloud console
-
-```bash
+```
 helm upgrade --install ingress-nginx ingress-nginx \
   --repo https://kubernetes.github.io/ingress-nginx \
   --namespace ingress-nginx --create-namespace
 
-git clone https://github.com/CS3219-AY2324S1/ay2324s1-course-assessment-g56.git
 
-cd gke-cluster
+git clone https://github.com/kyueran/cs3219-gke.git
+
+cd cs3219-gke
+
+gcloud container node-pools update default-pool --location=us-central1-c --cluster=cluster-1 --system-config-from-file=c_group_mode.yaml
+
+gcloud container clusters update cluster-1 --gateway-api=standard --location=us-central1-c
 
 chmod +x deploy.sh
 
 ./deploy.sh
 ```
 
-On your local terminal
-
-```bash
+On your local terminal 
+```
 sudo vim /etc/hosts
 
 #Add this line
-<External Load Balancer IP without the port number>   peerprep.com
+<load balancer IP>   peerprep.com
 ```

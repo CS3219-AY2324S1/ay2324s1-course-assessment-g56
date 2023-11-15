@@ -17,6 +17,11 @@ spec:
         image: judge0/judge0:1.13.0
         ports:
         - containerPort: 2358
+        resources:
+          requests:
+            cpu: "250m" # This is the amount of CPU the application requests
+          limits:
+            cpu: "750m" # This is the maximum amount of CPU the application can use
         securityContext:
           privileged: true
         envFrom:

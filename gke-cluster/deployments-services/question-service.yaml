@@ -1,63 +1,66 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: room-service-deployment
+  name: question-service-deployment
   labels:
-    app: room-service
+    app: question-service
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: room-service
+      app: question-service
   template:
     metadata:
       labels:
-        app: room-service
+        app: question-service
     spec:
       containers:
-        - name: room-service
-          image: gcr.io/thinking-return-402109/room_service:latest
+        - name: question-service
+          image: gcr.io/thinking-return-402109/question_service:latest
           imagePullPolicy: Always
           ports:
-            - containerPort: 6007
+            - containerPort: 5001
+          resources:
+            requests:
+              cpu: "100m" # This is the amount of CPU the application requests
+            limits:
+              cpu: "500m" # This is the maximum amount of CPU the application can use
           envFrom:
+            - secretRef:
+                name: firebase-secret
             - secretRef:
                 name: supabase-secret
           env:
-            - name: ROOM_SERVICE_PORT
+            - name: QUESTION_SERVICE_PORT
               valueFrom:
                 configMapKeyRef:
                   name: backend-config
-                  key: ROOM_SERVICE_PORT
+                  key: QUESTION_SERVICE_PORT
             - name: FRONTEND_SERVICE
               valueFrom:
                 configMapKeyRef:
                   name: backend-config
                   key: FRONTEND_SERVICE
-            - name: MATCHING_SERVICE
+            - name: ROOM_SERVICE
               valueFrom:
                 configMapKeyRef:
                   name: backend-config
-                  key: MATCHING_PATH
-            - name: QUESTION_SERVICE
-              valueFrom:
-                configMapKeyRef:
-                  name: backend-config
-                  key: QUESTION_PATH
+                  key: ROOM_PATH
             - name: NODE_ENV
               valueFrom:
                 configMapKeyRef:
                   name: backend-config
                   key: NODE_ENV
+
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: room-service-service
+  name: question-service-service
 spec:
   selector:
-    app: room-service
+    app: question-service
   ports:
     - protocol: TCP
-      port: 6007
-      targetPort: 6007
+      port: 5001
+      targetPort: 5001
