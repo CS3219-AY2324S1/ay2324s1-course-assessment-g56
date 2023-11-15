@@ -197,7 +197,6 @@ steps:
       - |
         rm frontend/.env
   # Push all images
-  steps:
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'push'
