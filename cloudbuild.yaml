@@ -35,6 +35,11 @@ steps:
       - '-c'
       - |
         rm backend/question_service/.env
+  # Step 6: Push question_service image
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'gcr.io/$PROJECT_ID/question_service:latest'
 # Matching Service
   # Step 1: Create the .env file in backend/matching_service/
   - name: 'gcr.io/cloud-builders/gcloud'
@@ -72,6 +77,11 @@ steps:
       - '-c'
       - |
         rm backend/matching_service/.env
+  # Step 6: Push matching_service image
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'gcr.io/$PROJECT_ID/matching_service:latest'
 #User Service
   # Step 1: Create the .env file in backend/user_service/
   - name: 'gcr.io/cloud-builders/gcloud'
@@ -109,6 +119,11 @@ steps:
       - '-c'
       - |
         rm backend/user_service/.env
+  # Step 6: Push user_service image
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'gcr.io/$PROJECT_ID/user_service:latest'
 #Room Service
   # Step 1: Create the .env file in backend/room_service/
   - name: 'gcr.io/cloud-builders/gcloud'
@@ -140,6 +155,11 @@ steps:
       - '-c'
       - |
         rm backend/room_service/.env
+  # Step 5: Push room_service image
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'gcr.io/$PROJECT_ID/room_service:latest'
 #Video Token Service
   # Step 1: Create the .env file in backend/video_token_service/
   - name: 'gcr.io/cloud-builders/gcloud'
@@ -171,6 +191,11 @@ steps:
       - '-c'
       - |
         rm backend/video_token_service/.env
+  # Step 5: Push video_token_service image
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'gcr.io/$PROJECT_ID/video_token_service:latest'
 # Frontend service
   # Step 1: Create the .env file in /frontend
   - name: 'gcr.io/cloud-builders/gcloud'
@@ -187,8 +212,6 @@ steps:
       - '-t'
       - 'gcr.io/$PROJECT_ID/frontend_service'
       - ./frontend
-    # Add any other Docker build options as needed.
-
   # Step 3: Delete the .env file
   - name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: 'bash'
@@ -196,6 +219,11 @@ steps:
       - '-c'
       - |
         rm frontend/.env
+  # Step 4: Push frontend_service image
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'gcr.io/$PROJECT_ID/frontend_service:latest'
   # Trigger update of images in deployed to GKE
   - name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: 'bash'
@@ -207,10 +235,3 @@ steps:
         else
           echo "Build steps failed, not publishing Pub/Sub message."
         fi
-images:
-  - 'gcr.io/$PROJECT_ID/question_service:latest'
-  - 'gcr.io/$PROJECT_ID/matching_service:latest'
-  - 'gcr.io/$PROJECT_ID/user_service:latest'
-  - 'gcr.io/$PROJECT_ID/room_service:latest'
-  - 'gcr.io/$PROJECT_ID/video_token_service:latest'
-  - 'gcr.io/$PROJECT_ID/frontend_service:latest'
