@@ -35,6 +35,11 @@ steps:
       - '-c'
       - |
         rm backend/question_service/.env
+# Push question image
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'gcr.io/$PROJECT_ID/question_service:latest'
 # Matching Service
   # Step 1: Create the .env file in backend/matching_service/
   - name: 'gcr.io/cloud-builders/gcloud'
