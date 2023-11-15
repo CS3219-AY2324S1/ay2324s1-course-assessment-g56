@@ -1,0 +1,2 @@
+linuxConfig:
+  cgroupMode: 'CGROUP_MODE_V1'

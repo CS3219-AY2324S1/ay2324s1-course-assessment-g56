@@ -20,6 +20,11 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: 3000
+          resources:
+            requests:
+              cpu: "100m" # This is the amount of CPU the application requests
+            limits:
+              cpu: "500m" # This is the maximum amount of CPU the application can use
           env:
             - name: RUNTIME_FRONTEND_SERVICE
               valueFrom:
