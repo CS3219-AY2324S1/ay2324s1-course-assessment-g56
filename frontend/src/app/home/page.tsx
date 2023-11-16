@@ -53,6 +53,7 @@ export default function Page() {
         status: 'error',
       });
     }
+    console.log(session?.access_token, "AUTH TOKEN FOR ASSIGNMENT 3")
   }, [isError]);
 
   return (
